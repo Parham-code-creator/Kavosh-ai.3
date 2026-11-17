@@ -1011,7 +1011,15 @@
             const months = parseInt(selectedDuration);
             const t = translations[currentLang];
             
-            // تمام 7 پلن (4 قدیمی + 3 جدید)
+            // درصد تخفیف بر اساس مدت اشتراک
+            const discountPercent = {
+                1: 0,
+                3: 10,   // ۱۰٪ تخفیف برای ۳ ماهه
+                6: 15,   // ۱۵٪ تخفیف برای ۶ ماهه
+                12: 20   // ۲۰٪ تخفیف برای یک‌ساله
+            }[months] || 0;
+
+            // تمام 7 پلن
             const plans = [
                 { name: 'پریمیوم', msg: 50, img: 10 },
                 { name: 'پرو', msg: 100, img: 15 },
@@ -1026,10 +1034,16 @@
                 let rawPrice = basePrices[p.name] * months;
                 let finalPrice = rawPrice;
                 let discountHtml = '';
-                if (months > 1) {
-                    finalPrice = Math.max(0, rawPrice - 25000);
-                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${t.discountText}</div>`;
+
+                if (discountPercent > 0) {
+                    finalPrice = Math.round(rawPrice * (1 - discountPercent / 100));
+                    const discountAmount = rawPrice - finalPrice;
+                    const discountText = currentLang === 'en' 
+                        ? `🎉 ${discountPercent}% OFF (−${discountAmount.toLocaleString('en-US')} Tomans)`
+                        : `🎉 ${discountPercent}٪ تخفیف (−${discountAmount.toLocaleString('fa-IR')} تومان)`;
+                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${discountText}</div>`;
                 }
+
                 const priceFormatted = finalPrice.toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR');
                 const displayName = t.plansMap[p.name] || p.name;
                 const durationText = currentLang === 'en' ? `${months} Months` : `${months} ماهه`;
@@ -1528,11 +1542,16 @@
         function getMaxQuotas() {
             if (!currentUser) return { msg: 0, img: 0 };
             if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
-            const tier = currentUser.tier || 'free';
-            if (tier.includes('اولترا') || tier.includes('Ultra')) return { msg: 350, img: 40 };
-            if (tier.includes('حرفه‌ای') || tier.includes('Professional')) return { msg: 300, img: 35 };
-            if (tier.includes('پیشرفته') || tier.includes('Advanced')) return { msg: 250, img: 30 };
-            if (tier.includes('پریمیوم') || tier.includes('Premium')) return { msg: 50, img: 10 };
+            const tier = (currentUser.tier || 'free').toLowerCase();
+            
+            if (tier.includes('اولترا') || tier.includes('ultra')) return { msg: 350, img: 40 };
+            if (tier.includes('حرفه‌ای') || tier.includes('professional')) return { msg: 300, img: 35 };
+            if (tier.includes('پیشرفته') || tier.includes('advanced')) return { msg: 250, img: 30 };
+            if (tier.includes('پرو مکس') || tier.includes('pro max')) return { msg: 200, img: 25 };
+            if (tier.includes('پرو پریمیوم') || tier.includes('pro premium')) return { msg: 150, img: 20 };
+            if (tier.includes('پرو') || tier.includes('pro')) return { msg: 100, img: 15 };
+            if (tier.includes('پریمیوم') || tier.includes('premium')) return { msg: 50, img: 10 };
+            
             return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
         }
 
