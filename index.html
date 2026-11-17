@@ -444,7 +444,7 @@
 
     <!-- Plans Modal -->
     <div id="plans-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-4xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-5xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
                 <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2.5"><i class="fa-solid fa-crown"></i> <span id="ui-plans-title">خرید اشتراک ویژه</span></h3>
                 <button onclick="closePlansModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -455,7 +455,7 @@
                 <button onclick="changeDuration('6')" id="dur-6" class="flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">۶ ماهه</button>
                 <button onclick="changeDuration('12')" id="dur-12" class="flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">یک‌ساله</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="plans-container"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="plans-container"></div>
             <div id="payment-box" style="display: none;" class="bg-slate-900/60 border border-slate-700/50 p-5 rounded-2xl space-y-4">
                 <h4 class="text-sm font-bold text-amber-400 border-b border-slate-700/50 pb-2.5"><span id="ui-pay-header">پرداخت اشتراک:</span> <span id="selected-plan-name"></span> (<span id="selected-plan-price"></span> تومان)</h4>
                 <div class="bg-slate-950/80 p-4 rounded-xl text-xs text-slate-400 border border-slate-700/40"><span id="ui-card-label">شماره کارت:</span> <span class="font-mono font-bold text-amber-300 tracking-wider">6219 8619 5040 0118</span> (پرهام خان احمدی)</div>
@@ -557,7 +557,16 @@
         let currentInterval = null;
         let lastImageRequestTime = 0; // برای مدیریت محدودیت 45 ثانیه‌ای Pollinations
 
-        const basePrices = { 'پریمیوم': 25000, 'پرو': 50000, 'پرو پریمیوم': 75000, 'پرو مکس': 100000 };
+        // قیمت‌های پایه ماهانه برای هر پلن
+        const basePrices = { 
+            'پریمیوم': 25000, 
+            'پرو': 50000, 
+            'پرو پریمیوم': 75000, 
+            'پرو مکس': 100000,
+            'پیشرفته': 125000,
+            'حرفه‌ای': 150000,
+            'اولترا': 175000
+        };
         const DEFAULT_MSG_QUOTA = 25;
         const DEFAULT_IMG_QUOTA = 2;
 
@@ -629,7 +638,15 @@
                 adminLogout: "خروج از حساب",
                 adminClose: "بستن پنل",
                 discountText: "🎉 ۲۵,۰۰۰ تومان تخفیف اعمال شد!",
-                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max' }
+                plansMap: { 
+                    'پریمیوم': 'Premium', 
+                    'پرو': 'Pro', 
+                    'پرو پریمیوم': 'Pro Premium', 
+                    'پرو مکس': 'Pro Max',
+                    'پیشرفته': 'Advanced',
+                    'حرفه‌ای': 'Professional',
+                    'اولترا': 'Ultra'
+                }
             },
             en: {
                 brandName: "Kavosh AI3",
@@ -698,7 +715,15 @@
                 adminLogout: "Logout",
                 adminClose: "Close Panel",
                 discountText: "🎉 25,000 Tomans discount applied!",
-                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max' }
+                plansMap: { 
+                    'پریمیوم': 'Premium', 
+                    'پرو': 'Pro', 
+                    'پرو پریمیوم': 'Pro Premium', 
+                    'پرو مکس': 'Pro Max',
+                    'پیشرفته': 'Advanced',
+                    'حرفه‌ای': 'Professional',
+                    'اولترا': 'Ultra'
+                }
             }
         };
 
@@ -868,11 +893,16 @@
             const container = document.getElementById('plans-container');
             const months = parseInt(selectedDuration);
             const t = translations[currentLang];
+            
+            // تمام 7 پلن (4 قدیمی + 3 جدید)
             const plans = [
                 { name: 'پریمیوم', msg: 50, img: 10 },
                 { name: 'پرو', msg: 100, img: 15 },
                 { name: 'پرو پریمیوم', msg: 150, img: 20 },
-                { name: 'پرو مکس', msg: 200, img: 25 }
+                { name: 'پرو مکس', msg: 200, img: 25 },
+                { name: 'پیشرفته', msg: 250, img: 30 },
+                { name: 'حرفه‌ای', msg: 300, img: 35 },
+                { name: 'اولترا', msg: 350, img: 40 }
             ];
 
             container.innerHTML = plans.map(p => {
@@ -1071,11 +1101,10 @@
 
             if (hasPersian) {
                 try {
-                    const translateRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    const translateRes = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
                         method: 'POST',
                         headers: { 
-                            'Content-Type': 'application/json', 
-                            'Authorization': `Bearer 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` 
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ 
                             model: "llama-3.3-70b-versatile",
@@ -1205,11 +1234,10 @@
                 : "شما یک دستیار هوش مصنوعی به نام کاوش AI3 هستید. به زبان فارسی روان، دقیق و طبیعی پاسخ دهید. مفید و مؤدب باشید.";
 
             try {
-                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                const res = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json', 
-                        'Authorization': `Bearer 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` 
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ 
                         model: "openai/gpt-oss-120b",
@@ -1364,6 +1392,9 @@
             if (!currentUser) return { msg: 0, img: 0 };
             if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
             const tier = currentUser.tier || 'free';
+            if (tier.includes('اولترا') || tier.includes('Ultra')) return { msg: 350, img: 40 };
+            if (tier.includes('حرفه‌ای') || tier.includes('Professional')) return { msg: 300, img: 35 };
+            if (tier.includes('پیشرفته') || tier.includes('Advanced')) return { msg: 250, img: 30 };
             if (tier.includes('پریمیوم') || tier.includes('Premium')) return { msg: 50, img: 10 };
             return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
         }
