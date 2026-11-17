@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" id="html-root">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">کاوش AI3</title>
+    <!-- فونت وزیرمتن -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif']
+                    },
+                    colors: {
+                        kavosh: {
+                            50:  '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.45s ease-out',
+                        'pulse-soft': 'pulseSoft 2.5s ease-in-out infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.15)' },
+                            '100%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.25)' },
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <!-- آیکون‌های FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000000 100%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0ea5e9, #a855f7);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #38bdf8, #c084fc); }
+
+        /* Glass morphism helpers */
+        .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        .glass-strong {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        /* Soft glow borders */
+        .glow-border {
+            box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .glow-border-purple {
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Message bubbles */
+        .msg-user {
+            background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%);
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
+        }
+        .msg-ai {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Input focus ring */
+        .input-glow:focus-within {
+            border-color: rgba(14, 165, 233, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15), 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animated gradient text */
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #a78bfa, #f472b6);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Floating orbs background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Button hover lift */
+        .btn-lift {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+        }
+
+        /* Plan card hover */
+        .plan-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .plan-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(14, 165, 233, 0.4) !important;
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Smooth modal appearance */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out, slideUp 0.35s ease-out;
+        }
+
+        /* Avatar ring */
+        .avatar-ring {
+            background: linear-gradient(135deg, #0ea5e9, #a855f7, #ec4899);
+            padding: 2px;
+        }
+        .avatar-inner {
+            background: #0f172a;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden relative">
+
+    <!-- Background Orbs -->
+    <div class="orb w-96 h-96 bg-sky-600 top-[-10%] right-[-5%]"></div>
+    <div class="orb w-80 h-80 bg-purple-600 bottom-[-15%] left-[-8%]"></div>
+    <div class="orb w-64 h-64 bg-fuchsia-600 top-[40%] left-[30%] opacity-20"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2.5 pointer-events-none"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-all duration-300 z-20 relative">
+        <div class="flex-1 flex flex-col min-h-0">
+            <!-- New Chat Button -->
+            <div class="p-4">
+                <button onclick="newChat()" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
+                    <span class="flex items-center gap-2.5"><i class="fa-solid fa-plus text-sky-200"></i> <span id="ui-new-chat">گفتگوی جدید</span></span>
+                    <i class="fa-regular fa-pen-to-square text-sky-200/80"></i>
+                </button>
+            </div>
+            
+            <!-- Subscription & Quotas -->
+            <div class="px-4 py-3 mx-3 my-1 glass rounded-2xl space-y-3 border border-slate-700/50">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-slate-400 font-medium" id="ui-sub-level">سطح اشتراک:</span>
+                    <span id="sub-tier-badge" class="px-2.5 py-1 bg-slate-800/80 text-sky-300 rounded-lg font-bold text-[11px] border border-slate-600/50">رایگان</span>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between text-[11px] mb-1.5">
+                        <span class="text-slate-400" id="ui-daily-msg">پیام روزانه:</span>
+                        <span id="quota-text" class="text-slate-400 font-bold">نیاز به ورود</span>
+                    </div>
+                    <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="quota-bar" class="bg-gradient-to-r from-sky-500 to-cyan-400 h-full transition-all duration-500 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between text-[11px] mb-1.5">
+                        <span class="text-slate-400" id="ui-daily-img">تصویر روزانه:</span>
+                        <span id="img-quota-text" class="text-slate-400 font-bold">0 / 2</span>
+                    </div>
+                    <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="img-quota-bar" class="bg-gradient-to-r from-violet-500 to-fuchsia-400 h-full transition-all duration-500 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button onclick="openPlansModal()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs py-2.5 rounded-xl transition shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5 btn-lift">
+                        <i class="fa-solid fa-gem"></i> <span id="ui-upgrade">ارتقای اشتراک</span>
+                    </button>
+                    <button onclick="openTicketModal()" class="w-full bg-slate-800/80 hover:bg-slate-700/80 text-sky-300 font-bold text-xs py-2.5 rounded-xl transition border border-slate-600/50 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-headset"></i> <span id="ui-support">پشتیبانی</span>
+                    </button>
+                </div>
+
+                <!-- Aparat & YouTube -->
+                <div class="space-y-2 pt-1">
+                    <div class="grid grid-cols-2 gap-2">
+                        <a href="https://www.aparat.com" target="_blank" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-video"></i> <span id="ui-aparat">کاوش آپارات</span>
+                        </a>
+                        <a href="https://www.youtube.com" target="_blank" class="bg-red-600/10 hover:bg-red-600/20 text-red-300 border border-red-500/20 text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5 font-medium">
+                            <i class="fa-brands fa-youtube"></i> <span id="ui-youtube">کاوش یوتیوب</span>
+                        </a>
+                    </div>
+                    <div class="text-[10px] text-slate-400 text-center leading-tight bg-slate-900/60 p-2 rounded-xl border border-slate-700/40" id="ui-yt-note">
+                        نکته: جهت استفاده از کاوش یوتیوب باید فیلتر شکن روشن باشد
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Chats -->
+            <div class="px-4 py-3 flex items-center justify-between text-xs font-semibold text-slate-500 tracking-wider">
+                <span id="ui-recent-chats">گفتگوهای اخیر</span>
+                <button onclick="confirmClearAllChats()" class="text-slate-500 hover:text-red-400 transition flex items-center gap-1 normal-case text-xs" title="پاک کردن تمام گفتگوها">
+                    <i class="fa-regular fa-trash-can"></i> <span id="ui-clear-all">پاکسازی همه</span>
+                </button>
+            </div>
+            
+            <div id="chat-history-list" class="px-3 space-y-1.5 overflow-y-auto flex-1 pb-2">
+                <div class="p-3 text-xs text-slate-500 text-center" id="ui-no-chats">هنوز گفتگویی ثبت نشده است.</div>
+            </div>
+        </div>
+
+        <!-- User Profile Footer -->
+        <div class="p-4 border-t border-slate-700/40 flex items-center justify-between shrink-0 bg-slate-900/40">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="openProfileModal()" title="تنظیمات">
+                <div class="avatar-ring rounded-full">
+                    <div class="w-9 h-9 rounded-full avatar-inner flex items-center justify-center font-bold text-white text-sm" id="user-avatar">ک</div>
+                </div>
+                <div>
+                    <div class="text-sm font-medium text-slate-200 group-hover:text-sky-300 transition" id="user-display-name">کاربر مهمان</div>
+                    <div class="text-xs text-slate-500" id="user-status-text">نیاز به ورود</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <button id="admin-panel-btn" onclick="openAdminModal()" style="display: none;" class="text-amber-400 hover:text-amber-300 p-2 rounded-xl hover:bg-amber-500/10 transition" title="پنل مدیریت"><i class="fa-solid fa-user-shield"></i></button>
+                <button id="logout-btn" onclick="confirmLogout()" style="display: none;" class="text-red-400 hover:text-red-300 p-2 rounded-xl hover:bg-red-500/10 transition" title="خروج"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col h-full relative z-10">
+        <!-- Header -->
+        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-5 z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition"><i class="fa-solid fa-bars text-lg"></i></button>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center shadow-lg shadow-sky-500/30">
+                        <i class="fa-solid fa-compass text-white text-sm"></i>
+                    </div>
+                    <span class="font-bold tracking-wide gradient-text text-lg" id="ui-brand-name">کاوش AI3</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openProfileModal()" class="text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-2 btn-lift">
+                    <i class="fa-solid fa-user"></i> <span id="ui-auth-btn-text">ورود / ثبت‌نام</span>
+                </button>
+                <button onclick="clearChat()" title="پاکسازی صفحه" class="text-slate-400 hover:text-red-400 p-2.5 rounded-xl hover:bg-red-500/10 transition"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+        </header>
+
+        <!-- Warning Banner -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+            <span id="ui-warning-text">کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.</span>
+        </div>
+
+        <!-- Chat Container -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in">
+                <div class="relative">
+                    <div class="w-20 h-20 bg-gradient-to-br from-sky-500 via-violet-500 to-fuchsia-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 text-3xl text-white animate-float">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="absolute -inset-3 bg-gradient-to-br from-sky-500/20 to-violet-500/20 rounded-3xl blur-xl -z-10"></div>
+                </div>
+                <div class="space-y-3">
+                    <h1 class="text-3xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">سلام! من <span class="gradient-text">کاوش AI3</span> هستم</h1>
+                    <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.</p>
+                </div>
+                <div class="flex flex-wrap gap-2 justify-center pt-2">
+                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">چت هوشمند</span>
+                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">تولید تصویر</span>
+                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">پشتیبانی فارسی</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
+            <div class="max-w-3xl mx-auto relative glass-strong border border-slate-700/50 rounded-2xl shadow-2xl input-glow transition-all duration-300 flex items-center px-3 py-2.5 gap-1">
+                <button id="mode-toggle-btn" onclick="toggleMode()" class="text-slate-400 hover:text-violet-300 px-3 py-2 rounded-xl transition text-xs flex items-center gap-1.5 border border-slate-700/60 bg-slate-900/60 shrink-0" title="تغییر حالت">
+                    <i class="fa-solid fa-message text-sky-400" id="mode-icon"></i>
+                    <span id="mode-text">متن</span>
+                </button>
+
+                <textarea id="user-input" rows="1" placeholder="پیام خود را بنویسید..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm p-3 focus:outline-none resize-none max-h-32 leading-relaxed" onkeydown="handleKeyPress(event)"></textarea>
+
+                <div class="flex items-center gap-1.5">
+                    <button id="mic-btn" onclick="toggleVoiceInput()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 w-10 h-10 rounded-xl flex items-center justify-center transition" title="صوتی">
+                        <i class="fa-solid fa-microphone text-sm" id="mic-icon"></i>
+                    </button>
+                    <button onclick="handleSendAction()" id="send-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-sky-500/25" title="ارسال">
+                        <i class="fa-solid fa-arrow-up text-sm"></i>
+                    </button>
+                    <button onclick="stopCurrentProcess()" id="stop-btn" style="display: none;" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-red-500/25" title="توقف">
+                        <i class="fa-solid fa-stop text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="text-center text-xs text-slate-500 mt-3" id="ui-copyright">
+                هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-sm w-full p-7 shadow-2xl relative space-y-5 text-center modal-enter">
+            <div class="w-14 h-14 rounded-2xl bg-red-500/15 text-red-400 flex items-center justify-center mx-auto text-2xl border border-red-500/20">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirm-title" class="text-base font-bold text-slate-100">آیا مطمئن هستید؟</h3>
+            <p id="confirm-desc" class="text-xs text-slate-400 leading-relaxed">این عملیات قابل بازگشت نیست.</p>
+            <div class="flex gap-3 pt-2">
+                <button id="confirm-yes-btn" onclick="executeConfirmAction()" class="flex-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-lg shadow-red-500/20">بله</button>
+                <button id="confirm-no-btn" onclick="closeConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-xl transition border border-slate-700">خیر</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-6 modal-enter">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 class="text-lg font-bold text-sky-400 flex items-center gap-2.5">
+                    <i class="fa-solid fa-gear"></i> <span id="ui-settings-title">تنظیمات حساب و زبان</span>
+                </h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleProfileUpdate(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-label-lang">زبان برنامه (Language)</label>
+                    <select id="language-select" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                        <option value="fa">فارسی (Persian)</option>
+                        <option value="en">English (انگلیسی)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-label-username">تغییر نام کاربری</label>
+                    <input type="text" id="profile-username" required class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                </div>
+                <div class="border-t border-slate-700/50 pt-4 space-y-3">
+                    <h4 class="text-xs font-bold text-amber-400" id="ui-label-pass">تغییر رمز عبور</h4>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-label-curr">رمز عبور فعلی</label>
+                        <input type="password" id="profile-curr-pass" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-label-new">رمز عبور جدید</label>
+                        <input type="password" id="profile-new-pass" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-label-conf">تکرار رمز عبور جدید</label>
+                        <input type="password" id="profile-confirm-pass" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl text-xs transition shadow-lg shadow-sky-500/20 btn-lift" id="ui-save-btn">
+                    ذخیره تغییرات
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Ticket Modal -->
+    <div id="ticket-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-xl w-full p-7 shadow-2xl relative space-y-5 max-h-[90vh] overflow-y-auto modal-enter">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 class="text-lg font-bold text-sky-400 flex items-center gap-2.5">
+                    <i class="fa-solid fa-headset"></i> <span id="ui-ticket-title">پشتیبانی و تیکت‌ها</span>
+                </h3>
+                <button onclick="closeTicketModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleTicketSubmit(event)" class="space-y-4 bg-slate-900/50 p-5 rounded-2xl border border-slate-700/40">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-ticket-subj-label">موضوع تیکت</label>
+                    <input type="text" id="ticket-subject" required placeholder="مثلاً: مشکل در فعال‌سازی اشتراک" class="w-full bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5" id="ui-ticket-msg-label">متن پیام</label>
+                    <textarea id="ticket-message" rows="3" required placeholder="شرح کامل درخواست..." class="w-full bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition resize-none"></textarea>
+                </div>
+                <button type="submit" id="ui-ticket-send" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-lg shadow-sky-500/20">ارسال تیکت</button>
+            </form>
+            <div id="user-tickets-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+        </div>
+    </div>
+
+    <!-- Plans Modal -->
+    <div id="plans-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-4xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2.5"><i class="fa-solid fa-crown"></i> <span id="ui-plans-title">خرید اشتراک ویژه</span></h3>
+                <button onclick="closePlansModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="flex items-center justify-center gap-2 bg-slate-900/60 p-1.5 rounded-2xl border border-slate-700/50 max-w-md mx-auto">
+                <button onclick="changeDuration('1')" id="dur-1" class="flex-1 py-2 rounded-xl text-xs font-bold transition bg-gradient-to-r from-sky-600 to-violet-600 text-white shadow-md">۱ ماهه</button>
+                <button onclick="changeDuration('3')" id="dur-3" class="flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">۳ ماهه</button>
+                <button onclick="changeDuration('6')" id="dur-6" class="flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">۶ ماهه</button>
+                <button onclick="changeDuration('12')" id="dur-12" class="flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white">یک‌ساله</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="plans-container"></div>
+            <div id="payment-box" style="display: none;" class="bg-slate-900/60 border border-slate-700/50 p-5 rounded-2xl space-y-4">
+                <h4 class="text-sm font-bold text-amber-400 border-b border-slate-700/50 pb-2.5"><span id="ui-pay-header">پرداخت اشتراک:</span> <span id="selected-plan-name"></span> (<span id="selected-plan-price"></span> تومان)</h4>
+                <div class="bg-slate-950/80 p-4 rounded-xl text-xs text-slate-400 border border-slate-700/40"><span id="ui-card-label">شماره کارت:</span> <span class="font-mono font-bold text-amber-300 tracking-wider">6219 8619 5040 0118</span> (پرهام خان احمدی)</div>
+                <form onsubmit="handleReceiptSubmit(event)" class="space-y-3">
+                    <input type="text" id="payer-name" required placeholder="نام و نام خانوادگی واریزکننده" class="w-full bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                    <input type="file" id="receipt-file" accept="image/*" required class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-slate-800 file:text-slate-200 file:cursor-pointer">
+                    <button type="submit" id="ui-receipt-btn" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-amber-500/20">ارسال رسید فاکتور</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-5 modal-enter">
+            <div class="flex items-center justify-between">
+                <div class="flex gap-5 border-b border-slate-700/50 w-full pb-2.5">
+                    <button id="tab-login-btn" onclick="switchTab('login')" class="text-sm font-bold text-sky-400 border-b-2 border-sky-500 pb-1.5 transition">ورود</button>
+                    <button id="tab-register-btn" onclick="switchTab('register')" class="text-sm font-bold text-slate-400 hover:text-slate-200 pb-1.5 transition">ثبت‌نام</button>
+                </div>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-100 mr-2 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="text" id="login-username" required placeholder="نام کاربری" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <input type="password" id="login-password" required placeholder="رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <button type="submit" id="ui-login-submit" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-sky-500/20 btn-lift">ورود به حساب</button>
+            </form>
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4" style="display: none;">
+                <input type="text" id="reg-username" required placeholder="نام کاربری جدید" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <input type="password" id="reg-password" required placeholder="رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <input type="password" id="reg-confirm-password" required placeholder="تکرار رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <button type="submit" id="ui-reg-submit" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-sky-500/20 btn-lift">ایجاد حساب</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-amber-500/20 rounded-3xl max-w-4xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2.5"><i class="fa-solid fa-crown"></i> <span id="ui-admin-title">پنل مدیریت</span></h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider" id="ui-admin-users-title">مدیریت کاربران و مسدودسازی</h4>
+                <div id="admin-users-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="space-y-3 border-t border-slate-700/50 pt-5">
+                <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider" id="ui-admin-rec-title">فاکتورها و رسیدهای واریزی در انتظار تأیید</h4>
+                <div id="admin-receipts-list" class="space-y-2.5">
+                    <div class="text-xs text-slate-500 text-center py-3" id="ui-no-rec">هیچ فاکتوری در انتظار تأیید نیست.</div>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-t border-slate-700/50 pt-5">
+                <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider" id="ui-admin-tkt-title">مدیریت تیکت‌های پشتیبانی کاربران</h4>
+                <div id="admin-tickets-list" class="space-y-2.5 max-h-60 overflow-y-auto pr-1">
+                    <div class="text-xs text-slate-500 text-center py-3" id="ui-no-tkt">هیچ تیکتی ثبت نشده است.</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between border-t border-slate-700/50 pt-5">
+                <button onclick="confirmLogout()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-5 py-2.5 rounded-xl text-xs transition border border-red-500/20" id="ui-admin-logout">خروج از حساب</button>
+                <button onclick="closeAdminModal()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-5 py-2.5 rounded-xl text-xs transition border border-slate-700" id="ui-admin-close">بستن پنل</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Chats Modal -->
+    <div id="admin-chats-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-2xl w-full p-7 shadow-2xl relative space-y-4 max-h-[85vh] overflow-y-auto modal-enter">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
+                <h3 id="admin-chats-title" class="text-sm font-bold text-sky-400">مکالمات کاربر</h3>
+                <button onclick="closeAdminChatsModal()" class="text-slate-400 hover:text-slate-100 p-1.5 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div id="admin-chats-content" class="space-y-3 text-xs text-slate-200"></div>
+        </div>
+    </div>
+
+    <script>
+        let usersDB = [];
+        let currentUser = null;
+        let currentChatId = null;
+        let chatsDB = [];
+        let receiptsDB = [];
+        let ticketsDB = [];
+        let selectedDuration = '1';
+        let currentLang = 'fa';
+        let inputMode = 'text';
+        let selectedPlan = null;
+        let recognition = null;
+        let isRecording = false;
+        let pendingConfirmAction = null;
+
+        let currentAbortController = null;
+        let currentTimer = null;
+        let currentInterval = null;
+        let lastImageRequestTime = 0; // برای مدیریت محدودیت 45 ثانیه‌ای Pollinations
+
+        const basePrices = { 'پریمیوم': 25000, 'پرو': 50000, 'پرو پریمیوم': 75000, 'پرو مکس': 100000 };
+        const DEFAULT_MSG_QUOTA = 25;
+        const DEFAULT_IMG_QUOTA = 2;
+
+        const translations = {
+            fa: {
+                brandName: "کاوش AI3",
+                pageTitle: "کاوش AI3",
+                warningText: "کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.",
+                copyright: "هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد",
+                newChat: "گفتگوی جدید",
+                subLevel: "سطح اشتراک:",
+                free: "رایگان",
+                dailyMsg: "پیام روزانه:",
+                dailyImg: "تصویر روزانه:",
+                needLogin: "نیاز به ورود",
+                unlimited: "نامحدود",
+                upgrade: "ارتقای اشتراک",
+                support: "پشتیبانی",
+                aparat: "کاوش آپارات",
+                youtube: "کاوش یوتیوب",
+                ytNote: "نکته: جهت استفاده از کاوش یوتیوب باید فیلتر شکن روشن باشد",
+                recentChats: "گفتگوهای اخیر",
+                clearAll: "پاکسازی همه",
+                noChats: "هنوز گفتگویی ثبت نشده است.",
+                guest: "کاربر مهمان",
+                welcomeTitle: "سلام! من کاوش AI3 هستم",
+                welcomeDesc: "می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.",
+                inputPlaceholder: "پیام خود را بنویسید...",
+                imagePlaceholder: "توصیف تصویری که می‌خواهید ساخته شود...",
+                imgLoadingText: "⏳ در حال ساخت تصویر... (ممکن است ۴۵ ثانیه الی ۱ دقیقه طول بکشه)",
+                imagePrefix: "تصویر: ",
+                copy: "کپی",
+                edit: "ویرایش",
+                voicePlay: "پخش صوتی",
+                authBtn: "ورود / ثبت‌نام",
+                modeText: "متن",
+                modeImage: "تصویر",
+                settingsTitle: "تنظیمات حساب و زبان",
+                labelLang: "زبان برنامه (Language)",
+                labelUsername: "تغییر نام کاربری",
+                labelPass: "تغییر رمز عبور",
+                labelCurr: "رمز عبور فعلی",
+                labelNew: "رمز عبور جدید",
+                labelConf: "تکرار رمز عبور جدید",
+                saveBtn: "ذخیره تغییرات",
+                loginTab: "ورود",
+                registerTab: "ثبت‌نام",
+                loginPlaceholder: "نام کاربری",
+                passPlaceholder: "رمز عبور",
+                regUserPlaceholder: "نام کاربری جدید",
+                regPassPlaceholder: "رمز عبور",
+                regConfPlaceholder: "تکرار رمز عبور",
+                loginSubmit: "ورود به حساب",
+                regSubmit: "ایجاد حساب",
+                ticketTitle: "پشتیبانی و تیکت‌ها",
+                ticketSubjLabel: "موضوع تیکت",
+                ticketMsgLabel: "متن پیام",
+                ticketSend: "ارسال تیکت",
+                plansTitle: "خرید اشتراک ویژه",
+                payHeader: "پرداخت اشتراک:",
+                cardLabel: "شماره کارت:",
+                receiptBtn: "ارسال رسید فاکتور",
+                adminTitle: "پنل مدیریت",
+                adminUsersTitle: "مدیریت کاربران و مسدودسازی",
+                adminRecTitle: "فاکتورها و رسیدهای واریزی در انتظار تأیید",
+                adminTktTitle: "مدیریت تیکت‌های پشتیبانی کاربران",
+                noRec: "هیچ فاکتوری در انتظار تأیید نیست.",
+                noTkt: "هیچ تیکتی ثبت نشده است.",
+                adminLogout: "خروج از حساب",
+                adminClose: "بستن پنل",
+                discountText: "🎉 ۲۵,۰۰۰ تومان تخفیف اعمال شد!",
+                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max' }
+            },
+            en: {
+                brandName: "Kavosh AI3",
+                pageTitle: "Kavosh AI3",
+                warningText: "Kavosh AI3 is an AI model and may make mistakes, including about people.",
+                copyright: "Any copying of this artificial intelligence is subject to legal prosecution",
+                newChat: "New Chat",
+                subLevel: "Subscription:",
+                free: "Free",
+                dailyMsg: "Daily Messages:",
+                dailyImg: "Daily Images:",
+                needLogin: "Login Required",
+                unlimited: "Unlimited",
+                upgrade: "Upgrade Plan",
+                support: "Support",
+                aparat: "Kavosh Aparat",
+                youtube: "Kavosh YouTube",
+                ytNote: "Note: VPN must be turned on to use Kavosh YouTube",
+                recentChats: "Recent Chats",
+                clearAll: "Clear All",
+                noChats: "No chats recorded yet.",
+                guest: "Guest User",
+                welcomeTitle: "Hello! I am Kavosh AI3",
+                welcomeDesc: "You can chat with text (Persian/English) or generate images. Ready to help you.",
+                inputPlaceholder: "Type your message...",
+                imagePlaceholder: "Describe the image you want to generate...",
+                imgLoadingText: "⏳ Generating image... (May take 45 seconds to 1 minute)",
+                imagePrefix: "Image: ",
+                copy: "Copy",
+                edit: "Edit",
+                voicePlay: "Voice Play",
+                authBtn: "Login / Register",
+                modeText: "Text",
+                modeImage: "Image",
+                settingsTitle: "Account & Language Settings",
+                labelLang: "Application Language",
+                labelUsername: "Change Username",
+                labelPass: "Change Password",
+                labelCurr: "Current Password",
+                labelNew: "New Password",
+                labelConf: "Confirm New Password",
+                saveBtn: "Save Changes",
+                loginTab: "Login",
+                registerTab: "Register",
+                loginPlaceholder: "Username",
+                passPlaceholder: "Password",
+                regUserPlaceholder: "New Username",
+                regPassPlaceholder: "Password",
+                regConfPlaceholder: "Confirm Password",
+                loginSubmit: "Login to Account",
+                regSubmit: "Create Account",
+                ticketTitle: "Support & Tickets",
+                ticketSubjLabel: "Ticket Subject",
+                ticketMsgLabel: "Message",
+                ticketSend: "Send Ticket",
+                plansTitle: "Buy Premium Subscription",
+                payHeader: "Subscription Payment:",
+                cardLabel: "Card Number:",
+                receiptBtn: "Submit Payment Receipt",
+                adminTitle: "Admin Panel",
+                adminUsersTitle: "User Management & Banning",
+                adminRecTitle: "Pending Receipts & Invoices",
+                adminTktTitle: "User Support Tickets",
+                noRec: "No pending receipts found.",
+                noTkt: "No tickets found.",
+                adminLogout: "Logout",
+                adminClose: "Close Panel",
+                discountText: "🎉 25,000 Tomans discount applied!",
+                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max' }
+            }
+        };
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'error' ? 'bg-gradient-to-r from-red-600 to-rose-600' : 'bg-gradient-to-r from-sky-600 to-violet-600';
+            toast.className = `${bg} text-white px-5 py-3 rounded-2xl text-xs font-medium shadow-2xl transition-all duration-300 opacity-0 pointer-events-auto flex items-center gap-2.5`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        try {
+            usersDB = JSON.parse(localStorage.getItem('kavosh_users')) || [];
+            currentUser = JSON.parse(localStorage.getItem('kavosh_current_user')) || null;
+            receiptsDB = JSON.parse(localStorage.getItem('kavosh_receipts')) || [];
+            ticketsDB = JSON.parse(localStorage.getItem('kavosh_tickets')) || [];
+            currentLang = localStorage.getItem('kavosh_lang') || 'fa';
+        } catch (e) {}
+
+        document.addEventListener('DOMContentLoaded', () => {
+            applyLanguage(currentLang);
+            if (currentUser) {
+                const dbUser = usersDB.find(u => u.username === currentUser.username);
+                if (dbUser && dbUser.banUntil && Date.now() < dbUser.banUntil) {
+                    showToast('حساب کاربری شما مسدود شده است.', 'error');
+                    currentUser = null;
+                    localStorage.removeItem('kavosh_current_user');
+                } else {
+                    updateUIForUser(currentUser.username, currentUser.isAdmin, currentUser.isVice);
+                    loadUserChats();
+                }
+            }
+            updateQuotaUI();
+            newChat();
+            initSpeechRecognition();
+            renderPlans();
+        });
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('kavosh_lang', lang);
+            const root = document.getElementById('html-root');
+            const t = translations[lang];
+
+            if (lang === 'en') {
+                root.setAttribute('dir', 'ltr');
+                root.setAttribute('lang', 'en');
+            } else {
+                root.setAttribute('dir', 'rtl');
+                root.setAttribute('lang', 'fa');
+            }
+
+            document.getElementById('page-title').innerText = t.pageTitle;
+            document.getElementById('ui-brand-name').innerText = t.brandName;
+            document.getElementById('ui-warning-text').innerText = t.warningText;
+            document.getElementById('ui-copyright').innerText = t.copyright;
+            document.getElementById('ui-new-chat').innerText = t.newChat;
+            document.getElementById('ui-sub-level').innerText = t.subLevel;
+            document.getElementById('ui-daily-msg').innerText = t.dailyMsg;
+            document.getElementById('ui-daily-img').innerText = t.dailyImg;
+            document.getElementById('ui-upgrade').innerText = t.upgrade;
+            document.getElementById('ui-support').innerText = t.support;
+            document.getElementById('ui-aparat').innerText = t.aparat;
+            document.getElementById('ui-youtube').innerText = t.youtube;
+            document.getElementById('ui-yt-note').innerText = t.ytNote;
+            document.getElementById('ui-recent-chats').innerText = t.recentChats;
+            document.getElementById('ui-clear-all').innerText = t.clearAll;
+            document.getElementById('ui-no-chats').innerText = t.noChats;
+            document.getElementById('ui-auth-btn-text').innerText = currentUser ? currentUser.username : t.authBtn;
+            document.getElementById('user-display-name').innerText = currentUser ? currentUser.username : t.guest;
+            document.getElementById('user-status-text').innerText = currentUser ? (currentUser.isAdmin ? 'Admin' : 'User') : t.needLogin;
+            document.getElementById('language-select').value = lang;
+
+            document.getElementById('ui-settings-title').innerText = t.settingsTitle;
+            document.getElementById('ui-label-lang').innerText = t.labelLang;
+            document.getElementById('ui-label-username').innerText = t.labelUsername;
+            document.getElementById('ui-label-pass').innerText = t.labelPass;
+            document.getElementById('ui-label-curr').innerText = t.labelCurr;
+            document.getElementById('ui-label-new').innerText = t.labelNew;
+            document.getElementById('ui-label-conf').innerText = t.labelConf;
+            document.getElementById('ui-save-btn').innerText = t.saveBtn;
+
+            document.getElementById('tab-login-btn').innerText = t.loginTab;
+            document.getElementById('tab-register-btn').innerText = t.registerTab;
+            document.getElementById('login-username').placeholder = t.loginPlaceholder;
+            document.getElementById('login-password').placeholder = t.passPlaceholder;
+            document.getElementById('ui-login-submit').innerText = t.loginSubmit;
+
+            document.getElementById('reg-username').placeholder = t.regUserPlaceholder;
+            document.getElementById('reg-password').placeholder = t.regPassPlaceholder;
+            document.getElementById('reg-confirm-password').placeholder = t.regConfPlaceholder;
+            document.getElementById('ui-reg-submit').innerText = t.regSubmit;
+
+            document.getElementById('ui-ticket-title').innerText = t.ticketTitle;
+            document.getElementById('ui-ticket-subj-label').innerText = t.ticketSubjLabel;
+            document.getElementById('ui-ticket-msg-label').innerText = t.ticketMsgLabel;
+            document.getElementById('ui-ticket-send').innerText = t.ticketSend;
+
+            document.getElementById('ui-plans-title').innerText = t.plansTitle;
+            document.getElementById('ui-pay-header').innerText = t.payHeader;
+            document.getElementById('ui-card-label').innerText = t.cardLabel;
+            document.getElementById('ui-receipt-btn').innerText = t.receiptBtn;
+
+            document.getElementById('ui-admin-title').innerText = t.adminTitle;
+            document.getElementById('ui-admin-users-title').innerText = t.adminUsersTitle;
+            document.getElementById('ui-admin-rec-title').innerText = t.adminRecTitle;
+            document.getElementById('ui-admin-tkt-title').innerText = t.adminTktTitle;
+            document.getElementById('ui-no-rec').innerText = t.noRec;
+            document.getElementById('ui-no-tkt').innerText = t.noTkt;
+            document.getElementById('ui-admin-logout').innerText = t.adminLogout;
+            document.getElementById('ui-admin-close').innerText = t.adminClose;
+
+            const modeTextEl = document.getElementById('mode-text');
+            if (modeTextEl) modeTextEl.innerText = inputMode === 'text' ? t.modeText : t.modeImage;
+            const inputEl = document.getElementById('user-input');
+            if (inputEl) inputEl.placeholder = inputMode === 'text' ? t.inputPlaceholder : t.imagePlaceholder;
+
+            const welcomeTitle = document.getElementById('ui-welcome-title');
+            const welcomeDesc = document.getElementById('ui-welcome-desc');
+            if (welcomeTitle) welcomeTitle.innerHTML = lang === 'fa' ? `سلام! من <span class="gradient-text">کاوش AI3</span> هستم` : `Hello! I am <span class="gradient-text">Kavosh AI3</span>`;
+            if (welcomeDesc) welcomeDesc.innerText = t.welcomeDesc;
+
+            updateQuotaUI();
+            renderPlans();
+            renderChatHistoryList();
+        }
+
+        function toggleMode() {
+            const icon = document.getElementById('mode-icon');
+            const text = document.getElementById('mode-text');
+            const input = document.getElementById('user-input');
+            const t = translations[currentLang];
+
+            if (inputMode === 'text') {
+                inputMode = 'image';
+                icon.className = 'fa-solid fa-image text-violet-400';
+                text.innerText = t.modeImage;
+                input.placeholder = t.imagePlaceholder;
+            } else {
+                inputMode = 'text';
+                icon.className = 'fa-solid fa-message text-sky-400';
+                text.innerText = t.modeText;
+                input.placeholder = t.inputPlaceholder;
+            }
+        }
+
+        function changeDuration(dur) {
+            selectedDuration = dur;
+            ['1', '3', '6', '12'].forEach(d => {
+                const btn = document.getElementById(`dur-${d}`);
+                if (d === dur) {
+                    btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition bg-gradient-to-r from-sky-600 to-violet-600 text-white shadow-md";
+                } else {
+                    btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+                }
+            });
+            renderPlans();
+        }
+
+        function renderPlans() {
+            const container = document.getElementById('plans-container');
+            const months = parseInt(selectedDuration);
+            const t = translations[currentLang];
+            const plans = [
+                { name: 'پریمیوم', msg: 50, img: 10 },
+                { name: 'پرو', msg: 100, img: 15 },
+                { name: 'پرو پریمیوم', msg: 150, img: 20 },
+                { name: 'پرو مکس', msg: 200, img: 25 }
+            ];
+
+            container.innerHTML = plans.map(p => {
+                let rawPrice = basePrices[p.name] * months;
+                let finalPrice = rawPrice;
+                let discountHtml = '';
+                if (months > 1) {
+                    finalPrice = Math.max(0, rawPrice - 25000);
+                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${t.discountText}</div>`;
+                }
+                const priceFormatted = finalPrice.toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR');
+                const displayName = t.plansMap[p.name] || p.name;
+                const durationText = currentLang === 'en' ? `${months} Months` : `${months} ماهه`;
+                return `
+                <div class="plan-card glass-card rounded-2xl p-5 flex flex-col justify-between border border-slate-700/50">
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold mb-1.5">${durationText}</div>
+                        <h4 class="font-bold text-sky-300 text-base">${displayName}</h4>
+                        <div class="text-xl font-bold my-2.5 text-slate-50">${priceFormatted} <span class="text-xs text-slate-400 font-normal">${currentLang === 'en' ? 'Tomans' : 'تومان'}</span></div>
+                        ${discountHtml}
+                        <ul class="text-xs text-slate-300 space-y-2.5 my-4 border-t border-slate-700/50 pt-4">
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> ${currentLang === 'en' ? `${p.msg} text messages daily` : `روزانه ${p.msg} پیام متنی`}</li>
+                            <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> ${currentLang === 'en' ? `${p.img} AI images daily` : `روزانه ${p.img} تصویر AI`}</li>
+                        </ul>
+                    </div>
+                    <button onclick="selectPlan('${displayName} (${durationText})', '${priceFormatted}')" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-md shadow-sky-500/15">${currentLang === 'en' ? 'Select & Pay' : 'انتخاب و پرداخت'}</button>
+                </div>`;
+            }).join('');
+        }
+
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = currentLang === 'en' ? 'en-US' : 'fa-IR';
+                recognition.onresult = (event) => {
+                    document.getElementById('user-input').value = event.results[0][0].transcript;
+                    stopRecordingUI();
+                };
+                recognition.onerror = () => stopRecordingUI();
+                recognition.onend = () => stopRecordingUI();
+            }
+        }
+
+        function toggleVoiceInput() {
+            if (!recognition) { showToast(currentLang === 'en' ? 'Speech recognition not supported.' : 'مرورگر از تشخیص گفتار پشتیبانی نمی‌کند.', 'error'); return; }
+            if (isRecording) {
+                recognition.stop();
+                stopRecordingUI();
+            } else {
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    document.getElementById('mic-btn').classList.add('bg-red-600', 'animate-pulse');
+                } catch(e) {}
+            }
+        }
+
+        function stopRecordingUI() {
+            isRecording = false;
+            const btn = document.getElementById('mic-btn');
+            if (btn) btn.classList.remove('bg-red-600', 'animate-pulse');
+        }
+
+        function newChat() {
+            currentChatId = 'chat_' + Date.now();
+            const t = translations[currentLang];
+            document.getElementById('chat-container').innerHTML = `
+                <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in">
+                    <div class="relative">
+                        <div class="w-20 h-20 bg-gradient-to-br from-sky-500 via-violet-500 to-fuchsia-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 text-3xl text-white animate-float">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div class="absolute -inset-3 bg-gradient-to-br from-sky-500/20 to-violet-500/20 rounded-3xl blur-xl -z-10"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <h1 class="text-3xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">${currentLang === 'fa' ? 'سلام! من <span class="gradient-text">کاوش AI3</span> هستم' : 'Hello! I am <span class="gradient-text">Kavosh AI3</span>'}</h1>
+                        <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">${t.welcomeDesc}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 justify-center pt-2">
+                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'چت هوشمند' : 'Smart Chat'}</span>
+                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'تولید تصویر' : 'Image Generation'}</span>
+                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'پشتیبانی فارسی' : 'Persian Support'}</span>
+                    </div>
+                </div>`;
+        }
+
+        function clearChat() { newChat(); }
+
+        function handleSendAction() {
+            if (inputMode === 'image') generateImage();
+            else sendMessage();
+        }
+
+        function setProcessingState(isProcessing) {
+            const sendBtn = document.getElementById('send-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            if (isProcessing) {
+                sendBtn.style.display = 'none';
+                stopBtn.style.display = 'flex';
+            } else {
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
+            }
+        }
+
+        function stopCurrentProcess() {
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+            if (currentTimer) { clearTimeout(currentTimer); currentTimer = null; }
+            if (currentInterval) { clearInterval(currentInterval); currentInterval = null; }
+
+            const activeLoadings = document.querySelectorAll('[id^="loading-"], [id^="img-loading-"]');
+            activeLoadings.forEach(el => {
+                el.innerHTML = `<div class="text-xs text-red-400 p-3">❌ ${currentLang === 'en' ? 'Operation stopped.' : 'عملیات متوقف شد.'}</div>`;
+                el.id = '';
+            });
+            setProcessingState(false);
+        }
+
+        function copyText(encodedText) {
+            const decodedText = decodeURIComponent(encodedText);
+            navigator.clipboard.writeText(decodedText).then(() => showToast(currentLang === 'en' ? 'Text copied!' : 'متن با موفقیت کپی شد!'));
+        }
+
+        function editMessage(encodedText) {
+            const decodedText = decodeURIComponent(encodedText);
+            document.getElementById('user-input').value = decodedText;
+            document.getElementById('user-input').focus();
+        }
+
+        function speakText(encodedText) {
+            const decodedText = decodeURIComponent(encodedText);
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(decodedText);
+                const isEnglish = /^[A-Za-z0-9\s.,?!@#$%^&*()_+-=;:""'']+$/.test(decodedText.substring(0, 15));
+                utterance.lang = isEnglish ? 'en-US' : 'fa-IR';
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast(currentLang === 'en' ? 'Speech not supported.' : 'مرورگر از صوت پشتیبانی نمی‌کند.', 'error');
+            }
+        }
+
+        async function generateImage() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // بررسی محدودیت 45 ثانیه‌ای سرویس Pollinations
+            const now = Date.now();
+            if (now - lastImageRequestTime < 45000) {
+                const waitSeconds = Math.ceil((45000 - (now - lastImageRequestTime)) / 1000);
+                showToast(currentLang === 'en' ? `Please wait ${waitSeconds} seconds before generating another image.` : `لطفاً ${waitSeconds} ثانیه دیگر برای ساخت تصویر صبر کنید.`, 'error');
+                return;
+            }
+
+            const quota = checkUserQuota('img');
+            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
+
+            setProcessingState(true);
+            const container = document.getElementById('chat-container');
+            const welcome = document.getElementById('welcome-screen');
+            if (welcome) welcome.remove();
+
+            const t = translations[currentLang];
+
+            // نمایش پیام کاربر
+            container.innerHTML += `
+                <div class="flex items-start gap-4 max-w-3xl mx-auto justify-end animate-slide-up">
+                    <div class="msg-user text-white px-5 py-3.5 rounded-2xl rounded-tr-md text-sm space-y-2 max-w-[85%]">
+                        <div>🎨 ${escapeHtml(text)}</div>
+                    </div>
+                </div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            const loadingId = 'img-loading-' + Date.now();
+            container.innerHTML += `
+                <div id="${loadingId}" class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
+                    <div class="msg-ai w-full max-w-[450px] p-6 rounded-2xl rounded-tl-md flex flex-col items-center justify-center text-white space-y-3">
+                        <div class="w-10 h-10 border-4 border-violet-400/30 border-t-violet-400 rounded-full animate-spin"></div>
+                        <div id="${loadingId}-text" class="text-sm font-bold text-amber-300 text-center tracking-wide">${t.imgLoadingText}</div>
+                        <div class="text-[11px] text-slate-400">${currentLang === 'en' ? 'Please wait...' : 'لطفاً صبر کنید...'}</div>
+                    </div>
+                </div>`;
+            container.scrollTop = container.scrollHeight;
+
+            // ---- ترجمه پرامپت ----
+            let finalPrompt = text;
+            const hasPersian = /[\u0600-\u06FF]/.test(text);
+            let translationFailed = false;
+
+            if (hasPersian) {
+                try {
+                    const translateRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Authorization': `Bearer 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` 
+                        },
+                        body: JSON.stringify({ 
+                            model: "llama-3.3-70b-versatile",
+                            messages: [
+                                { 
+                                    role: "system", 
+                                    content: "You are a professional translator. Translate the Persian text into a highly descriptive English prompt for image generation. Describe the scene, lighting, colors, and mood in detail. Only output the English prompt, no extra text." 
+                                },
+                                { role: "user", content: text }
+                            ],
+                            temperature: 0.3,
+                            max_tokens: 150
+                        })
+                    });
+                    
+                    if (!translateRes.ok) throw new Error('Translation API Error');
+                    
+                    const translateData = await translateRes.json();
+                    if (translateData.choices && translateData.choices[0]?.message?.content) {
+                        finalPrompt = translateData.choices[0].message.content.trim();
+                    } else {
+                        throw new Error('No translation content');
+                    }
+                } catch (e) {
+                    console.warn("Translation failed, using fallback.", e);
+                    translationFailed = true;
+                    finalPrompt = "A beautiful, detailed scene, highly realistic, cinematic lighting"; 
+                }
+            }
+
+            if (translationFailed) {
+                showToast("❌ سرویس ترجمه در دسترس نیست. از پرامپت پیش‌فرض استفاده می‌شود.", 'error');
+            }
+
+            const enhancedPrompt = `${finalPrompt}, highly detailed, realistic, 8k resolution, cinematic lighting, masterpiece`;
+            const encodedPrompt = encodeURIComponent(enhancedPrompt);
+            const seed = Math.floor(Math.random() * 999999);
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&width=1024&height=1024`;
+
+            // ثبت زمان درخواست
+            lastImageRequestTime = Date.now();
+
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            
+            let imageLoaded = false;
+            let imageSuccess = false;
+
+            img.onload = () => {
+                imageLoaded = true;
+                imageSuccess = true;
+            };
+            img.onerror = () => {
+                imageLoaded = true;
+                imageSuccess = false;
+            };
+            img.src = imageUrl;
+
+            // ---- تایمر 45 ثانیه‌ای اجباری ----
+            currentTimer = setTimeout(() => {
+                const loadingEl = document.getElementById(loadingId);
+                if (!loadingEl) return; // اگر کاربر عملیات را متوقف کرده باشد
+
+                setProcessingState(false);
+                loadingEl.remove();
+
+                if (imageLoaded && imageSuccess) {
+                    incrementQuota('img');
+                    container.innerHTML += `
+                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
+                            <div class="msg-ai p-3 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[85%]">
+                                <img src="${imageUrl}" class="rounded-xl w-full max-h-[480px] object-cover shadow-lg" alt="${escapeHtml(text)}" />
+                                <div class="text-[11px] text-slate-400 px-1">${escapeHtml(text)}</div>
+                            </div>
+                        </div>`;
+                    container.scrollTop = container.scrollHeight;
+                    saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
+                } else {
+                    container.innerHTML += `
+                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
+                            <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-red-300 max-w-[85%] border border-red-500/20">
+                                ⚠️ ${currentLang === 'en' ? 'Failed to generate image. (Possible limit reached or network error). Please try again later.' : 'ساخت تصویر با مشکل مواجه شد (احتمالاً محدودیت مصرف یا خطای شبکه). لطفاً بعداً تلاش کنید.'}
+                            </div>
+                        </div>`;
+                }
+            }, 45000); // 45 ثانیه دقیق
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const quota = checkUserQuota('msg');
+            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
+
+            setProcessingState(true);
+            const container = document.getElementById('chat-container');
+            const welcome = document.getElementById('welcome-screen');
+            if (welcome) welcome.remove();
+
+            const encodedUserText = encodeURIComponent(text);
+            const t = translations[currentLang];
+
+            container.innerHTML += `
+                <div class="flex items-start gap-4 max-w-3xl mx-auto justify-end animate-slide-up">
+                    <div class="msg-user text-white px-5 py-3.5 rounded-2xl rounded-tr-md text-sm space-y-2 max-w-[85%]">
+                        <div>${escapeHtml(text)}</div>
+                        <div class="flex items-center gap-3 pt-1.5 text-[11px] text-sky-100/80 border-t border-white/15">
+                            <button onclick="copyText('${encodedUserText}')" class="hover:text-white flex items-center gap-1.5 transition"><i class="fa-regular fa-copy"></i> ${t.copy}</button>
+                            <button onclick="editMessage('${encodedUserText}')" class="hover:text-white flex items-center gap-1.5 transition"><i class="fa-solid fa-pen"></i> ${t.edit}</button>
+                        </div>
+                    </div>
+                </div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            let aiReply = "";
+            let isError = false;
+            currentAbortController = new AbortController();
+            
+            const isUserEnglish = /^[A-Za-z0-9\s.,?!@#$%^&*()_+-=;:""'']+$/.test(text.substring(0, 15));
+            const systemPrompt = isUserEnglish 
+                ? "You are an AI assistant named Kavosh AI3. You must reply strictly in English based on the user's input. Be helpful, accurate and natural." 
+                : "شما یک دستیار هوش مصنوعی به نام کاوش AI3 هستید. به زبان فارسی روان، دقیق و طبیعی پاسخ دهید. مفید و مؤدب باشید.";
+
+            try {
+                const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer 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` 
+                    },
+                    body: JSON.stringify({ 
+                        model: "openai/gpt-oss-120b",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: text }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 2048
+                    }),
+                    signal: currentAbortController.signal
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    isError = true;
+                    const errMsg = data.error?.message || data.message || `خطای سرور (${res.status})`;
+                    aiReply = currentLang === 'en' 
+                        ? `⚠️ API Error: ${errMsg}\n\nPlease check your Groq API key or try again later.`
+                        : `⚠️ خطا در ارتباط با هوش مصنوعی:\n${errMsg}\n\nکلید API ممکن است نامعتبر یا تمام‌شده باشد.`;
+                } else if (data.choices && data.choices[0]?.message?.content) {
+                    aiReply = data.choices[0].message.content.trim();
+                } else {
+                    isError = true;
+                    aiReply = currentLang === 'en' 
+                        ? "⚠️ No response received from the model. Please try again."
+                        : "⚠️ پاسخی از مدل دریافت نشد. لطفاً دوباره تلاش کنید.";
+                }
+            } catch(e) {
+                if (e.name === 'AbortError') { 
+                    setProcessingState(false); 
+                    return; 
+                }
+                isError = true;
+                console.error("Kavosh AI Error:", e);
+                aiReply = currentLang === 'en' 
+                    ? `⚠️ Connection failed: ${e.message || 'Network error'}\n\nCheck your internet or API key.`
+                    : `⚠️ اتصال برقرار نشد: ${e.message || 'خطای شبکه'}\n\nاینترنت یا کلید API را بررسی کنید.`;
+            }
+
+            setProcessingState(false);
+            if (!isError) incrementQuota('msg');
+            
+            const encodedAiText = encodeURIComponent(aiReply);
+            const encodedSpeechText = encodeURIComponent(aiReply);
+            
+            container.innerHTML += `
+                <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-sky-500/30">ک</div>
+                    <div class="msg-ai p-4.5 rounded-2xl rounded-tl-md text-sm text-slate-200 whitespace-pre-line space-y-3 max-w-[85%] ${isError ? 'border border-red-500/30' : ''}">
+                        <div class="${isError ? 'text-red-300' : ''}">${escapeHtml(aiReply)}</div>
+                        <div class="flex items-center gap-3 pt-2.5 text-slate-400 text-xs border-t border-slate-700/50 justify-between">
+                            <div class="flex items-center gap-3">
+                                <button onclick="copyText('${encodedAiText}')" class="hover:text-sky-400 flex items-center gap-1.5 transition"><i class="fa-regular fa-copy"></i> ${t.copy}</button>
+                                ${!isError ? `<button onclick="speakText('${encodedSpeechText}')" class="hover:text-sky-400 flex items-center gap-1.5 transition"><i class="fa-solid fa-volume-high"></i> ${t.voicePlay}</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            container.scrollTop = container.scrollHeight;
+            if (!isError) saveCurrentChatToStorage(container.innerHTML, text);
+        }
+
+        function loadUserChats() {
+            if (!currentUser) return;
+            try { chatsDB = JSON.parse(localStorage.getItem(`kavosh_chats_${currentUser.username}`)) || []; } catch(e) { chatsDB = []; }
+            renderChatHistoryList();
+        }
+
+        function saveCurrentChatToStorage(messagesHtml, title) {
+            if (!currentUser) return;
+            if (!currentChatId) currentChatId = 'chat_' + Date.now();
+            let existingIndex = chatsDB.findIndex(c => c.id === currentChatId);
+            const chatObj = { id: currentChatId, title: title.length > 25 ? title.substring(0, 25) + '...' : title, html: messagesHtml, updatedAt: Date.now() };
+            if (existingIndex >= 0) chatsDB[existingIndex] = chatObj;
+            else chatsDB.unshift(chatObj);
+            try { localStorage.setItem(`kavosh_chats_${currentUser.username}`, JSON.stringify(chatsDB)); } catch(e) {}
+            renderChatHistoryList();
+        }
+
+        function renderChatHistoryList() {
+            const list = document.getElementById('chat-history-list');
+            const t = translations[currentLang];
+            if (!chatsDB || chatsDB.length === 0) {
+                list.innerHTML = `<div class="p-3 text-xs text-slate-500 text-center">${t.noChats}</div>`;
+                return;
+            }
+            list.innerHTML = chatsDB.map(c => `
+                <div class="p-2.5 text-sm text-slate-300 bg-slate-800/40 hover:bg-slate-800/70 rounded-xl flex items-center justify-between group transition border border-transparent hover:border-slate-700/50">
+                    <div onclick="loadChat('${c.id}')" class="cursor-pointer truncate flex items-center gap-2.5 flex-1">
+                        <i class="fa-regular fa-message text-sky-400/70 text-xs"></i> <span>${escapeHtml(c.title)}</span>
+                    </div>
+                    <button onclick="confirmDeleteSingleChat(event, '${c.id}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function loadChat(chatId) {
+            const chat = chatsDB.find(c => c.id === chatId);
+            if (!chat) return;
+            currentChatId = chatId;
+            document.getElementById('chat-container').innerHTML = chat.html;
+            const container = document.getElementById('chat-container');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function confirmDeleteSingleChat(event, chatId) {
+            event.stopPropagation();
+            showConfirmModal(
+                currentLang === 'en' ? "Delete conversation?" : "حذف مکالمه؟",
+                currentLang === 'en' ? "Are you sure you want to delete this conversation?" : "آیا از حذف این مکالمه مطمئن هستید؟",
+                () => {
+                    chatsDB = chatsDB.filter(c => c.id !== chatId);
+                    try { localStorage.setItem(`kavosh_chats_${currentUser.username}`, JSON.stringify(chatsDB)); } catch(e) {}
+                    renderChatHistoryList();
+                    if (currentChatId === chatId) newChat();
+                    showToast(currentLang === 'en' ? "Conversation deleted." : "مکالمه حذف شد.");
+                }
+            );
+        }
+
+        function confirmClearAllChats() {
+            if (!currentUser || !chatsDB.length) return;
+            showConfirmModal(
+                currentLang === 'en' ? "Clear all chats?" : "پاکسازی تمام گفتگوها؟",
+                currentLang === 'en' ? "All chat history will be deleted." : "تمام سابقه گفتگوها حذف خواهد شد.",
+                () => {
+                    chatsDB = [];
+                    try { localStorage.removeItem(`kavosh_chats_${currentUser.username}`); } catch(e) {}
+                    renderChatHistoryList();
+                    newChat();
+                    showToast(currentLang === 'en' ? "All chats cleared." : "تمام گفتگوها پاک شدند.");
+                }
+            );
+        }
+
+        function getUserQuotaData() {
+            const userId = currentUser ? currentUser.username : 'guest';
+            const quotaKey = `kavosh_quota_${userId}`;
+            let data = null;
+            try { data = JSON.parse(localStorage.getItem(quotaKey)); } catch(e) {}
+            const now = Date.now();
+            if (!data || (now - data.startTime) > 24*60*60*1000) {
+                data = { count: 0, imgCount: 0, startTime: now };
+                try { localStorage.setItem(quotaKey, JSON.stringify(data)); } catch(e) {}
+            }
+            return { data, quotaKey };
+        }
+
+        function getMaxQuotas() {
+            if (!currentUser) return { msg: 0, img: 0 };
+            if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
+            const tier = currentUser.tier || 'free';
+            if (tier.includes('پریمیوم') || tier.includes('Premium')) return { msg: 50, img: 10 };
+            return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
+        }
+
+        function checkUserQuota(type = 'msg') {
+            if (!currentUser) return { allowed: false, message: currentLang === 'en' ? 'Please login first.' : 'ابتدا وارد حساب کاربری خود شوید.' };
+            if (currentUser.isAdmin || currentUser.isVice) return { allowed: true };
+            const limits = getMaxQuotas();
+            const { data } = getUserQuotaData();
+            if (type === 'msg' && data.count >= limits.msg) return { allowed: false, message: currentLang === 'en' ? 'Message quota reached.' : 'سهمیه پیام تمام شده است.' };
+            if (type === 'img' && data.imgCount >= limits.img) return { allowed: false, message: currentLang === 'en' ? 'Image quota reached.' : 'سهمیه تصویر تمام شده است.' };
+            return { allowed: true };
+        }
+
+        function incrementQuota(type = 'msg') {
+            if (!currentUser || currentUser.isAdmin || currentUser.isVice) return;
+            const { data, quotaKey } = getUserQuotaData();
+            if (type === 'msg') data.count++;
+            if (type === 'img') data.imgCount++;
+            try { localStorage.setItem(quotaKey, JSON.stringify(data)); } catch(e) {}
+            updateQuotaUI();
+        }
+
+        function updateQuotaUI() {
+            const quotaText = document.getElementById('quota-text');
+            const quotaBar = document.getElementById('quota-bar');
+            const imgQuotaText = document.getElementById('img-quota-text');
+            const imgQuotaBar = document.getElementById('img-quota-bar');
+            const tierBadge = document.getElementById('sub-tier-badge');
+            const t = translations[currentLang];
+
+            if (!currentUser) {
+                quotaText.innerText = t.needLogin;
+                quotaBar.style.width = "0%";
+                imgQuotaText.innerText = "0 / 2";
+                imgQuotaBar.style.width = "0%";
+                tierBadge.innerText = t.free;
+                return;
+            }
+            tierBadge.innerText = currentUser.isAdmin ? "Admin" : (currentUser.isVice ? "Vice" : (currentUser.tier || t.free));
+            if (currentUser.isAdmin || currentUser.isVice) {
+                quotaText.innerText = t.unlimited; quotaBar.style.width = "100%";
+                imgQuotaText.innerText = t.unlimited; imgQuotaBar.style.width = "100%";
+                return;
+            }
+            const limits = getMaxQuotas();
+            const { data } = getUserQuotaData();
+            const remMsg = Math.max(0, limits.msg - data.count);
+            quotaText.innerText = `${remMsg} / ${limits.msg}`;
+            quotaBar.style.width = `${(remMsg / limits.msg)*100}%`;
+            const remImg = Math.max(0, limits.img - (data.imgCount || 0));
+            imgQuotaText.innerText = `${remImg} / ${limits.img}`;
+            imgQuotaBar.style.width = limits.img > 0 ? `${(remImg / limits.img)*100}%` : "0%";
+        }
+
+        function openPlansModal() {
+            if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً ابتدا وارد شوید.', 'error'); openAuthModal(); return; }
+            document.getElementById('payment-box').style.display = 'none';
+            document.getElementById('plans-modal').style.display = 'flex';
+        }
+        function closePlansModal() { document.getElementById('plans-modal').style.display = 'none'; }
+
+        function selectPlan(name, price) {
+            selectedPlan = { name, price };
+            document.getElementById('selected-plan-name').innerText = name;
+            document.getElementById('selected-plan-price').innerText = price;
+            document.getElementById('payment-box').style.display = 'block';
+        }
+
+        function handleReceiptSubmit(e) {
+            e.preventDefault();
+            const payerName = document.getElementById('payer-name').value.trim();
+            const fileInput = document.getElementById('receipt-file');
+            if (!fileInput.files.length) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                receiptsDB.push({
+                    id: 'rec_' + Date.now(), username: currentUser.username, payerName, planName: selectedPlan.name, planPrice: selectedPlan.price, image: evt.target.result, status: 'pending'
+                });
+                try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
+                showToast(currentLang === 'en' ? 'Receipt submitted successfully.' : 'فاکتور با موفقیت ارسال شد.');
+                closePlansModal();
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+
+        function openAuthModal() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+
+        function switchTab(tab) {
+            document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+            if (tab === 'login') {
+                loginBtn.className = "text-sm font-bold text-sky-400 border-b-2 border-sky-500 pb-1.5 transition";
+                regBtn.className = "text-sm font-bold text-slate-400 hover:text-slate-200 pb-1.5 transition";
+            } else {
+                regBtn.className = "text-sm font-bold text-sky-400 border-b-2 border-sky-500 pb-1.5 transition";
+                loginBtn.className = "text-sm font-bold text-slate-400 hover:text-slate-200 pb-1.5 transition";
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const conf = document.getElementById('reg-confirm-password').value;
+            if (password !== conf) { showToast(currentLang === 'en' ? 'Passwords do not match.' : 'رمز عبور مطابقت ندارد.', 'error'); return; }
+            const newUser = { username, password, tier: currentLang === 'en' ? 'Free' : 'رایگان', banUntil: 0 };
+            usersDB.push(newUser);
+            localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
+            currentUser = newUser;
+            localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+            updateUIForUser(username, false, false);
+            updateQuotaUI();
+            newChat();
+            closeAuthModal();
+            showToast(currentLang === 'en' ? 'Registration successful!' : 'ثبت‌نام با موفقیت انجام شد!');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            if (username === 'parham' && password === '13951395') {
+                currentUser = { username: 'parham', isAdmin: true };
+                updateUIForUser('parham (مدیر کل)', true, false);
+            } else if (username === 'radin' && password === '13951395') {
+                currentUser = { username: 'radin', isVice: true };
+                updateUIForUser('radin (معاون)', false, true);
+            } else {
+                const user = usersDB.find(u => u.username === username && u.password === password);
+                if (!user) { showToast(currentLang === 'en' ? 'Invalid username or password.' : 'نام کاربری یا رمز عبور اشتباه است.', 'error'); return; }
+                if (user.banUntil && Date.now() < user.banUntil) {
+                    showToast(currentLang === 'en' ? 'Your account is banned.' : 'حساب کاربری شما تا تاریخ مشخصی مسدود است.', 'error');
+                    return;
+                }
+                currentUser = user;
+                updateUIForUser(user.username, false, false);
+            }
+            localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+            updateQuotaUI();
+            loadUserChats();
+            newChat();
+            closeAuthModal();
+            showToast(currentLang === 'en' ? 'Logged in successfully.' : 'با موفقیت وارد شدید.');
+        }
+
+        function updateUIForUser(username, isAdmin, isVice) {
+            document.getElementById('user-display-name').innerText = username;
+            document.getElementById('user-status-text').innerText = isAdmin ? 'Admin' : (isVice ? 'Vice' : 'User');
+            document.getElementById('user-avatar').innerText = username.charAt(0).toUpperCase();
+            document.getElementById('ui-auth-btn-text').innerText = username;
+            document.getElementById('admin-panel-btn').style.display = (isAdmin || isVice) ? 'block' : 'none';
+            document.getElementById('logout-btn').style.display = 'block';
+        }
+
+        function confirmLogout() {
+            showConfirmModal(
+                currentLang === 'en' ? "Logout confirmation" : "تأیید خروج",
+                currentLang === 'en' ? "Are you sure you want to logout?" : "آیا از خروج از حساب کاربری خود مطمئن هستید؟",
+                () => {
+                    currentUser = null;
+                    localStorage.removeItem('kavosh_current_user');
+                    const t = translations[currentLang];
+                    document.getElementById('user-display-name').innerText = t.guest;
+                    document.getElementById('user-status-text').innerText = t.needLogin;
+                    document.getElementById('user-avatar').innerText = "ک";
+                    document.getElementById('ui-auth-btn-text').innerText = t.authBtn;
+                    document.getElementById('admin-panel-btn').style.display = 'none';
+                    document.getElementById('logout-btn').style.display = 'none';
+                    updateQuotaUI();
+                    newChat();
+                    closeAdminModal();
+                    closeProfileModal();
+                    showToast(currentLang === 'en' ? 'Logged out.' : 'از حساب خارج شدید.');
+                }
+            );
+        }
+
+        function showConfirmModal(title, desc, onConfirm) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-desc').innerText = desc;
+            document.getElementById('confirm-yes-btn').innerText = currentLang === 'en' ? 'Yes' : 'بله';
+            document.getElementById('confirm-no-btn').innerText = currentLang === 'en' ? 'No' : 'خیر';
+            pendingConfirmAction = onConfirm;
+            document.getElementById('confirm-modal').style.display = 'flex';
+        }
+
+        function closeConfirmModal() {
+            pendingConfirmAction = null;
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
+
+        function executeConfirmAction() {
+            if (pendingConfirmAction) pendingConfirmAction();
+            closeConfirmModal();
+        }
+
+        function openTicketModal() {
+            if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً وارد شوید.', 'error'); openAuthModal(); return; }
+            renderUserTickets();
+            document.getElementById('ticket-modal').style.display = 'flex';
+        }
+        function closeTicketModal() { document.getElementById('ticket-modal').style.display = 'none'; }
+        
+        function handleTicketSubmit(e) {
+            e.preventDefault();
+            ticketsDB.push({
+                id: 'tkt_' + Date.now(), username: currentUser.username, subject: document.getElementById('ticket-subject').value, message: document.getElementById('ticket-message').value, reply: '', status: currentLang === 'en' ? 'Pending' : 'در انتظار پاسخ'
+            });
+            try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+            document.getElementById('ticket-subject').value = '';
+            document.getElementById('ticket-message').value = '';
+            renderUserTickets();
+            showToast(currentLang === 'en' ? 'Ticket submitted.' : 'تیکت شما ارسال شد.');
+        }
+
+        function renderUserTickets() {
+            const list = document.getElementById('user-tickets-list');
+            if (!currentUser) return;
+            const myT = ticketsDB.filter(t => t.username === currentUser.username);
+            list.innerHTML = myT.length ? myT.map(t => `
+                <div class="bg-slate-900/60 p-4 rounded-2xl text-xs space-y-1.5 relative border border-slate-700/40">
+                    <div class="font-bold flex justify-between">
+                        <span>${escapeHtml(t.subject)}</span>
+                        ${!t.reply ? `<button onclick="deleteMyTicket('${t.id}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                    <p class="text-slate-400">${escapeHtml(t.message)}</p>
+                    ${t.reply ? `<div class="text-emerald-400">${currentLang === 'en' ? 'Admin Reply: ' : 'پاسخ مدیر: '} ${escapeHtml(t.reply)}</div>` : `<div class="text-amber-400 text-[10px]">${currentLang === 'en' ? 'Pending admin reply' : 'در انتظار پاسخ مدیر'}</div>`}
+                </div>`).join('') : `<div class="text-xs text-slate-500 text-center">${currentLang === 'en' ? 'No tickets.' : 'تیکتی نیست.'}</div>`;
+        }
+
+        function deleteMyTicket(id) {
+            const tkt = ticketsDB.find(t => t.id === id);
+            if (tkt && !tkt.reply) {
+                ticketsDB = ticketsDB.filter(t => t.id !== id);
+                try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+                renderUserTickets();
+                showToast(currentLang === 'en' ? 'Ticket deleted.' : 'تیکت شما حذف شد.');
+            } else {
+                showToast(currentLang === 'en' ? 'Replied tickets cannot be deleted.' : 'تیکت پاسخ داده شده قابل حذف نیست.', 'error');
+            }
+        }
+
+        function openProfileModal() {
+            if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً ابتدا وارد حساب کاربری خود شوید.', 'error'); openAuthModal(); return; }
+            document.getElementById('profile-username').value = currentUser.username;
+            document.getElementById('language-select').value = currentLang;
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+        function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            const newU = document.getElementById('profile-username').value.trim();
+            const newLang = document.getElementById('language-select').value;
+            const currP = document.getElementById('profile-curr-pass').value;
+            const newP = document.getElementById('profile-new-pass').value;
+            const confP = document.getElementById('profile-confirm-pass').value;
+
+            if (newLang !== currentLang) {
+                showConfirmModal(
+                    newLang === 'en' ? "Change Language Confirmation" : "تأیید تغییر زبان",
+                    newLang === 'en' ? "Are you sure you want to change the application language?" : "آیا از تغییر زبان برنامه مطمئن هستید؟",
+                    () => {
+                        applyProfileChanges(newU, newLang, currP, newP, confP);
+                    }
+                );
+            } else {
+                applyProfileChanges(newU, newLang, currP, newP, confP);
+            }
+        }
+
+        function applyProfileChanges(newU, newLang, currP, newP, confP) {
+            if (newP || currP || confP) {
+                if (currP !== currentUser.password) { showToast(currentLang === 'en' ? 'Incorrect current password.' : 'رمز عبور فعلی اشتباه است.', 'error'); return; }
+                if (newP !== confP) { showToast(currentLang === 'en' ? 'New passwords do not match.' : 'تکرار رمز عبور جدید مطابقت ندارد.', 'error'); return; }
+                currentUser.password = newP;
+            }
+
+            currentUser.username = newU;
+            try {
+                localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+                usersDB = usersDB.map(u => u.username === currentUser.username ? currentUser : u);
+                localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
+            } catch(e) {}
+
+            applyLanguage(newLang);
+            updateUIForUser(currentUser.username, currentUser.isAdmin, currentUser.isVice);
+            closeProfileModal();
+            showToast(currentLang === 'en' ? 'Changes saved successfully.' : 'تغییرات با موفقیت ذخیره شد.');
+        }
+
+        function openAdminModal() {
+            renderAdminUsers();
+            renderAdminReceipts();
+            renderAdminTickets();
+            document.getElementById('admin-modal').style.display = 'flex';
+        }
+        function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        function renderAdminUsers() {
+            const list = document.getElementById('admin-users-list');
+            if (!usersDB.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No users registered.' : 'هیچ کاربری ثبت نام نکرده است.'}</div>`;
+                return;
+            }
+            list.innerHTML = usersDB.map(u => {
+                const isBanned = u.banUntil && Date.now() < u.banUntil;
+                const tierInfo = u.tier || (currentLang === 'en' ? 'Regular User' : 'کاربر معمولی');
+                return `
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs flex flex-col md:flex-row items-center justify-between gap-3">
+                    <div>
+                        <div class="font-bold text-slate-200">${escapeHtml(u.username)}</div>
+                        <div class="text-amber-400">${currentLang === 'en' ? 'Subscription: ' : 'اشتراک: '} ${tierInfo} ${isBanned ? '<span class="text-red-400 font-bold">(مسدود شده)</span>' : ''}</div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="viewUserChats('${u.username}')" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg transition">مکالمات</button>
+                        <select id="ban-duration-${u.username}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200">
+                            <option value="1">۱ روز</option>
+                            <option value="7">۷ روز</option>
+                            <option value="30">۳۰ روز</option>
+                            <option value="365">۳۶۵ روز</option>
+                        </select>
+                        <button onclick="banUser('${u.username}')" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg transition">مسدود</button>
+                        <button onclick="unbanUser('${u.username}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition">رفع مسدودی</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function banUser(username) {
+            const days = parseInt(document.getElementById(`ban-duration-${username}`).value);
+            const user = usersDB.find(u => u.username === username);
+            if (user) {
+                user.banUntil = Date.now() + (days * 24 * 60 * 60 * 1000);
+                try { localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); } catch(e) {}
+                renderAdminUsers();
+                showToast(`کاربر ${username} به مدت ${days} روز مسدود شد.`);
+            }
+        }
+
+        function unbanUser(username) {
+            const user = usersDB.find(u => u.username === username);
+            if (user) {
+                user.banUntil = 0;
+                try { localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); } catch(e) {}
+                renderAdminUsers();
+                showToast(`مسدودی کاربر ${username} برداشته شد.`);
+            }
+        }
+
+        function viewUserChats(username) {
+            let uChats = [];
+            try { uChats = JSON.parse(localStorage.getItem(`kavosh_chats_${username}`)) || []; } catch(e) {}
+            const content = document.getElementById('admin-chats-content');
+            document.getElementById('admin-chats-title').innerText = `مکالمات کاربر: ${username}`;
+            if (!uChats.length) {
+                content.innerHTML = `<div class="text-slate-500 text-center py-4">${currentLang === 'en' ? 'This user has no chats.' : 'این کاربر هیچ گفتگویی ثبت نکرده است.'}</div>`;
+            } else {
+                content.innerHTML = uChats.map(c => `
+                    <div class="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-700/40 space-y-2">
+                        <div class="font-bold text-sky-400">عنوان: ${escapeHtml(c.title)}</div>
+                        <div class="max-h-48 overflow-y-auto bg-slate-950/80 p-2.5 rounded-xl">${c.html}</div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('admin-chats-modal').style.display = 'flex';
+        }
+        function closeAdminChatsModal() { document.getElementById('admin-chats-modal').style.display = 'none'; }
+
+        function renderAdminReceipts() {
+            const list = document.getElementById('admin-receipts-list');
+            const pending = receiptsDB.filter(r => r.status === 'pending');
+            if (!pending.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${translations[currentLang].noRec}</div>`;
+                return;
+            }
+            list.innerHTML = pending.map(r => `
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex justify-between font-bold text-slate-200">
+                        <span>User: ${escapeHtml(r.username)} (${escapeHtml(r.payerName)})</span>
+                        <span class="text-amber-400">${r.planName} - ${r.planPrice} Toman</span>
+                    </div>
+                    <div><a href="${r.image}" target="_blank" class="text-sky-400 underline">View Receipt Image</a></div>
+                    <div class="flex gap-2 pt-1">
+                        ${currentUser.isAdmin ? `<button onclick="approveReceipt('${r.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">تأیید و فعال‌سازی اشتراک</button>` : `<span class="text-xs text-slate-400">معاون دسترسی تأیید فاکتور پرو/پریمیوم را ندارد</span>`}
+                        <button onclick="rejectReceipt('${r.id}')" class="bg-red-600 hover:bg-red-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">رد فاکتور</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function approveReceipt(id) {
+            if (!currentUser.isAdmin) { showToast('شما دسترسی تأیید این فاکتور را ندارید.', 'error'); return; }
+            const rec = receiptsDB.find(r => r.id === id);
+            if (!rec) return;
+            rec.status = 'approved';
+            
+            let targetUser = usersDB.find(u => u.username === rec.username);
+            if (targetUser) {
+                targetUser.tier = rec.planName;
+                localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
+                if (currentUser && currentUser.username === targetUser.username) {
+                    currentUser = targetUser;
+                    localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+                    updateQuotaUI();
+                }
+            }
+            try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
+            renderAdminReceipts();
+            renderAdminUsers();
+            showToast('فاکتور تأیید و اشتراک کاربر فعال شد.');
+        }
+
+        function rejectReceipt(id) {
+            receiptsDB = receiptsDB.filter(r => r.id !== id);
+            try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
+            renderAdminReceipts();
+            showToast('فاکتور رد شد.', 'error');
+        }
+
+        function renderAdminTickets() {
+            const list = document.getElementById('admin-tickets-list');
+            const activeTickets = ticketsDB.filter(t => !t.isClosed);
+            if (!activeTickets.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${translations[currentLang].noTkt}</div>`;
+                return;
+            }
+            list.innerHTML = activeTickets.map(t => `
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex justify-between font-bold text-sky-400">
+                        <span>${escapeHtml(t.username)}: ${escapeHtml(t.subject)}</span>
+                        <span class="text-slate-400">${t.status}</span>
+                    </div>
+                    <p class="text-slate-300">${escapeHtml(t.message)}</p>
+                    ${t.reply ? `<div class="bg-slate-950/80 p-2.5 rounded-xl text-emerald-400">پاسخ قبلی: ${escapeHtml(t.reply)}</div>` : ''}
+                    <div class="flex gap-2 pt-1 items-center">
+                        <input type="text" id="reply-input-${t.id}" value="${t.reply || ''}" placeholder="پاسخ به تیکت..." class="flex-1 bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                        <button onclick="replyAndCloseTicket('${t.id}')" class="bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">ارسال و بستن تیکت</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function replyAndCloseTicket(id) {
+            const input = document.getElementById(`reply-input-${id}`);
+            const replyText = input ? input.value.trim() : '';
+            if (!replyText) { showToast(currentLang === 'en' ? 'Please enter a reply.' : 'لطفاً پاسخ را وارد کنید.', 'error'); return; }
+            const tkt = ticketsDB.find(t => t.id === id);
+            if (tkt) {
+                tkt.reply = replyText;
+                tkt.status = currentLang === 'en' ? 'Replied & Closed' : 'پاسخ داده شد و بسته شد';
+                tkt.isClosed = true;
+                try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+                renderAdminTickets();
+                showToast(currentLang === 'en' ? 'Ticket replied and closed.' : 'تیکت پاسخ داده شد و از پنل بسته شد.');
+            }
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendAction(); } }
+        function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
