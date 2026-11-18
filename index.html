@@ -69,7 +69,78 @@
         body {
             font-family: 'Vazirmatn', sans-serif;
             background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000000 100%);
-            overflow: hidden; /* جلوگیری از اسکرول ناخواسته */
+            transition: background 0.5s ease, color 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* ========== Day Mode (Light Theme) ========== */
+        body.day-mode {
+            background: radial-gradient(ellipse at top, #e0f2fe 0%, #f0f9ff 40%, #f8fafc 100%);
+            color: #0f172a;
+        }
+        body.day-mode .glass,
+        body.day-mode .glass-strong {
+            background: rgba(255, 255, 255, 0.75) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+        }
+        body.day-mode .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(241,245,249,0.95)) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+        }
+        body.day-mode .msg-ai {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+            color: #1e293b !important;
+        }
+        body.day-mode .msg-user {
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+        }
+        body.day-mode header,
+        body.day-mode aside {
+            border-color: rgba(148, 163, 184, 0.2) !important;
+        }
+        body.day-mode .text-slate-100,
+        body.day-mode .text-slate-200,
+        body.day-mode .text-slate-50 {
+            color: #0f172a !important;
+        }
+        body.day-mode .text-slate-300 {
+            color: #334155 !important;
+        }
+        body.day-mode .text-slate-400,
+        body.day-mode .text-slate-500 {
+            color: #64748b !important;
+        }
+        body.day-mode #user-input {
+            color: #0f172a !important;
+        }
+        body.day-mode #user-input::placeholder {
+            color: #94a3b8 !important;
+        }
+        body.day-mode .orb {
+            opacity: 0.15 !important;
+        }
+        body.day-mode .bg-slate-800\/60,
+        body.day-mode .bg-slate-800\/80,
+        body.day-mode .bg-slate-900\/60,
+        body.day-mode .bg-slate-900\/80 {
+            background-color: rgba(241, 245, 249, 0.9) !important;
+        }
+        body.day-mode .border-slate-700\/40,
+        body.day-mode .border-slate-700\/50,
+        body.day-mode .border-slate-700\/60 {
+            border-color: rgba(203, 213, 225, 0.6) !important;
+        }
+        body.day-mode .input-glow:focus-within {
+            border-color: rgba(14, 165, 233, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        body.day-mode .gradient-text {
+            background: linear-gradient(90deg, #0284c7, #7c3aed, #db2777);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Custom Scrollbar */
@@ -329,6 +400,9 @@
                 </div>
             </div>
             <div class="flex items-center gap-1 md:gap-2">
+                <button onclick="toggleTheme()" class="text-slate-400 hover:text-amber-300 p-2 md:p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تغییر حالت شب/روز">
+                    <i id="theme-icon" class="fa-solid fa-sun"></i>
+                </button>
                 <button onclick="openProfileModal()" class="hidden md:block text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
                 <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-[11px] md:text-xs font-medium px-3 md:px-4 py-2 md:py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-1.5 md:gap-2 btn-lift">
                     <i class="fa-solid fa-user"></i> <span id="ui-auth-btn-text">ورود / ثبت‌نام</span>
@@ -781,8 +855,51 @@
             currentLang = localStorage.getItem('kavosh_lang') || 'fa';
         } catch (e) {}
 
+        // ========== Theme (Day / Night) ==========
+        function getAutoTheme() {
+            // 6:00 تا 17:59 = روز ، بقیه = شب
+            const hour = new Date().getHours();
+            return (hour >= 6 && hour < 18) ? 'day' : 'night';
+        }
+
+        function applyTheme(theme) {
+            const body = document.body;
+            if (theme === 'day') {
+                body.classList.add('day-mode');
+            } else {
+                body.classList.remove('day-mode');
+            }
+            const themeIcon = document.getElementById('theme-icon');
+            if (themeIcon) {
+                themeIcon.className = theme === 'day' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.body.classList.contains('day-mode') ? 'day' : 'night';
+            const next = current === 'day' ? 'night' : 'day';
+            localStorage.setItem('kavosh_theme', next); // ذخیره انتخاب دستی
+            applyTheme(next);
+        }
+
+        function initTheme() {
+            const saved = localStorage.getItem('kavosh_theme');
+            // اگر کاربر دستی انتخاب کرده، همون رو استفاده کن، وگرنه بر اساس ساعت
+            const theme = (saved === 'day' || saved === 'night') ? saved : getAutoTheme();
+            applyTheme(theme);
+
+            // هر دقیقه چک کن (فقط اگر کاربر دستی انتخاب نکرده باشد)
+            setInterval(() => {
+                const savedNow = localStorage.getItem('kavosh_theme');
+                if (savedNow !== 'day' && savedNow !== 'night') {
+                    applyTheme(getAutoTheme());
+                }
+            }, 60000);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             applyLanguage(currentLang);
+            initTheme();
             if (currentUser) {
                 const dbUser = usersDB.find(u => u.username === currentUser.username);
                 if (dbUser && dbUser.banUntil && Date.now() < dbUser.banUntil) {
@@ -926,7 +1043,15 @@
             const months = parseInt(selectedDuration);
             const t = translations[currentLang];
             
-            // تمام 7 پلن (4 قدیمی + 3 جدید)
+            // درصد تخفیف بر اساس مدت اشتراک
+            const discountPercent = {
+                1: 0,
+                3: 10,   // ۱۰٪ تخفیف برای ۳ ماهه
+                6: 15,   // ۱۵٪ تخفیف برای ۶ ماهه
+                12: 20   // ۲۰٪ تخفیف برای یک‌ساله
+            }[months] || 0;
+
+            // تمام 7 پلن
             const plans = [
                 { name: 'پریمیوم', msg: 50, img: 10 },
                 { name: 'پرو', msg: 100, img: 15 },
@@ -941,10 +1066,16 @@
                 let rawPrice = basePrices[p.name] * months;
                 let finalPrice = rawPrice;
                 let discountHtml = '';
-                if (months > 1) {
-                    finalPrice = Math.max(0, rawPrice - 25000);
-                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${t.discountText}</div>`;
+
+                if (discountPercent > 0) {
+                    finalPrice = Math.round(rawPrice * (1 - discountPercent / 100));
+                    const discountAmount = rawPrice - finalPrice;
+                    const discountText = currentLang === 'en' 
+                        ? `🎉 ${discountPercent}% OFF (−${discountAmount.toLocaleString('en-US')} Tomans)`
+                        : `🎉 ${discountPercent}٪ تخفیف (−${discountAmount.toLocaleString('fa-IR')} تومان)`;
+                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${discountText}</div>`;
                 }
+
                 const priceFormatted = finalPrice.toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR');
                 const displayName = t.plansMap[p.name] || p.name;
                 const durationText = currentLang === 'en' ? `${months} Months` : `${months} ماهه`;
@@ -1095,7 +1226,17 @@
             }
 
             const quota = checkUserQuota('img');
-            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
+            if (!quota.allowed) {
+                if (!currentUser) {
+                    showToast(quota.message, 'error');
+                    openAuthModal();
+                } else if (quota.isQuota) {
+                    showQuotaExceededMessage('img');
+                } else {
+                    showToast(quota.message, 'error');
+                }
+                return;
+            }
 
             setProcessingState(true);
             const container = document.getElementById('chat-container');
@@ -1133,7 +1274,7 @@
 
             if (hasPersian) {
                 try {
-                    const translateRes = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
+                    const translateRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json'
@@ -1233,7 +1374,17 @@
             if (!text) return;
 
             const quota = checkUserQuota('msg');
-            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
+            if (!quota.allowed) {
+                if (!currentUser) {
+                    showToast(quota.message, 'error');
+                    openAuthModal();
+                } else if (quota.isQuota) {
+                    showQuotaExceededMessage('msg');
+                } else {
+                    showToast(quota.message, 'error');
+                }
+                return;
+            }
 
             setProcessingState(true);
             const container = document.getElementById('chat-container');
@@ -1266,7 +1417,7 @@
                 : "شما یک دستیار هوش مصنوعی به نام کاوش AI3 هستید. به زبان فارسی روان، دقیق و طبیعی پاسخ دهید. مفید و مؤدب باشید.";
 
             try {
-                const res = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
+                const res = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json'
@@ -1424,22 +1575,75 @@
         function getMaxQuotas() {
             if (!currentUser) return { msg: 0, img: 0 };
             if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
-            const tier = currentUser.tier || 'free';
-            if (tier.includes('اولترا') || tier.includes('Ultra')) return { msg: 350, img: 40 };
-            if (tier.includes('حرفه‌ای') || tier.includes('Professional')) return { msg: 300, img: 35 };
-            if (tier.includes('پیشرفته') || tier.includes('Advanced')) return { msg: 250, img: 30 };
-            if (tier.includes('پریمیوم') || tier.includes('Premium')) return { msg: 50, img: 10 };
+            const tier = (currentUser.tier || 'free').toLowerCase();
+            
+            if (tier.includes('اولترا') || tier.includes('ultra')) return { msg: 350, img: 40 };
+            if (tier.includes('حرفه‌ای') || tier.includes('professional')) return { msg: 300, img: 35 };
+            if (tier.includes('پیشرفته') || tier.includes('advanced')) return { msg: 250, img: 30 };
+            if (tier.includes('پرو مکس') || tier.includes('pro max')) return { msg: 200, img: 25 };
+            if (tier.includes('پرو پریمیوم') || tier.includes('pro premium')) return { msg: 150, img: 20 };
+            if (tier.includes('پرو') || tier.includes('pro')) return { msg: 100, img: 15 };
+            if (tier.includes('پریمیوم') || tier.includes('premium')) return { msg: 50, img: 10 };
+            
             return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
         }
 
         function checkUserQuota(type = 'msg') {
-            if (!currentUser) return { allowed: false, message: currentLang === 'en' ? 'Please login first.' : 'ابتدا وارد حساب کاربری خود شوید.' };
+            if (!currentUser) return { allowed: false, message: currentLang === 'en' ? 'Please login first.' : 'ابتدا وارد حساب کاربری خود شوید.', isQuota: false };
             if (currentUser.isAdmin || currentUser.isVice) return { allowed: true };
             const limits = getMaxQuotas();
             const { data } = getUserQuotaData();
-            if (type === 'msg' && data.count >= limits.msg) return { allowed: false, message: currentLang === 'en' ? 'Message quota reached.' : 'سهمیه پیام تمام شده است.' };
-            if (type === 'img' && data.imgCount >= limits.img) return { allowed: false, message: currentLang === 'en' ? 'Image quota reached.' : 'سهمیه تصویر تمام شده است.' };
+            if (type === 'msg' && data.count >= limits.msg) {
+                return { 
+                    allowed: false, 
+                    isQuota: true,
+                    message: currentLang === 'en' 
+                        ? 'You have reached the free message limit for today.' 
+                        : 'شما به محدودیت پیام رایگان در امروز رسیده‌اید'
+                };
+            }
+            if (type === 'img' && data.imgCount >= limits.img) {
+                return { 
+                    allowed: false, 
+                    isQuota: true,
+                    message: currentLang === 'en' 
+                        ? 'You have reached the free image limit for today.' 
+                        : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید'
+                };
+            }
             return { allowed: true };
+        }
+
+        function showQuotaExceededMessage(type = 'msg') {
+            const container = document.getElementById('chat-container');
+            const welcome = document.getElementById('welcome-screen');
+            if (welcome) welcome.remove();
+
+            const isMsg = type === 'msg';
+            const title = currentLang === 'en' 
+                ? (isMsg ? 'You have reached the free message limit for today.' : 'You have reached the free image limit for today.')
+                : (isMsg ? 'شما به محدودیت پیام رایگان در امروز رسیده‌اید' : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید');
+            
+            const subtitle = currentLang === 'en'
+                ? 'Upgrade your subscription to Premium for more messages.'
+                : 'برای پیام‌های بیشتر اشتراک خود را به پریمیوم ارتقا دهید';
+
+            const btnText = currentLang === 'en' ? 'Upgrade to Premium' : 'ارتقاء به پریمیوم';
+
+            container.innerHTML += `
+                <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-amber-500/30">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div class="msg-ai p-5 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[85%] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5">
+                        <div class="text-amber-200 font-bold text-[15px] leading-relaxed">${title}</div>
+                        <div class="text-slate-400 text-xs leading-relaxed">${subtitle}</div>
+                        <button onclick="openPlansModal()" class="mt-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-md shadow-amber-500/25 flex items-center gap-2">
+                            <i class="fa-solid fa-gem"></i> ${btnText}
+                        </button>
+                    </div>
+                </div>`;
+            container.scrollTop = container.scrollHeight;
         }
 
         function incrementQuota(type = 'msg') {
