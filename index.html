@@ -1311,6 +1311,16 @@
             const text = input.value.trim();
             if (!text) return;
 
+            // محدودیت کوتاه برای جلوگیری از اسپم سرویس رایگان
+            const now = Date.now();
+            if (now - lastImageRequestTime < 20000) {
+                const waitSeconds = Math.ceil((20000 - (now - lastImageRequestTime)) / 1000);
+                showToast(currentLang === 'en' 
+                    ? `Please wait ${waitSeconds}s before generating another image.` 
+                    : `لطفاً ${waitSeconds} ثانیه صبر کنید و دوباره تصویر بسازید.`, 'error');
+                return;
+            }
+
             const quota = checkUserQuota('img');
             if (!quota.allowed) {
                 if (!currentUser) {
@@ -1387,29 +1397,61 @@
                 console.warn("Prompt enhancement failed", e);
             }
 
-            // سرویس Pollinations حذف شد.
-            // برای ساخت تصویر واقعی باید یک API معتبر (مثل Flux، Stability یا DALL·E) به بک‌اند اضافه شود.
-            // فعلاً پرامپت تقویت‌شده را نشان می‌دهیم و به کاربر اطلاع می‌دهیم.
+            // ساخت تصویر واقعی با پرامپت تقویت‌شده
+            const enhancedPrompt = `${finalPrompt}, masterpiece, best quality, highly detailed, sharp focus, 8k`;
+            const encodedPrompt = encodeURIComponent(enhancedPrompt);
+            const seed = Math.floor(Math.random() * 999999);
 
-            setProcessingState(false);
-            const loadingEl = document.getElementById(loadingId);
-            if (loadingEl) loadingEl.remove();
+            // استفاده از مدل flux برای کیفیت بهتر
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&width=1024&height=1024&model=flux&enhance=true`;
 
-            incrementQuota('img');
+            lastImageRequestTime = Date.now();
 
-            const msg = currentLang === 'en'
-                ? `Image generation service has been updated. Pollinations was removed as requested.<br><br><b>Enhanced prompt prepared:</b><br><code style="font-size:11px;word-break:break-all">${escapeHtml(finalPrompt)}</code><br><br>To enable real image generation, add a proper image API (Flux / Stability AI / OpenAI) to your backend <code>/api/image</code> endpoint.`
-                : `سرویس ساخت تصویر به‌روز شد و Pollinations حذف گردید.<br><br><b>پرامپت تقویت‌شده آماده شد:</b><br><code style="font-size:11px;word-break:break-all">${escapeHtml(finalPrompt)}</code><br><br>برای فعال‌سازی ساخت تصویر واقعی، یک API معتبر تصویر (مثل Flux یا Stability) را به بک‌اند اضافه کنید (مثلاً مسیر <code>/api/image</code>).`;
+            const img = new Image();
+            img.crossOrigin = "anonymous";
 
-            container.innerHTML += `
-                <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
-                    <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-slate-200 max-w-[85%] border border-violet-500/20 space-y-2">
-                        <div>${msg}</div>
-                    </div>
-                </div>`;
-            container.scrollTop = container.scrollHeight;
-            saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
+            let settled = false;
+
+            const finish = (success) => {
+                if (settled) return;
+                settled = true;
+                if (currentTimer) { clearTimeout(currentTimer); currentTimer = null; }
+
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+                setProcessingState(false);
+
+                if (success) {
+                    incrementQuota('img');
+                    container.innerHTML += `
+                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
+                            <div class="msg-ai p-3 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[90%]">
+                                <img src="${imageUrl}" class="rounded-xl w-full max-h-[520px] object-cover shadow-lg" alt="${escapeHtml(text)}" loading="lazy" />
+                                <div class="text-[11px] text-slate-400 px-1">${escapeHtml(text)}</div>
+                            </div>
+                        </div>`;
+                    container.scrollTop = container.scrollHeight;
+                    saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
+                } else {
+                    container.innerHTML += `
+                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
+                            <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-red-300 max-w-[85%] border border-red-500/20">
+                                ⚠️ ${currentLang === 'en' 
+                                    ? 'Failed to generate image. Please try again in a moment or use a simpler description.' 
+                                    : 'ساخت تصویر با مشکل مواجه شد. کمی صبر کنید و دوباره با توضیح ساده‌تر تلاش کنید.'}
+                            </div>
+                        </div>`;
+                }
+            };
+
+            img.onload = () => finish(true);
+            img.onerror = () => finish(false);
+            img.src = imageUrl;
+
+            // تایم‌اوت ۳۰ ثانیه
+            currentTimer = setTimeout(() => finish(img.complete && img.naturalWidth > 0), 30000);
         }
 
         async function sendMessage() {
