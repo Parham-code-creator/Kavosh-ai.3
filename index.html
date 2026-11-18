@@ -3,7 +3,7 @@
 <head>
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">کاوش AI3</title>
     <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
@@ -69,77 +69,7 @@
         body {
             font-family: 'Vazirmatn', sans-serif;
             background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000000 100%);
-            transition: background 0.5s ease, color 0.3s ease;
-        }
-
-        /* ========== Day Mode (Light Theme) ========== */
-        body.day-mode {
-            background: radial-gradient(ellipse at top, #e0f2fe 0%, #f0f9ff 40%, #f8fafc 100%);
-            color: #0f172a;
-        }
-        body.day-mode .glass,
-        body.day-mode .glass-strong {
-            background: rgba(255, 255, 255, 0.75) !important;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-        }
-        body.day-mode .glass-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(241,245,249,0.95)) !important;
-            border-color: rgba(148, 163, 184, 0.2) !important;
-        }
-        body.day-mode .msg-ai {
-            background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
-            border-color: rgba(148, 163, 184, 0.25) !important;
-            color: #1e293b !important;
-        }
-        body.day-mode .msg-user {
-            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
-        }
-        body.day-mode header,
-        body.day-mode aside {
-            border-color: rgba(148, 163, 184, 0.2) !important;
-        }
-        body.day-mode .text-slate-100,
-        body.day-mode .text-slate-200,
-        body.day-mode .text-slate-50 {
-            color: #0f172a !important;
-        }
-        body.day-mode .text-slate-300 {
-            color: #334155 !important;
-        }
-        body.day-mode .text-slate-400,
-        body.day-mode .text-slate-500 {
-            color: #64748b !important;
-        }
-        body.day-mode #user-input {
-            color: #0f172a !important;
-        }
-        body.day-mode #user-input::placeholder {
-            color: #94a3b8 !important;
-        }
-        body.day-mode .orb {
-            opacity: 0.15 !important;
-        }
-        body.day-mode .bg-slate-800\/60,
-        body.day-mode .bg-slate-800\/80,
-        body.day-mode .bg-slate-900\/60,
-        body.day-mode .bg-slate-900\/80 {
-            background-color: rgba(241, 245, 249, 0.9) !important;
-        }
-        body.day-mode .border-slate-700\/40,
-        body.day-mode .border-slate-700\/50,
-        body.day-mode .border-slate-700\/60 {
-            border-color: rgba(203, 213, 225, 0.6) !important;
-        }
-        body.day-mode .input-glow:focus-within {
-            border-color: rgba(14, 165, 233, 0.5) !important;
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
-        }
-        body.day-mode .gradient-text {
-            background: linear-gradient(90deg, #0284c7, #7c3aed, #db2777);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            overflow: hidden; /* جلوگیری از اسکرول ناخواسته */
         }
 
         /* Custom Scrollbar */
@@ -250,6 +180,34 @@
         .avatar-inner {
             background: #0f172a;
         }
+
+        /* سایدبار واکنش‌گرا */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (min-width: 768px) {
+            #sidebar {
+                position: relative;
+                transform: none !important;
+            }
+            #sidebar-overlay {
+                display: none !important;
+            }
+        }
+        /* در موبایل سایدبار به صورت پیش‌فرض مخفی است */
+        @media (max-width: 767px) {
+            #sidebar {
+                transform: translateX(100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden relative">
@@ -259,15 +217,18 @@
     <div class="orb w-80 h-80 bg-purple-600 bottom-[-15%] left-[-8%]"></div>
     <div class="orb w-64 h-64 bg-fuchsia-600 top-[40%] left-[30%] opacity-20"></div>
 
+    <!-- Overlay برای بستن سایدبار در موبایل -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2.5 pointer-events-none"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-all duration-300 z-20 relative">
+    <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-transform duration-300 z-50 relative h-full">
         <div class="flex-1 flex flex-col min-h-0">
             <!-- New Chat Button -->
             <div class="p-4">
-                <button onclick="newChat()" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
+                <button onclick="newChat(); if(window.innerWidth < 768) toggleSidebar();" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
                     <span class="flex items-center gap-2.5"><i class="fa-solid fa-plus text-sky-200"></i> <span id="ui-new-chat">گفتگوی جدید</span></span>
                     <i class="fa-regular fa-pen-to-square text-sky-200/80"></i>
                 </button>
@@ -355,39 +316,36 @@
     </aside>
 
     <!-- Main Chat Area -->
-    <main class="flex-1 flex flex-col h-full relative z-10">
+    <main class="flex-1 flex flex-col h-full relative z-10 w-full overflow-hidden">
         <!-- Header -->
-        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-5 z-10">
-            <div class="flex items-center gap-3">
+        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-3 md:px-5 z-10 shrink-0">
+            <div class="flex items-center gap-2 md:gap-3">
                 <button onclick="toggleSidebar()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition"><i class="fa-solid fa-bars text-lg"></i></button>
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center shadow-lg shadow-sky-500/30">
                         <i class="fa-solid fa-compass text-white text-sm"></i>
                     </div>
-                    <span class="font-bold tracking-wide gradient-text text-lg" id="ui-brand-name">کاوش AI3</span>
+                    <span class="font-bold tracking-wide gradient-text text-base md:text-lg" id="ui-brand-name">کاوش AI3</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleTheme()" class="text-slate-400 hover:text-amber-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تغییر حالت شب/روز">
-                    <i id="theme-icon" class="fa-solid fa-sun"></i>
-                </button>
-                <button onclick="openProfileModal()" class="text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
-                <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-2 btn-lift">
+            <div class="flex items-center gap-1 md:gap-2">
+                <button onclick="openProfileModal()" class="hidden md:block text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-[11px] md:text-xs font-medium px-3 md:px-4 py-2 md:py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-1.5 md:gap-2 btn-lift">
                     <i class="fa-solid fa-user"></i> <span id="ui-auth-btn-text">ورود / ثبت‌نام</span>
                 </button>
-                <button onclick="clearChat()" title="پاکسازی صفحه" class="text-slate-400 hover:text-red-400 p-2.5 rounded-xl hover:bg-red-500/10 transition"><i class="fa-regular fa-trash-can"></i></button>
+                <button onclick="clearChat()" title="پاکسازی صفحه" class="text-slate-400 hover:text-red-400 p-2 md:p-2.5 rounded-xl hover:bg-red-500/10 transition"><i class="fa-regular fa-trash-can"></i></button>
             </div>
         </header>
 
         <!-- Warning Banner -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
+        <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-[10px] md:text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
             <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
             <span id="ui-warning-text">کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.</span>
         </div>
 
         <!-- Chat Container -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
-            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-2 md:p-6 space-y-6 relative">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in px-4">
                 <div class="relative">
                     <div class="w-20 h-20 bg-gradient-to-br from-sky-500 via-violet-500 to-fuchsia-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 text-3xl text-white animate-float">
                         <i class="fa-solid fa-compass"></i>
@@ -395,8 +353,8 @@
                     <div class="absolute -inset-3 bg-gradient-to-br from-sky-500/20 to-violet-500/20 rounded-3xl blur-xl -z-10"></div>
                 </div>
                 <div class="space-y-3">
-                    <h1 class="text-3xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">سلام! من <span class="gradient-text">کاوش AI3</span> هستم</h1>
-                    <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.</p>
+                    <h1 class="text-2xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">سلام! من <span class="gradient-text">کاوش AI3</span> هستم</h1>
+                    <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.</p>
                 </div>
                 <div class="flex flex-wrap gap-2 justify-center pt-2">
                     <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">چت هوشمند</span>
@@ -407,28 +365,28 @@
         </div>
 
         <!-- Input Box -->
-        <div class="p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
-            <div class="max-w-3xl mx-auto relative glass-strong border border-slate-700/50 rounded-2xl shadow-2xl input-glow transition-all duration-300 flex items-center px-3 py-2.5 gap-1">
-                <button id="mode-toggle-btn" onclick="toggleMode()" class="text-slate-400 hover:text-violet-300 px-3 py-2 rounded-xl transition text-xs flex items-center gap-1.5 border border-slate-700/60 bg-slate-900/60 shrink-0" title="تغییر حالت">
+        <div class="p-2 md:p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent shrink-0">
+            <div class="max-w-3xl mx-auto relative glass-strong border border-slate-700/50 rounded-2xl shadow-2xl input-glow transition-all duration-300 flex items-end px-2 md:px-3 py-1.5 md:py-2.5 gap-1">
+                <button id="mode-toggle-btn" onclick="toggleMode()" class="text-slate-400 hover:text-violet-300 px-2 md:px-3 py-2 rounded-xl transition text-xs flex items-center gap-1.5 border border-slate-700/60 bg-slate-900/60 shrink-0 mb-1 md:mb-0" title="تغییر حالت">
                     <i class="fa-solid fa-message text-sky-400" id="mode-icon"></i>
-                    <span id="mode-text">متن</span>
+                    <span id="mode-text" class="hidden md:inline">متن</span>
                 </button>
 
-                <textarea id="user-input" rows="1" placeholder="پیام خود را بنویسید..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm p-3 focus:outline-none resize-none max-h-32 leading-relaxed" onkeydown="handleKeyPress(event)"></textarea>
+                <textarea id="user-input" rows="1" placeholder="پیام خود را بنویسید..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm p-2 md:p-3 focus:outline-none resize-none max-h-32 leading-relaxed mb-1 md:mb-0" onkeydown="handleKeyPress(event)"></textarea>
 
-                <div class="flex items-center gap-1.5">
-                    <button id="mic-btn" onclick="toggleVoiceInput()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 w-10 h-10 rounded-xl flex items-center justify-center transition" title="صوتی">
+                <div class="flex items-center gap-1 md:gap-1.5">
+                    <button id="mic-btn" onclick="toggleVoiceInput()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition" title="صوتی">
                         <i class="fa-solid fa-microphone text-sm" id="mic-icon"></i>
                     </button>
-                    <button onclick="handleSendAction()" id="send-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-sky-500/25" title="ارسال">
+                    <button onclick="handleSendAction()" id="send-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-sky-500/25" title="ارسال">
                         <i class="fa-solid fa-arrow-up text-sm"></i>
                     </button>
-                    <button onclick="stopCurrentProcess()" id="stop-btn" style="display: none;" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white w-10 h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-red-500/25" title="توقف">
+                    <button onclick="stopCurrentProcess()" id="stop-btn" style="display: none;" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-red-500/25" title="توقف">
                         <i class="fa-solid fa-stop text-sm"></i>
                     </button>
                 </div>
             </div>
-            <div class="text-center text-xs text-slate-500 mt-3" id="ui-copyright">
+            <div class="text-center text-[10px] md:text-xs text-slate-500 mt-2 md:mt-3" id="ui-copyright">
                 هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد
             </div>
         </div>
@@ -823,51 +781,8 @@
             currentLang = localStorage.getItem('kavosh_lang') || 'fa';
         } catch (e) {}
 
-        // ========== Theme (Day / Night) ==========
-        function getAutoTheme() {
-            // 6:00 تا 17:59 = روز ، بقیه = شب
-            const hour = new Date().getHours();
-            return (hour >= 6 && hour < 18) ? 'day' : 'night';
-        }
-
-        function applyTheme(theme) {
-            const body = document.body;
-            if (theme === 'day') {
-                body.classList.add('day-mode');
-            } else {
-                body.classList.remove('day-mode');
-            }
-            const themeIcon = document.getElementById('theme-icon');
-            if (themeIcon) {
-                themeIcon.className = theme === 'day' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
-            }
-        }
-
-        function toggleTheme() {
-            const current = document.body.classList.contains('day-mode') ? 'day' : 'night';
-            const next = current === 'day' ? 'night' : 'day';
-            localStorage.setItem('kavosh_theme', next); // ذخیره انتخاب دستی
-            applyTheme(next);
-        }
-
-        function initTheme() {
-            const saved = localStorage.getItem('kavosh_theme');
-            // اگر کاربر دستی انتخاب کرده، همون رو استفاده کن، وگرنه بر اساس ساعت
-            const theme = (saved === 'day' || saved === 'night') ? saved : getAutoTheme();
-            applyTheme(theme);
-
-            // هر دقیقه چک کن (فقط اگر کاربر دستی انتخاب نکرده باشد)
-            setInterval(() => {
-                const savedNow = localStorage.getItem('kavosh_theme');
-                if (savedNow !== 'day' && savedNow !== 'night') {
-                    applyTheme(getAutoTheme());
-                }
-            }, 60000);
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             applyLanguage(currentLang);
-            initTheme();
             if (currentUser) {
                 const dbUser = usersDB.find(u => u.username === currentUser.username);
                 if (dbUser && dbUser.banUntil && Date.now() < dbUser.banUntil) {
@@ -1011,15 +926,7 @@
             const months = parseInt(selectedDuration);
             const t = translations[currentLang];
             
-            // درصد تخفیف بر اساس مدت اشتراک
-            const discountPercent = {
-                1: 0,
-                3: 10,   // ۱۰٪ تخفیف برای ۳ ماهه
-                6: 15,   // ۱۵٪ تخفیف برای ۶ ماهه
-                12: 20   // ۲۰٪ تخفیف برای یک‌ساله
-            }[months] || 0;
-
-            // تمام 7 پلن
+            // تمام 7 پلن (4 قدیمی + 3 جدید)
             const plans = [
                 { name: 'پریمیوم', msg: 50, img: 10 },
                 { name: 'پرو', msg: 100, img: 15 },
@@ -1034,16 +941,10 @@
                 let rawPrice = basePrices[p.name] * months;
                 let finalPrice = rawPrice;
                 let discountHtml = '';
-
-                if (discountPercent > 0) {
-                    finalPrice = Math.round(rawPrice * (1 - discountPercent / 100));
-                    const discountAmount = rawPrice - finalPrice;
-                    const discountText = currentLang === 'en' 
-                        ? `🎉 ${discountPercent}% OFF (−${discountAmount.toLocaleString('en-US')} Tomans)`
-                        : `🎉 ${discountPercent}٪ تخفیف (−${discountAmount.toLocaleString('fa-IR')} تومان)`;
-                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${discountText}</div>`;
+                if (months > 1) {
+                    finalPrice = Math.max(0, rawPrice - 25000);
+                    discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${t.discountText}</div>`;
                 }
-
                 const priceFormatted = finalPrice.toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR');
                 const displayName = t.plansMap[p.name] || p.name;
                 const durationText = currentLang === 'en' ? `${months} Months` : `${months} ماهه`;
@@ -1194,17 +1095,7 @@
             }
 
             const quota = checkUserQuota('img');
-            if (!quota.allowed) {
-                if (!currentUser) {
-                    showToast(quota.message, 'error');
-                    openAuthModal();
-                } else if (quota.isQuota) {
-                    showQuotaExceededMessage('img');
-                } else {
-                    showToast(quota.message, 'error');
-                }
-                return;
-            }
+            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
 
             setProcessingState(true);
             const container = document.getElementById('chat-container');
@@ -1242,7 +1133,7 @@
 
             if (hasPersian) {
                 try {
-                    const translateRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
+                    const translateRes = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json'
@@ -1342,17 +1233,7 @@
             if (!text) return;
 
             const quota = checkUserQuota('msg');
-            if (!quota.allowed) {
-                if (!currentUser) {
-                    showToast(quota.message, 'error');
-                    openAuthModal();
-                } else if (quota.isQuota) {
-                    showQuotaExceededMessage('msg');
-                } else {
-                    showToast(quota.message, 'error');
-                }
-                return;
-            }
+            if (!quota.allowed) { showToast(quota.message, 'error'); if (!currentUser) openAuthModal(); return; }
 
             setProcessingState(true);
             const container = document.getElementById('chat-container');
@@ -1385,7 +1266,7 @@
                 : "شما یک دستیار هوش مصنوعی به نام کاوش AI3 هستید. به زبان فارسی روان، دقیق و طبیعی پاسخ دهید. مفید و مؤدب باشید.";
 
             try {
-                const res = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
+                const res = await fetch("https://kavosh-ai-3-3bo3z.onrender.com/api/groq", {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json'
@@ -1494,6 +1375,7 @@
             document.getElementById('chat-container').innerHTML = chat.html;
             const container = document.getElementById('chat-container');
             container.scrollTop = container.scrollHeight;
+            if(window.innerWidth < 768) toggleSidebar();
         }
 
         function confirmDeleteSingleChat(event, chatId) {
@@ -1542,75 +1424,22 @@
         function getMaxQuotas() {
             if (!currentUser) return { msg: 0, img: 0 };
             if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
-            const tier = (currentUser.tier || 'free').toLowerCase();
-            
-            if (tier.includes('اولترا') || tier.includes('ultra')) return { msg: 350, img: 40 };
-            if (tier.includes('حرفه‌ای') || tier.includes('professional')) return { msg: 300, img: 35 };
-            if (tier.includes('پیشرفته') || tier.includes('advanced')) return { msg: 250, img: 30 };
-            if (tier.includes('پرو مکس') || tier.includes('pro max')) return { msg: 200, img: 25 };
-            if (tier.includes('پرو پریمیوم') || tier.includes('pro premium')) return { msg: 150, img: 20 };
-            if (tier.includes('پرو') || tier.includes('pro')) return { msg: 100, img: 15 };
-            if (tier.includes('پریمیوم') || tier.includes('premium')) return { msg: 50, img: 10 };
-            
+            const tier = currentUser.tier || 'free';
+            if (tier.includes('اولترا') || tier.includes('Ultra')) return { msg: 350, img: 40 };
+            if (tier.includes('حرفه‌ای') || tier.includes('Professional')) return { msg: 300, img: 35 };
+            if (tier.includes('پیشرفته') || tier.includes('Advanced')) return { msg: 250, img: 30 };
+            if (tier.includes('پریمیوم') || tier.includes('Premium')) return { msg: 50, img: 10 };
             return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
         }
 
         function checkUserQuota(type = 'msg') {
-            if (!currentUser) return { allowed: false, message: currentLang === 'en' ? 'Please login first.' : 'ابتدا وارد حساب کاربری خود شوید.', isQuota: false };
+            if (!currentUser) return { allowed: false, message: currentLang === 'en' ? 'Please login first.' : 'ابتدا وارد حساب کاربری خود شوید.' };
             if (currentUser.isAdmin || currentUser.isVice) return { allowed: true };
             const limits = getMaxQuotas();
             const { data } = getUserQuotaData();
-            if (type === 'msg' && data.count >= limits.msg) {
-                return { 
-                    allowed: false, 
-                    isQuota: true,
-                    message: currentLang === 'en' 
-                        ? 'You have reached the free message limit for today.' 
-                        : 'شما به محدودیت پیام رایگان در امروز رسیده‌اید'
-                };
-            }
-            if (type === 'img' && data.imgCount >= limits.img) {
-                return { 
-                    allowed: false, 
-                    isQuota: true,
-                    message: currentLang === 'en' 
-                        ? 'You have reached the free image limit for today.' 
-                        : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید'
-                };
-            }
+            if (type === 'msg' && data.count >= limits.msg) return { allowed: false, message: currentLang === 'en' ? 'Message quota reached.' : 'سهمیه پیام تمام شده است.' };
+            if (type === 'img' && data.imgCount >= limits.img) return { allowed: false, message: currentLang === 'en' ? 'Image quota reached.' : 'سهمیه تصویر تمام شده است.' };
             return { allowed: true };
-        }
-
-        function showQuotaExceededMessage(type = 'msg') {
-            const container = document.getElementById('chat-container');
-            const welcome = document.getElementById('welcome-screen');
-            if (welcome) welcome.remove();
-
-            const isMsg = type === 'msg';
-            const title = currentLang === 'en' 
-                ? (isMsg ? 'You have reached the free message limit for today.' : 'You have reached the free image limit for today.')
-                : (isMsg ? 'شما به محدودیت پیام رایگان در امروز رسیده‌اید' : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید');
-            
-            const subtitle = currentLang === 'en'
-                ? 'Upgrade your subscription to Premium for more messages.'
-                : 'برای پیام‌های بیشتر اشتراک خود را به پریمیوم ارتقا دهید';
-
-            const btnText = currentLang === 'en' ? 'Upgrade to Premium' : 'ارتقاء به پریمیوم';
-
-            container.innerHTML += `
-                <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-amber-500/30">
-                        <i class="fa-solid fa-crown"></i>
-                    </div>
-                    <div class="msg-ai p-5 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[85%] border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5">
-                        <div class="text-amber-200 font-bold text-[15px] leading-relaxed">${title}</div>
-                        <div class="text-slate-400 text-xs leading-relaxed">${subtitle}</div>
-                        <button onclick="openPlansModal()" class="mt-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-md shadow-amber-500/25 flex items-center gap-2">
-                            <i class="fa-solid fa-gem"></i> ${btnText}
-                        </button>
-                    </div>
-                </div>`;
-            container.scrollTop = container.scrollHeight;
         }
 
         function incrementQuota(type = 'msg') {
@@ -2066,7 +1895,19 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (window.innerWidth < 768) {
+                sidebar.classList.toggle('open');
+                if (sidebar.classList.contains('open')) {
+                    overlay.classList.remove('hidden');
+                } else {
+                    overlay.classList.add('hidden');
+                }
+            } else {
+                // در دسکتاپ سایدبار همیشه باز است، مگر اینکه کاربر بخواهد مخفی کند
+                sidebar.classList.toggle('hidden');
+            }
         }
     </script>
 </body>
