@@ -1311,14 +1311,6 @@
             const text = input.value.trim();
             if (!text) return;
 
-            // بررسی محدودیت 45 ثانیه‌ای سرویس Pollinations
-            const now = Date.now();
-            if (now - lastImageRequestTime < 45000) {
-                const waitSeconds = Math.ceil((45000 - (now - lastImageRequestTime)) / 1000);
-                showToast(currentLang === 'en' ? `Please wait ${waitSeconds} seconds before generating another image.` : `لطفاً ${waitSeconds} ثانیه دیگر برای ساخت تصویر صبر کنید.`, 'error');
-                return;
-            }
-
             const quota = checkUserQuota('img');
             if (!quota.allowed) {
                 if (!currentUser) {
@@ -1361,105 +1353,63 @@
                 </div>`;
             container.scrollTop = container.scrollHeight;
 
-            // ---- ترجمه پرامپت ----
+            // ---- ساخت پرامپت دقیق با مدل ----
             let finalPrompt = text;
             const hasPersian = /[\u0600-\u06FF]/.test(text);
-            let translationFailed = false;
 
-            if (hasPersian) {
-                try {
-                    const translateRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ 
-                            model: "llama-3.3-70b-versatile",
-                            messages: [
-                                { 
-                                    role: "system", 
-                                    content: "You are a professional translator. Translate the Persian text into a highly descriptive English prompt for image generation. Describe the scene, lighting, colors, and mood in detail. Only output the English prompt, no extra text." 
-                                },
-                                { role: "user", content: text }
-                            ],
-                            temperature: 0.3,
-                            max_tokens: 150
-                        })
-                    });
-                    
-                    if (!translateRes.ok) throw new Error('Translation API Error');
-                    
-                    const translateData = await translateRes.json();
-                    if (translateData.choices && translateData.choices[0]?.message?.content) {
-                        finalPrompt = translateData.choices[0].message.content.trim();
-                    } else {
-                        throw new Error('No translation content');
+            try {
+                const promptRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            {
+                                role: "system",
+                                content: hasPersian
+                                    ? "You are an expert image-prompt engineer. The user writes in Persian. Convert their request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
+                                    : "You are an expert image-prompt engineer. Convert the user request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
+                            },
+                            { role: "user", content: text }
+                        ],
+                        temperature: 0.35,
+                        max_tokens: 220
+                    })
+                });
+
+                if (promptRes.ok) {
+                    const promptData = await promptRes.json();
+                    if (promptData.choices?.[0]?.message?.content) {
+                        finalPrompt = promptData.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
                     }
-                } catch (e) {
-                    console.warn("Translation failed, using fallback.", e);
-                    translationFailed = true;
-                    finalPrompt = "A beautiful, detailed scene, highly realistic, cinematic lighting"; 
                 }
+            } catch (e) {
+                console.warn("Prompt enhancement failed", e);
             }
 
-            if (translationFailed) {
-                showToast("❌ سرویس ترجمه در دسترس نیست. از پرامپت پیش‌فرض استفاده می‌شود.", 'error');
-            }
+            // سرویس Pollinations حذف شد.
+            // برای ساخت تصویر واقعی باید یک API معتبر (مثل Flux، Stability یا DALL·E) به بک‌اند اضافه شود.
+            // فعلاً پرامپت تقویت‌شده را نشان می‌دهیم و به کاربر اطلاع می‌دهیم.
 
-            const enhancedPrompt = `${finalPrompt}, highly detailed, realistic, 8k resolution, cinematic lighting, masterpiece`;
-            const encodedPrompt = encodeURIComponent(enhancedPrompt);
-            const seed = Math.floor(Math.random() * 999999);
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&width=1024&height=1024`;
+            setProcessingState(false);
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
 
-            // ثبت زمان درخواست
-            lastImageRequestTime = Date.now();
+            incrementQuota('img');
 
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            
-            let imageLoaded = false;
-            let imageSuccess = false;
+            const msg = currentLang === 'en'
+                ? `Image generation service has been updated. Pollinations was removed as requested.<br><br><b>Enhanced prompt prepared:</b><br><code style="font-size:11px;word-break:break-all">${escapeHtml(finalPrompt)}</code><br><br>To enable real image generation, add a proper image API (Flux / Stability AI / OpenAI) to your backend <code>/api/image</code> endpoint.`
+                : `سرویس ساخت تصویر به‌روز شد و Pollinations حذف گردید.<br><br><b>پرامپت تقویت‌شده آماده شد:</b><br><code style="font-size:11px;word-break:break-all">${escapeHtml(finalPrompt)}</code><br><br>برای فعال‌سازی ساخت تصویر واقعی، یک API معتبر تصویر (مثل Flux یا Stability) را به بک‌اند اضافه کنید (مثلاً مسیر <code>/api/image</code>).`;
 
-            img.onload = () => {
-                imageLoaded = true;
-                imageSuccess = true;
-            };
-            img.onerror = () => {
-                imageLoaded = true;
-                imageSuccess = false;
-            };
-            img.src = imageUrl;
-
-            // ---- تایمر 45 ثانیه‌ای اجباری ----
-            currentTimer = setTimeout(() => {
-                const loadingEl = document.getElementById(loadingId);
-                if (!loadingEl) return; // اگر کاربر عملیات را متوقف کرده باشد
-
-                setProcessingState(false);
-                loadingEl.remove();
-
-                if (imageLoaded && imageSuccess) {
-                    incrementQuota('img');
-                    container.innerHTML += `
-                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
-                            <div class="msg-ai p-3 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[85%]">
-                                <img src="${imageUrl}" class="rounded-xl w-full max-h-[480px] object-cover shadow-lg" alt="${escapeHtml(text)}" />
-                                <div class="text-[11px] text-slate-400 px-1">${escapeHtml(text)}</div>
-                            </div>
-                        </div>`;
-                    container.scrollTop = container.scrollHeight;
-                    saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
-                } else {
-                    container.innerHTML += `
-                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
-                            <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-red-300 max-w-[85%] border border-red-500/20">
-                                ⚠️ ${currentLang === 'en' ? 'Failed to generate image. (Possible limit reached or network error). Please try again later.' : 'ساخت تصویر با مشکل مواجه شد (احتمالاً محدودیت مصرف یا خطای شبکه). لطفاً بعداً تلاش کنید.'}
-                            </div>
-                        </div>`;
-                }
-            }, 45000); // 45 ثانیه دقیق
+            container.innerHTML += `
+                <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
+                    <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-slate-200 max-w-[85%] border border-violet-500/20 space-y-2">
+                        <div>${msg}</div>
+                    </div>
+                </div>`;
+            container.scrollTop = container.scrollHeight;
+            saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
         }
 
         async function sendMessage() {
@@ -1507,8 +1457,18 @@
             
             const isUserEnglish = /^[A-Za-z0-9\s.,?!@#$%^&*()_+-=;:""'']+$/.test(text.substring(0, 15));
             const systemPrompt = isUserEnglish 
-                ? "You are an AI assistant named Kavosh AI3. You must reply strictly in English based on the user's input. Be helpful, accurate and natural." 
-                : "شما یک دستیار هوش مصنوعی به نام کاوش AI3 هستید. به زبان فارسی روان، دقیق و طبیعی پاسخ دهید. مفید و مؤدب باشید.";
+                ? `You are Kavosh AI3, a highly capable AI assistant. Reply strictly in English.
+Rules:
+- Be accurate, clear and helpful.
+- When the user asks for code, ALWAYS provide complete, working code in a proper markdown code block. Never refuse or give incomplete snippets.
+- If the request is for programming help, give the full solution first, then a short explanation.
+- Stay on topic.`
+                : `شما کاوش AI3 هستید، یک دستیار هوش مصنوعی بسیار توانمند.
+قوانین:
+- همیشه به فارسی روان، دقیق و کامل پاسخ بده.
+- وقتی کاربر کد می‌خواهد، حتماً کد کامل و قابل اجرا را داخل بلوک کد بده. هرگز کد را ناقص نگذار یا طفره نرو.
+- اگر درخواست برنامه‌نویسی است، اول کد کامل را بده، بعد توضیح کوتاه.
+- موضوع را گم نکن.`;
 
             try {
                 const res = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
@@ -1517,13 +1477,13 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ 
-                        model: "openai/gpt-oss-120b",
+                        model: "llama-3.3-70b-versatile",
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: text }
                         ],
-                        temperature: 0.7,
-                        max_tokens: 2048
+                        temperature: 0.55,
+                        max_tokens: 4096
                     }),
                     signal: currentAbortController.signal
                 });
