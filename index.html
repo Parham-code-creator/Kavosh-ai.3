@@ -1397,61 +1397,71 @@
                 console.warn("Prompt enhancement failed", e);
             }
 
-            // ساخت تصویر واقعی با پرامپت تقویت‌شده
-            const enhancedPrompt = `${finalPrompt}, masterpiece, best quality, highly detailed, sharp focus, 8k`;
-            const encodedPrompt = encodeURIComponent(enhancedPrompt);
-            const seed = Math.floor(Math.random() * 999999);
-
-            // استفاده از مدل flux برای کیفیت بهتر
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${seed}&width=1024&height=1024&model=flux&enhance=true`;
-
+            // ساخت تصویر از طریق بک‌اند خود سایت (بدون هیچ سرویس Pollinations)
             lastImageRequestTime = Date.now();
+            currentAbortController = new AbortController();
 
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-
-            let settled = false;
-
-            const finish = (success) => {
-                if (settled) return;
-                settled = true;
-                if (currentTimer) { clearTimeout(currentTimer); currentTimer = null; }
+            try {
+                const imgRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/image", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: finalPrompt,
+                        width: 1024,
+                        height: 1024
+                    }),
+                    signal: currentAbortController.signal
+                });
 
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
                 setProcessingState(false);
 
-                if (success) {
-                    incrementQuota('img');
-                    container.innerHTML += `
-                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
-                            <div class="msg-ai p-3 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[90%]">
-                                <img src="${imageUrl}" class="rounded-xl w-full max-h-[520px] object-cover shadow-lg" alt="${escapeHtml(text)}" loading="lazy" />
-                                <div class="text-[11px] text-slate-400 px-1">${escapeHtml(text)}</div>
-                            </div>
-                        </div>`;
-                    container.scrollTop = container.scrollHeight;
-                    saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
-                } else {
-                    container.innerHTML += `
-                        <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
-                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
-                            <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-red-300 max-w-[85%] border border-red-500/20">
-                                ⚠️ ${currentLang === 'en' 
-                                    ? 'Failed to generate image. Please try again in a moment or use a simpler description.' 
-                                    : 'ساخت تصویر با مشکل مواجه شد. کمی صبر کنید و دوباره با توضیح ساده‌تر تلاش کنید.'}
-                            </div>
-                        </div>`;
+                if (!imgRes.ok) {
+                    const errData = await imgRes.json().catch(() => ({}));
+                    throw new Error(errData.error || errData.message || `HTTP ${imgRes.status}`);
                 }
-            };
 
-            img.onload = () => finish(true);
-            img.onerror = () => finish(false);
-            img.src = imageUrl;
+                const imgData = await imgRes.json();
+                const imageUrl = imgData.url || imgData.image || (imgData.data && imgData.data[0] && imgData.data[0].url);
 
-            // تایم‌اوت ۳۰ ثانیه
-            currentTimer = setTimeout(() => finish(img.complete && img.naturalWidth > 0), 30000);
+                if (!imageUrl) throw new Error('No image URL in response');
+
+                incrementQuota('img');
+                container.innerHTML += `
+                    <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-violet-500/30">ک</div>
+                        <div class="msg-ai p-3 rounded-2xl rounded-tl-md text-sm space-y-3 max-w-[90%]">
+                            <img src="${imageUrl}" class="rounded-xl w-full max-h-[520px] object-cover shadow-lg" alt="${escapeHtml(text)}" loading="lazy" />
+                            <div class="text-[11px] text-slate-400 px-1">${escapeHtml(text)}</div>
+                        </div>
+                    </div>`;
+                container.scrollTop = container.scrollHeight;
+                saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
+
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    setProcessingState(false);
+                    return;
+                }
+                console.error("Image gen error:", e);
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) loadingEl.remove();
+                setProcessingState(false);
+
+                container.innerHTML += `
+                    <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
+                        <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-amber-200 max-w-[85%] border border-amber-500/30 space-y-2">
+                            <div>⚠️ ${currentLang === 'en' ? 'Image API is not configured on the server yet.' : 'API ساخت تصویر هنوز روی سرور تنظیم نشده است.'}</div>
+                            <div class="text-xs text-slate-400 leading-relaxed">
+                                ${currentLang === 'en' 
+                                    ? 'You need to add <code>/api/image</code> endpoint with a real model (Flux / Stability / SDXL).' 
+                                    : 'باید مسیر <code>/api/image</code> را در بک‌اند با یک مدل واقعی (Flux یا Stability) اضافه کنید.'}
+                            </div>
+                        </div>
+                    </div>`;
+            }
         }
 
         async function sendMessage() {
@@ -1531,20 +1541,24 @@ Rules:
                 });
 
                 const data = await res.json();
+                console.log("Groq response:", data);
 
                 if (!res.ok) {
                     isError = true;
-                    const errMsg = data.error?.message || data.message || `خطای سرور (${res.status})`;
+                    const errMsg = data.error?.message || data.message || data.error || `خطای سرور (${res.status})`;
                     aiReply = currentLang === 'en' 
-                        ? `⚠️ API Error: ${errMsg}\n\nPlease check your Groq API key or try again later.`
-                        : `⚠️ خطا در ارتباط با هوش مصنوعی:\n${errMsg}\n\nکلید API ممکن است نامعتبر یا تمام‌شده باشد.`;
+                        ? `⚠️ API Error: ${errMsg}\n\nPlease check your Groq API key.`
+                        : `⚠️ خطا در ارتباط با هوش مصنوعی:\n${errMsg}\n\nکلید GROQ_API_KEY را در Render بررسی کنید.`;
                 } else if (data.choices && data.choices[0]?.message?.content) {
                     aiReply = data.choices[0].message.content.trim();
+                } else if (data.choices && data.choices[0]?.text) {
+                    aiReply = data.choices[0].text.trim();
                 } else {
                     isError = true;
+                    const debugInfo = data.error ? JSON.stringify(data.error) : (data.message || JSON.stringify(data).substring(0, 250));
                     aiReply = currentLang === 'en' 
-                        ? "⚠️ No response received from the model. Please try again."
-                        : "⚠️ پاسخی از مدل دریافت نشد. لطفاً دوباره تلاش کنید.";
+                        ? `⚠️ No response from model.\n\nDebug: ${debugInfo}`
+                        : `⚠️ پاسخی از مدل دریافت نشد.\n\nجزئیات: ${debugInfo}`;
                 }
             } catch(e) {
                 if (e.name === 'AbortError') { 
