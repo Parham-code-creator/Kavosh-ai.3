@@ -3,7 +3,7 @@
 <head>
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">کاوش AI3</title>
     <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
@@ -70,7 +70,6 @@
             font-family: 'Vazirmatn', sans-serif;
             background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000000 100%);
             transition: background 0.5s ease, color 0.3s ease;
-            overflow: hidden;
         }
 
         /* ========== Day Mode (Light Theme) ========== */
@@ -252,31 +251,70 @@
             background: #0f172a;
         }
 
-        /* سایدبار واکنش‌گرا */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 50;
-            transition: transform 0.3s ease-in-out;
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 767px) {
+            body {
+                font-size: 16px; /* prevent iOS zoom on inputs */
+            }
+            #sidebar {
+                position: fixed !important;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                width: 85% !important;
+                max-width: 320px;
+                z-index: 50;
+                display: flex !important;
+                transform: translateX(110%);
+                transition: transform 0.3s ease;
+                box-shadow: -8px 0 30px rgba(0,0,0,0.5);
+                /* Take no space in the flex layout on mobile */
+                flex: none;
+                margin: 0;
+            }
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            /* Overlay when sidebar is open */
+            #mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 40;
+            }
+            #mobile-overlay.active {
+                display: block;
+            }
+            main {
+                width: 100% !important;
+                min-width: 0;
+                flex: 1 1 100%;
+            }
+            /* Make welcome text a bit smaller on very small screens */
+            #ui-welcome-title {
+                font-size: 1.55rem !important;
+                line-height: 1.4;
+            }
+            /* Input area more comfortable + prevent zoom */
+            #user-input {
+                font-size: 16px !important;
+            }
+            header {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
         }
         @media (min-width: 768px) {
             #sidebar {
-                position: relative;
+                position: relative !important;
                 transform: none !important;
             }
-            #sidebar-overlay {
+            #sidebar.hidden {
                 display: none !important;
             }
-        }
-        /* در موبایل سایدبار به صورت پیش‌فرض مخفی است */
-        @media (max-width: 767px) {
-            #sidebar {
-                transform: translateX(100%);
-            }
-            #sidebar.open {
-                transform: translateX(0);
+            #mobile-overlay {
+                display: none !important;
             }
         }
     </style>
@@ -288,18 +326,18 @@
     <div class="orb w-80 h-80 bg-purple-600 bottom-[-15%] left-[-8%]"></div>
     <div class="orb w-64 h-64 bg-fuchsia-600 top-[40%] left-[30%] opacity-20"></div>
 
-    <!-- Overlay برای بستن سایدبار در موبایل -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
-
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2.5 pointer-events-none"></div>
 
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" onclick="closeSidebarMobile()"></div>
+
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-transform duration-300 z-50 relative h-full">
+    <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-all duration-300 z-20 relative hidden md:flex">
         <div class="flex-1 flex flex-col min-h-0">
             <!-- New Chat Button -->
             <div class="p-4">
-                <button onclick="newChat(); if(window.innerWidth < 768) toggleSidebar();" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
+                <button onclick="newChat()" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
                     <span class="flex items-center gap-2.5"><i class="fa-solid fa-plus text-sky-200"></i> <span id="ui-new-chat">گفتگوی جدید</span></span>
                     <i class="fa-regular fa-pen-to-square text-sky-200/80"></i>
                 </button>
@@ -387,81 +425,100 @@
     </aside>
 
     <!-- Main Chat Area -->
-    <main class="flex-1 flex flex-col h-full relative z-10 w-full overflow-hidden">
+    <main class="flex-1 flex flex-col h-full relative z-10">
         <!-- Header -->
-        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-3 md:px-5 z-10 shrink-0">
-            <div class="flex items-center gap-2 md:gap-3">
+        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-5 z-10">
+            <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition"><i class="fa-solid fa-bars text-lg"></i></button>
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center shadow-lg shadow-sky-500/30">
                         <i class="fa-solid fa-compass text-white text-sm"></i>
                     </div>
-                    <span class="font-bold tracking-wide gradient-text text-base md:text-lg" id="ui-brand-name">کاوش AI3</span>
+                    <span class="font-bold tracking-wide gradient-text text-lg" id="ui-brand-name">کاوش AI3</span>
                 </div>
             </div>
-            <div class="flex items-center gap-1 md:gap-2">
-                <button onclick="toggleTheme()" class="text-slate-400 hover:text-amber-300 p-2 md:p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تغییر حالت شب/روز">
+            <div class="flex items-center gap-2">
+                <button onclick="toggleTheme()" class="text-slate-400 hover:text-amber-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تغییر حالت شب/روز">
                     <i id="theme-icon" class="fa-solid fa-sun"></i>
                 </button>
-                <button onclick="openProfileModal()" class="hidden md:block text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
-                <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-[11px] md:text-xs font-medium px-3 md:px-4 py-2 md:py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-1.5 md:gap-2 btn-lift">
+                <button onclick="openProfileModal()" class="text-slate-400 hover:text-sky-300 p-2.5 rounded-xl hover:bg-slate-800/60 transition text-lg" title="تنظیمات"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="openAuthModal()" id="auth-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white text-xs font-medium px-4 py-2.5 rounded-xl transition shadow-md shadow-sky-500/20 flex items-center gap-2 btn-lift">
                     <i class="fa-solid fa-user"></i> <span id="ui-auth-btn-text">ورود / ثبت‌نام</span>
                 </button>
-                <button onclick="clearChat()" title="پاکسازی صفحه" class="text-slate-400 hover:text-red-400 p-2 md:p-2.5 rounded-xl hover:bg-red-500/10 transition"><i class="fa-regular fa-trash-can"></i></button>
+                <button onclick="clearChat()" title="پاکسازی صفحه" class="text-slate-400 hover:text-red-400 p-2.5 rounded-xl hover:bg-red-500/10 transition"><i class="fa-regular fa-trash-can"></i></button>
             </div>
         </header>
 
         <!-- Warning Banner -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-[10px] md:text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
+        <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
             <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
             <span id="ui-warning-text">کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.</span>
         </div>
 
         <!-- Chat Container -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-2 md:p-6 space-y-6 relative">
-            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in px-4">
-                <div class="relative">
-                    <div class="w-20 h-20 bg-gradient-to-br from-sky-500 via-violet-500 to-fuchsia-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 text-3xl text-white animate-float">
-                        <i class="fa-solid fa-compass"></i>
-                    </div>
-                    <div class="absolute -inset-3 bg-gradient-to-br from-sky-500/20 to-violet-500/20 rounded-3xl blur-xl -z-10"></div>
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
+            <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-8 animate-fade-in px-4">
+                <div class="space-y-4">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-50 leading-relaxed" id="ui-welcome-title">
+                        امروز چه برنامه‌ای در دستور کار است؟
+                    </h1>
+                    <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">
+                        من <span class="gradient-text font-bold">کاوش AI3</span> هستم — چت، تولید تصویر و کمک به زبان فارسی و انگلیسی
+                    </p>
                 </div>
-                <div class="space-y-3">
-                    <h1 class="text-2xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">سلام! من <span class="gradient-text">کاوش AI3</span> هستم</h1>
-                    <p class="text-xs md:text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.</p>
-                </div>
-                <div class="flex flex-wrap gap-2 justify-center pt-2">
-                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">چت هوشمند</span>
-                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">تولید تصویر</span>
-                    <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">پشتیبانی فارسی</span>
+
+                <!-- Quick Actions (Grok-style) -->
+                <div class="flex flex-wrap gap-2.5 justify-center pt-1" id="quick-actions">
+                    <button onclick="setModeAndFocus('text')" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-message text-sky-400"></i> چت هوشمند
+                    </button>
+                    <button onclick="setModeAndFocus('image')" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-image text-violet-400"></i> تولید تصویر
+                    </button>
+                    <button onclick="openTicketModal()" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-emerald-400"></i> پشتیبانی
+                    </button>
+                    <button onclick="openPlansModal()" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-gem text-amber-400"></i> ارتقای اشتراک
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Input Box -->
-        <div class="p-2 md:p-4 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent shrink-0">
-            <div class="max-w-3xl mx-auto relative glass-strong border border-slate-700/50 rounded-2xl shadow-2xl input-glow transition-all duration-300 flex items-end px-2 md:px-3 py-1.5 md:py-2.5 gap-1">
-                <button id="mode-toggle-btn" onclick="toggleMode()" class="text-slate-400 hover:text-violet-300 px-2 md:px-3 py-2 rounded-xl transition text-xs flex items-center gap-1.5 border border-slate-700/60 bg-slate-900/60 shrink-0 mb-1 md:mb-0" title="تغییر حالت">
-                    <i class="fa-solid fa-message text-sky-400" id="mode-icon"></i>
-                    <span id="mode-text" class="hidden md:inline">متن</span>
-                </button>
+        <!-- Input Box (Grok-style large centered) -->
+        <div class="p-4 md:p-6 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
+            <div class="max-w-3xl mx-auto space-y-3">
+                <div class="relative glass-strong border border-slate-700/50 rounded-full shadow-2xl input-glow transition-all duration-300 flex items-center px-2 py-1.5 gap-1">
+                    <button id="mode-toggle-btn" onclick="toggleMode()" class="text-slate-400 hover:text-violet-300 px-3 py-2.5 rounded-full transition text-xs flex items-center gap-1.5 shrink-0" title="تغییر حالت">
+                        <i class="fa-solid fa-message text-sky-400" id="mode-icon"></i>
+                        <span id="mode-text" class="hidden sm:inline">متن</span>
+                    </button>
 
-                <textarea id="user-input" rows="1" placeholder="پیام خود را بنویسید..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm p-2 md:p-3 focus:outline-none resize-none max-h-32 leading-relaxed mb-1 md:mb-0" onkeydown="handleKeyPress(event)"></textarea>
+                    <textarea id="user-input" rows="1" placeholder="پیام خود را بنویسید یا بپرسید..." class="flex-1 bg-transparent text-slate-100 placeholder-slate-500 text-sm sm:text-base p-3 focus:outline-none resize-none max-h-32 leading-relaxed" onkeydown="handleKeyPress(event)"></textarea>
 
-                <div class="flex items-center gap-1 md:gap-1.5">
-                    <button id="mic-btn" onclick="toggleVoiceInput()" class="bg-slate-800/80 hover:bg-slate-700 text-slate-300 w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition" title="صوتی">
-                        <i class="fa-solid fa-microphone text-sm" id="mic-icon"></i>
-                    </button>
-                    <button onclick="handleSendAction()" id="send-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-sky-500/25" title="ارسال">
-                        <i class="fa-solid fa-arrow-up text-sm"></i>
-                    </button>
-                    <button onclick="stopCurrentProcess()" id="stop-btn" style="display: none;" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition shadow-lg shadow-red-500/25" title="توقف">
-                        <i class="fa-solid fa-stop text-sm"></i>
-                    </button>
+                    <div class="flex items-center gap-1">
+                        <button id="mic-btn" onclick="toggleVoiceInput()" class="bg-slate-800/60 hover:bg-slate-700 text-slate-300 w-10 h-10 rounded-full flex items-center justify-center transition" title="صوتی">
+                            <i class="fa-solid fa-microphone text-sm" id="mic-icon"></i>
+                        </button>
+                        <button onclick="handleSendAction()" id="send-btn" class="bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg shadow-sky-500/25" title="ارسال">
+                            <i class="fa-solid fa-arrow-up text-sm"></i>
+                        </button>
+                        <button onclick="stopCurrentProcess()" id="stop-btn" style="display: none;" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg shadow-red-500/25" title="توقف">
+                            <i class="fa-solid fa-stop text-sm"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="text-center text-[10px] md:text-xs text-slate-500 mt-2 md:mt-3" id="ui-copyright">
-                هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد
+
+                <!-- Quick suggestion chips under input (visible mainly on welcome) -->
+                <div id="input-suggestions" class="flex flex-wrap gap-2 justify-center text-xs">
+                    <button onclick="fillAndSend('یک داستان کوتاه بنویس')" class="px-3 py-1.5 rounded-full bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 transition border border-slate-700/40">داستان کوتاه بنویس</button>
+                    <button onclick="fillAndSend('یک تصویر از غروب خورشید در کوهستان بساز')" class="px-3 py-1.5 rounded-full bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 transition border border-slate-700/40">تولید تصویر غروب</button>
+                    <button onclick="fillAndSend('به انگلیسی توضیح بده هوش مصنوعی چیست')" class="px-3 py-1.5 rounded-full bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 transition border border-slate-700/40">توضیح به انگلیسی</button>
+                </div>
+
+                <div class="text-center text-xs text-slate-500" id="ui-copyright">
+                    هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد
+                </div>
             </div>
         </div>
     </main>
@@ -1133,29 +1190,66 @@
         function newChat() {
             currentChatId = 'chat_' + Date.now();
             const t = translations[currentLang];
+            const isFa = currentLang === 'fa';
             document.getElementById('chat-container').innerHTML = `
-                <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6 animate-fade-in">
-                    <div class="relative">
-                        <div class="w-20 h-20 bg-gradient-to-br from-sky-500 via-violet-500 to-fuchsia-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-violet-500/30 text-3xl text-white animate-float">
-                            <i class="fa-solid fa-compass"></i>
-                        </div>
-                        <div class="absolute -inset-3 bg-gradient-to-br from-sky-500/20 to-violet-500/20 rounded-3xl blur-xl -z-10"></div>
+                <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-8 animate-fade-in px-4">
+                    <div class="space-y-4">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-50 leading-relaxed" id="ui-welcome-title">
+                            ${isFa ? 'امروز چه برنامه‌ای در دستور کار است؟' : 'What\'s on the agenda today?'}
+                        </h1>
+                        <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">
+                            ${isFa ? 'من <span class="gradient-text font-bold">کاوش AI3</span> هستم — چت، تولید تصویر و کمک به زبان فارسی و انگلیسی' : 'I am <span class="gradient-text font-bold">Kavosh AI3</span> — chat, image generation & help in Persian and English'}
+                        </p>
                     </div>
-                    <div class="space-y-3">
-                        <h1 class="text-3xl md:text-4xl font-bold text-slate-50" id="ui-welcome-title">${currentLang === 'fa' ? 'سلام! من <span class="gradient-text">کاوش AI3</span> هستم' : 'Hello! I am <span class="gradient-text">Kavosh AI3</span>'}</h1>
-                        <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed" id="ui-welcome-desc">${t.welcomeDesc}</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2 justify-center pt-2">
-                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'چت هوشمند' : 'Smart Chat'}</span>
-                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'تولید تصویر' : 'Image Generation'}</span>
-                        <span class="px-3 py-1.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">${currentLang === 'fa' ? 'پشتیبانی فارسی' : 'Persian Support'}</span>
+                    <div class="flex flex-wrap gap-2.5 justify-center pt-1" id="quick-actions">
+                        <button onclick="setModeAndFocus('text')" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                            <i class="fa-solid fa-message text-sky-400"></i> ${isFa ? 'چت هوشمند' : 'Smart Chat'}
+                        </button>
+                        <button onclick="setModeAndFocus('image')" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                            <i class="fa-solid fa-image text-violet-400"></i> ${isFa ? 'تولید تصویر' : 'Create Image'}
+                        </button>
+                        <button onclick="openTicketModal()" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                            <i class="fa-solid fa-headset text-emerald-400"></i> ${isFa ? 'پشتیبانی' : 'Support'}
+                        </button>
+                        <button onclick="openPlansModal()" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
+                            <i class="fa-solid fa-gem text-amber-400"></i> ${isFa ? 'ارتقای اشتراک' : 'Upgrade'}
+                        </button>
                     </div>
                 </div>`;
+            
+            // Show suggestions again
+            const sugg = document.getElementById('input-suggestions');
+            if (sugg) sugg.style.display = 'flex';
         }
 
         function clearChat() { newChat(); }
 
+        function setModeAndFocus(mode) {
+            if (mode === 'image' && inputMode !== 'image') toggleMode();
+            if (mode === 'text' && inputMode !== 'text') toggleMode();
+            const input = document.getElementById('user-input');
+            if (input) {
+                input.focus();
+                if (mode === 'image') input.placeholder = translations[currentLang].imagePlaceholder;
+            }
+        }
+
+        function fillAndSend(text) {
+            const input = document.getElementById('user-input');
+            if (!input) return;
+            // If text contains image-related words, switch to image mode
+            if (/تصویر|عکس|image|draw|generate.*image/i.test(text) && inputMode !== 'image') {
+                toggleMode();
+            }
+            input.value = text;
+            handleSendAction();
+        }
+
         function handleSendAction() {
+            // Hide suggestions once user starts chatting
+            const sugg = document.getElementById('input-suggestions');
+            if (sugg) sugg.style.display = 'none';
+
             if (inputMode === 'image') generateImage();
             else sendMessage();
         }
@@ -1526,7 +1620,6 @@
             document.getElementById('chat-container').innerHTML = chat.html;
             const container = document.getElementById('chat-container');
             container.scrollTop = container.scrollHeight;
-            if(window.innerWidth < 768) toggleSidebar();
         }
 
         function confirmDeleteSingleChat(event, chatId) {
@@ -2099,20 +2192,41 @@
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            if (window.innerWidth < 768) {
-                sidebar.classList.toggle('open');
-                if (sidebar.classList.contains('open')) {
-                    overlay.classList.remove('hidden');
+            const overlay = document.getElementById('mobile-overlay');
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) {
+                const isOpen = sidebar.classList.contains('mobile-open');
+                if (isOpen) {
+                    sidebar.classList.remove('mobile-open');
+                    if (overlay) overlay.classList.remove('active');
                 } else {
-                    overlay.classList.add('hidden');
+                    sidebar.classList.remove('hidden');
+                    sidebar.classList.add('mobile-open');
+                    if (overlay) overlay.classList.add('active');
                 }
             } else {
-                // در دسکتاپ سایدبار همیشه باز است، مگر اینکه کاربر بخواهد مخفی کند
                 sidebar.classList.toggle('hidden');
             }
         }
+
+        function closeSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active');
+        }
+
+        // Close mobile sidebar on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                closeSidebarMobile();
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('hidden')) {
+                    // keep open state on desktop if desired
+                }
+            }
+        });
     </script>
 </body>
 </html>
