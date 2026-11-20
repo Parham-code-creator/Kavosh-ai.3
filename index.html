@@ -3,8 +3,10 @@
 <head>
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">کاوش AI3</title>
+    <!-- کیت توسعه ایتا (Eitaa WebApp SDK) - باید از آدرس رسمی لود شود -->
+    <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
     <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <!-- Tailwind CSS -->
@@ -427,14 +429,17 @@
     <!-- Main Chat Area -->
     <main class="flex-1 flex flex-col h-full relative z-10">
         <!-- Header -->
-        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-5 z-10">
-            <div class="flex items-center gap-3">
+        <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-3 sm:px-5 z-10">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="goBack()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition" title="بازگشت">
+                    <i class="fa-solid fa-arrow-right text-lg"></i>
+                </button>
                 <button onclick="toggleSidebar()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition"><i class="fa-solid fa-bars text-lg"></i></button>
                 <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center shadow-lg shadow-sky-500/30">
                         <i class="fa-solid fa-compass text-white text-sm"></i>
                     </div>
-                    <span class="font-bold tracking-wide gradient-text text-lg" id="ui-brand-name">کاوش AI3</span>
+                    <span class="font-bold tracking-wide gradient-text text-base sm:text-lg" id="ui-brand-name">کاوش AI3</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -522,6 +527,22 @@
             </div>
         </div>
     </main>
+
+    <!-- Welcome Modal (first registration) -->
+    <div id="welcome-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[55] flex items-center justify-center p-4">
+        <div class="glass-strong border border-sky-500/30 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-5 text-center modal-enter">
+            <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-3xl text-white shadow-lg shadow-sky-500/30">
+                <i class="fa-solid fa-compass"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-50" id="welcome-modal-title">به کاوش AI3 خوش آمدید 🎉</h3>
+            <p class="text-sm text-slate-300 leading-relaxed" id="welcome-modal-desc">
+                حساب شما با موفقیت ساخته شد. می‌توانید چت کنید، تصویر بسازید و در صورت نیاز اشتراک خود را ارتقا دهید.
+            </p>
+            <button onclick="closeWelcomeModal()" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg">
+                شروع کنیم
+            </button>
+        </div>
+    </div>
 
     <!-- Confirm Modal -->
     <div id="confirm-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
@@ -621,6 +642,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="plans-container"></div>
             <div id="payment-box" style="display: none;" class="bg-slate-900/60 border border-slate-700/50 p-5 rounded-2xl space-y-4">
                 <h4 class="text-sm font-bold text-amber-400 border-b border-slate-700/50 pb-2.5"><span id="ui-pay-header">پرداخت اشتراک:</span> <span id="selected-plan-name"></span> (<span id="selected-plan-price"></span> تومان)</h4>
+                <div class="flex gap-2">
+                    <input type="text" id="user-discount-code" placeholder="کد تخفیف (اختیاری)" class="flex-1 bg-slate-900 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                    <button type="button" onclick="applyDiscountCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shrink-0">اعمال</button>
+                </div>
+                <div id="discount-applied-msg" class="text-xs text-emerald-400 hidden"></div>
                 <div class="bg-slate-950/80 p-4 rounded-xl text-xs text-slate-400 border border-slate-700/40"><span id="ui-card-label">شماره کارت:</span> <span class="font-mono font-bold text-amber-300 tracking-wider">6219 8619 5040 0118</span> (پرهام خان احمدی)</div>
                 <form onsubmit="handleReceiptSubmit(event)" class="space-y-3">
                     <input type="text" id="payer-name" required placeholder="نام و نام خانوادگی واریزکننده" class="w-full bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
@@ -648,6 +674,7 @@
             </form>
             <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4" style="display: none;">
                 <input type="text" id="reg-username" required placeholder="نام کاربری جدید" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <input type="tel" id="reg-phone" required placeholder="شماره تماس (مثال: 09121234567)" pattern="09[0-9]{9}" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition" dir="ltr">
                 <input type="password" id="reg-password" required placeholder="رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
                 <input type="password" id="reg-confirm-password" required placeholder="تکرار رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
                 <button type="submit" id="ui-reg-submit" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-sky-500/20 btn-lift">ایجاد حساب</button>
@@ -673,6 +700,27 @@
                 <div id="admin-receipts-list" class="space-y-2.5">
                     <div class="text-xs text-slate-500 text-center py-3" id="ui-no-rec">هیچ فاکتوری در انتظار تأیید نیست.</div>
                 </div>
+            </div>
+
+            <!-- کدهای تخفیف -->
+            <div class="space-y-3 border-t border-slate-700/50 pt-5">
+                <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">کدهای تخفیف اشتراک (۵٪ تا ۱۰۰٪)</h4>
+                <div class="flex flex-wrap gap-2 items-end">
+                    <input type="text" id="discount-code-input" placeholder="کد (مثلاً WELCOME20)" class="flex-1 min-w-[120px] bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                    <input type="number" id="discount-percent-input" min="5" max="100" value="20" placeholder="٪" class="w-20 bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
+                    <button onclick="createDiscountCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">ایجاد کد</button>
+                </div>
+                <div id="discount-codes-list" class="space-y-2 max-h-40 overflow-y-auto text-xs"></div>
+                <button onclick="notifyUsersAboutDiscount()" class="w-full bg-sky-600/80 hover:bg-sky-500 text-white py-2 rounded-xl text-xs">اطلاع‌رسانی به کاربران درباره آخرین کد</button>
+            </div>
+
+            <!-- تنظیمات ایتا -->
+            <div class="space-y-3 border-t border-slate-700/50 pt-5">
+                <h4 class="text-xs font-bold text-violet-400 uppercase tracking-wider">کیت توسعه ایتا (Eitaa Bot)</h4>
+                <input type="text" id="eitaa-token-input" placeholder="توکن ربات ایتا" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                <input type="text" id="eitaa-chat-input" placeholder="شناسه چت / کانال ایتا" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                <button onclick="saveEitaaConfig()" class="bg-violet-600 hover:bg-violet-500 text-white px-4 py-2 rounded-xl text-xs font-bold">ذخیره تنظیمات ایتا</button>
+                <p class="text-[10px] text-slate-500">برای ارسال پیام واقعی، مسیر <code>/api/eitaa</code> را در بک‌اند پیاده‌سازی کنید.</p>
             </div>
 
             <div class="space-y-3 border-t border-slate-700/50 pt-5">
@@ -972,7 +1020,43 @@
             newChat();
             initSpeechRecognition();
             renderPlans();
+            checkDiscountAnnouncement();
+            initEitaaWebApp();
         });
+
+        function initEitaaWebApp() {
+            try {
+                const wa = window.Eitaa && window.Eitaa.WebApp;
+                if (!wa) {
+                    console.log('Eitaa SDK not active (only works inside Eitaa app)');
+                    return;
+                }
+                // آماده‌سازی برنامک داخل ایتا
+                if (typeof wa.ready === 'function') wa.ready();
+                if (typeof wa.expand === 'function') wa.expand();
+
+                // هماهنگ‌سازی تم
+                if (wa.colorScheme === 'light' || (wa.themeParams && wa.themeParams.bg_color === '#ffffff')) {
+                    document.body.classList.add('day-mode');
+                }
+
+                // دکمه بازگشت ایتا
+                if (wa.BackButton) {
+                    wa.BackButton.show();
+                    wa.BackButton.onClick(() => {
+                        if (window.history.length > 1) window.history.back();
+                        else if (typeof wa.close === 'function') wa.close();
+                    });
+                }
+
+                // اگر کاربر از ایتا وارد شده، اطلاعاتش را لاگ کن
+                if (wa.initDataUnsafe && wa.initDataUnsafe.user) {
+                    console.log('Eitaa user:', wa.initDataUnsafe.user);
+                }
+            } catch (e) {
+                console.warn('Eitaa init error:', e);
+            }
+        }
 
         function applyLanguage(lang) {
             currentLang = lang;
@@ -1372,7 +1456,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
+                        model: "deepseek-chat",
                         messages: [
                             {
                                 role: "system",
@@ -1529,7 +1613,7 @@ Rules:
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ 
-                        model: "llama-3.3-70b-versatile",
+                        model: "deepseek-chat",
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: text }
@@ -1805,8 +1889,13 @@ Rules:
 
         function selectPlan(name, price) {
             selectedPlan = { name, price };
+            appliedDiscount = null;
             document.getElementById('selected-plan-name').innerText = name;
             document.getElementById('selected-plan-price').innerText = price;
+            const msg = document.getElementById('discount-applied-msg');
+            if (msg) { msg.classList.add('hidden'); msg.textContent = ''; }
+            const codeInput = document.getElementById('user-discount-code');
+            if (codeInput) codeInput.value = '';
             document.getElementById('payment-box').style.display = 'block';
         }
 
@@ -1847,10 +1936,27 @@ Rules:
         function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('reg-username').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
             const password = document.getElementById('reg-password').value;
             const conf = document.getElementById('reg-confirm-password').value;
             if (password !== conf) { showToast(currentLang === 'en' ? 'Passwords do not match.' : 'رمز عبور مطابقت ندارد.', 'error'); return; }
-            const newUser = { username, password, tier: currentLang === 'en' ? 'Free' : 'رایگان', banUntil: 0 };
+            if (!/^09[0-9]{9}$/.test(phone)) {
+                showToast(currentLang === 'en' ? 'Enter a valid Iranian mobile number (09xxxxxxxxx).' : 'شماره موبایل معتبر وارد کنید (۰۹xxxxxxxxx).', 'error');
+                return;
+            }
+            if (usersDB.find(u => u.username === username)) {
+                showToast(currentLang === 'en' ? 'Username already exists.' : 'این نام کاربری قبلاً ثبت شده است.', 'error');
+                return;
+            }
+            const newUser = {
+                username,
+                phone,
+                password,
+                tier: currentLang === 'en' ? 'Free' : 'رایگان',
+                banUntil: 0,
+                isNew: true,
+                createdAt: Date.now()
+            };
             usersDB.push(newUser);
             localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
             currentUser = newUser;
@@ -1859,7 +1965,161 @@ Rules:
             updateQuotaUI();
             newChat();
             closeAuthModal();
-            showToast(currentLang === 'en' ? 'Registration successful!' : 'ثبت‌نام با موفقیت انجام شد!');
+            showWelcomeModal(username);
+        }
+
+        function showWelcomeModal(username) {
+            const title = document.getElementById('welcome-modal-title');
+            const desc = document.getElementById('welcome-modal-desc');
+            if (currentLang === 'en') {
+                title.textContent = `Welcome to Kavosh AI3, ${username}! 🎉`;
+                desc.textContent = 'Your account was created successfully. You can chat, generate images, and upgrade your plan anytime.';
+            } else {
+                title.textContent = `${username} عزیز، به کاوش AI3 خوش آمدید 🎉`;
+                desc.innerHTML = 'حساب شما با موفقیت ساخته شد.<br>می‌توانید چت کنید، تصویر بسازید و در صورت نیاز اشتراک خود را ارتقا دهید.';
+            }
+            document.getElementById('welcome-modal').style.display = 'flex';
+        }
+
+        function closeWelcomeModal() {
+            document.getElementById('welcome-modal').style.display = 'none';
+            if (currentUser && currentUser.isNew) {
+                currentUser.isNew = false;
+                const idx = usersDB.findIndex(u => u.username === currentUser.username);
+                if (idx >= 0) { usersDB[idx].isNew = false; localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); }
+                localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+            }
+            showToast(currentLang === 'en' ? 'Welcome aboard!' : 'خوش آمدید! آماده‌اید شروع کنید.');
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                newChat();
+                showToast(currentLang === 'en' ? 'Back to home' : 'بازگشت به صفحه اصلی');
+            }
+        }
+
+        // ========== Discount Codes ==========
+        function getDiscountCodes() {
+            try { return JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) { return []; }
+        }
+        function saveDiscountCodes(list) {
+            localStorage.setItem('kavosh_discount_codes', JSON.stringify(list));
+        }
+
+        function createDiscountCode() {
+            const code = (document.getElementById('discount-code-input').value || '').trim().toUpperCase();
+            let percent = parseInt(document.getElementById('discount-percent-input').value, 10);
+            if (!code || code.length < 3) { showToast('کد معتبر وارد کنید (حداقل ۳ کاراکتر)', 'error'); return; }
+            if (isNaN(percent) || percent < 5 || percent > 100) { showToast('درصد باید بین ۵ تا ۱۰۰ باشد', 'error'); return; }
+            const list = getDiscountCodes();
+            if (list.find(c => c.code === code)) { showToast('این کد از قبل وجود دارد', 'error'); return; }
+            list.push({ code, percent, active: true, createdAt: Date.now() });
+            saveDiscountCodes(list);
+            document.getElementById('discount-code-input').value = '';
+            renderDiscountCodes();
+            showToast(`کد ${code} با ${percent}٪ تخفیف ساخته شد`);
+        }
+
+        function renderDiscountCodes() {
+            const box = document.getElementById('discount-codes-list');
+            if (!box) return;
+            const list = getDiscountCodes();
+            if (!list.length) { box.innerHTML = '<div class="text-slate-500 text-center py-2">هنوز کدی ساخته نشده</div>'; return; }
+            box.innerHTML = list.map(c => `
+                <div class="flex items-center justify-between bg-slate-900/60 border border-slate-700/40 rounded-xl px-3 py-2">
+                    <span class="font-mono text-sky-300">${c.code}</span>
+                    <span class="text-emerald-400 font-bold">${c.percent}٪</span>
+                    <button onclick="deleteDiscountCode('${c.code}')" class="text-red-400 hover:text-red-300 text-xs">حذف</button>
+                </div>`).join('');
+        }
+
+        function deleteDiscountCode(code) {
+            let list = getDiscountCodes().filter(c => c.code !== code);
+            saveDiscountCodes(list);
+            renderDiscountCodes();
+            showToast('کد حذف شد');
+        }
+
+        let appliedDiscount = null;
+        function applyDiscountCode() {
+            const code = (document.getElementById('user-discount-code').value || '').trim().toUpperCase();
+            const found = getDiscountCodes().find(c => c.code === code && c.active);
+            const msg = document.getElementById('discount-applied-msg');
+            if (!found) {
+                appliedDiscount = null;
+                if (msg) { msg.classList.add('hidden'); }
+                showToast('کد تخفیف نامعتبر است', 'error');
+                return;
+            }
+            appliedDiscount = found;
+            if (selectedPlan && selectedPlan.price) {
+                const raw = parseInt(String(selectedPlan.price).replace(/,/g, ''), 10) || 0;
+                const final = Math.round(raw * (1 - found.percent / 100));
+                document.getElementById('selected-plan-price').innerText = final.toLocaleString('fa-IR');
+                if (msg) {
+                    msg.classList.remove('hidden');
+                    msg.textContent = `تخفیف ${found.percent}٪ اعمال شد. مبلغ نهایی: ${final.toLocaleString('fa-IR')} تومان`;
+                }
+            }
+            showToast(`تخفیف ${found.percent}٪ اعمال شد`);
+        }
+
+        function notifyUsersAboutDiscount() {
+            const list = getDiscountCodes();
+            if (!list.length) { showToast('اول یک کد بسازید', 'error'); return; }
+            const last = list[list.length - 1];
+            const note = `کد تخفیف جدید: ${last.code} با ${last.percent}٪ تخفیف روی اشتراک‌ها`;
+            localStorage.setItem('kavosh_discount_announcement', JSON.stringify({ text: note, at: Date.now() }));
+            showToast('اطلاع‌رسانی ذخیره شد و به کاربران نمایش داده می‌شود');
+            // تلاش برای ارسال به ایتا (اگر بک‌اند آماده باشد)
+            sendEitaaMessage(note);
+        }
+
+        function checkDiscountAnnouncement() {
+            try {
+                const ann = JSON.parse(localStorage.getItem('kavosh_discount_announcement') || 'null');
+                if (!ann) return;
+                const seen = localStorage.getItem('kavosh_seen_discount_ann');
+                if (seen === String(ann.at)) return;
+                showToast(ann.text, 'success');
+                localStorage.setItem('kavosh_seen_discount_ann', String(ann.at));
+            } catch(e) {}
+        }
+
+        // ========== Eitaa Kit ==========
+        function saveEitaaConfig() {
+            const token = document.getElementById('eitaa-token-input').value.trim();
+            const chatId = document.getElementById('eitaa-chat-input').value.trim();
+            localStorage.setItem('kavosh_eitaa', JSON.stringify({ token, chatId }));
+            showToast('تنظیمات ایتا ذخیره شد');
+        }
+
+        function loadEitaaConfig() {
+            try {
+                const cfg = JSON.parse(localStorage.getItem('kavosh_eitaa') || '{}');
+                const t = document.getElementById('eitaa-token-input');
+                const c = document.getElementById('eitaa-chat-input');
+                if (t) t.value = cfg.token || '';
+                if (c) c.value = cfg.chatId || '';
+            } catch(e) {}
+        }
+
+        async function sendEitaaMessage(text) {
+            try {
+                const cfg = JSON.parse(localStorage.getItem('kavosh_eitaa') || '{}');
+                if (!cfg.token || !cfg.chatId) return;
+                // از بک‌اند پروکسی استفاده می‌شود تا توکن لو نرود
+                await fetch('https://kavosh-ai-3-bo3z.onrender.com/api/eitaa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: cfg.token, chatId: cfg.chatId, text })
+                });
+            } catch(e) {
+                console.warn('Eitaa send failed (backend may not be ready)', e);
+            }
         }
 
         function handleLogin(e) {
@@ -2040,6 +2300,8 @@ Rules:
             renderAdminUsers();
             renderAdminReceipts();
             renderAdminTickets();
+            renderDiscountCodes();
+            loadEitaaConfig();
             document.getElementById('admin-modal').style.display = 'flex';
         }
         function closeAdminModal() { document.getElementById('admin-modal').style.display = 'none'; }
@@ -2053,10 +2315,11 @@ Rules:
             list.innerHTML = usersDB.map(u => {
                 const isBanned = u.banUntil && Date.now() < u.banUntil;
                 const tierInfo = u.tier || (currentLang === 'en' ? 'Regular User' : 'کاربر معمولی');
+                const phoneInfo = u.phone ? ` | 📱 ${u.phone}` : '';
                 return `
                 <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs flex flex-col md:flex-row items-center justify-between gap-3">
                     <div>
-                        <div class="font-bold text-slate-200">${escapeHtml(u.username)}</div>
+                        <div class="font-bold text-slate-200">${escapeHtml(u.username)}${phoneInfo}</div>
                         <div class="text-amber-400">${currentLang === 'en' ? 'Subscription: ' : 'اشتراک: '} ${tierInfo} ${isBanned ? '<span class="text-red-400 font-bold">(مسدود شده)</span>' : ''}</div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
