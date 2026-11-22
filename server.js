@@ -32,7 +32,7 @@ app.post('/api/groq', async (req, res) => {
             contents[0].parts[0].text = systemText.trim() + '\n\n' + contents[0].parts[0].text;
         }
 
-        const model = 'gemini-1.5-flash';
+        const model = 'gemini-4-hydrogen';
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         const response = await fetch(url, {
@@ -41,8 +41,10 @@ app.post('/api/groq', async (req, res) => {
             body: JSON.stringify({
                 contents: contents.length ? contents : [{ role: 'user', parts: [{ text: 'سلام' }] }],
                 generationConfig: {
-                    temperature: req.body.temperature || 0.7,
-                    maxOutputTokens: req.body.max_tokens || 2048
+                    maxOutputTokens: 65536,
+                    thinkingConfig: {
+                        thinkingLevel: "medium"
+                    }
                 }
             })
         });
