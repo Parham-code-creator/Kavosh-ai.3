@@ -1050,7 +1050,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: "gemini-4-hydrogen",
+                        model: "gemini-3.8-flash",
                         messages: [
                             { role: "system", content: hasPersian
                                 ? "You are an expert image-prompt engineer. The user writes in Persian. Convert their request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
@@ -1160,7 +1160,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        model: "gemini-4-hydrogen",
+                        model: "gemini-3.8-flash",
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: text }
