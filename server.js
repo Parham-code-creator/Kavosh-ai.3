@@ -32,7 +32,7 @@ app.post('/api/groq', async (req, res) => {
             contents[0].parts[0].text = systemText.trim() + '\n\n' + contents[0].parts[0].text;
         }
 
-        const model = 'gemini-4-hydrogen';
+        const model = 'gemini-3.8-flash';
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         const response = await fetch(url, {
