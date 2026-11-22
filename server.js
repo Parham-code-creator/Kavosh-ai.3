@@ -41,10 +41,7 @@ app.post('/api/groq', async (req, res) => {
             body: JSON.stringify({
                 contents: contents.length ? contents : [{ role: 'user', parts: [{ text: 'سلام' }] }],
                 generationConfig: {
-                    maxOutputTokens: 65536,
-                    thinkingConfig: {
-                        thinkingLevel: "medium"
-                    }
+                    maxOutputTokens: 65536
                 }
             })
         });
