@@ -642,11 +642,21 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="plans-container"></div>
             <div id="payment-box" style="display: none;" class="bg-slate-900/60 border border-slate-700/50 p-5 rounded-2xl space-y-4">
                 <h4 class="text-sm font-bold text-amber-400 border-b border-slate-700/50 pb-2.5"><span id="ui-pay-header">پرداخت اشتراک:</span> <span id="selected-plan-name"></span> (<span id="selected-plan-price"></span> تومان)</h4>
-                <div class="flex gap-2">
-                    <input type="text" id="user-discount-code" placeholder="کد تخفیف (اختیاری)" class="flex-1 bg-slate-900 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
-                    <button type="button" onclick="applyDiscountCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shrink-0">اعمال</button>
+                
+                <!-- بخش کدهای تخفیف فعال -->
+                <div class="bg-slate-950/60 border border-emerald-500/20 rounded-xl p-3 space-y-2">
+                    <div class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-ticket"></i> کدهای تخفیف فعال
+                    </div>
+                    <div id="available-discounts-list" class="flex flex-wrap gap-2 text-[11px]">
+                        <span class="text-slate-500">کد فعالی نیست</span>
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <input type="text" id="user-discount-code" placeholder="کد تخفیف را وارد کنید" class="flex-1 bg-slate-900 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                        <button type="button" onclick="applyDiscountCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shrink-0">اعمال</button>
+                    </div>
+                    <div id="discount-applied-msg" class="text-xs text-emerald-400 hidden"></div>
                 </div>
-                <div id="discount-applied-msg" class="text-xs text-emerald-400 hidden"></div>
                 <div class="bg-slate-950/80 p-4 rounded-xl text-xs text-slate-400 border border-slate-700/40"><span id="ui-card-label">شماره کارت:</span> <span class="font-mono font-bold text-amber-300 tracking-wider">6219 8619 5040 0118</span> (پرهام خان احمدی)</div>
                 <form onsubmit="handleReceiptSubmit(event)" class="space-y-3">
                     <input type="text" id="payer-name" required placeholder="نام و نام خانوادگی واریزکننده" class="w-full bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
@@ -675,8 +685,17 @@
             <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4" style="display: none;">
                 <input type="text" id="reg-username" required placeholder="نام کاربری جدید" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
                 <input type="tel" id="reg-phone" required placeholder="شماره تماس (مثال: 09121234567)" pattern="09[0-9]{9}" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition" dir="ltr">
-                <input type="password" id="reg-password" required placeholder="رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
-                <input type="password" id="reg-confirm-password" required placeholder="تکرار رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                <div class="space-y-1.5">
+                    <input type="password" id="reg-password" required minlength="8" maxlength="30" placeholder="رمز عبور (۸ تا ۳۰ کاراکتر)" oninput="updatePasswordStrength(this.value)" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition" dir="ltr" autocomplete="new-password">
+                    <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                        <div id="pwd-strength-bar" class="h-full w-0 transition-all duration-300 rounded-full"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px]">
+                        <span id="pwd-strength-label" class="text-slate-500">امنیت رمز</span>
+                        <span class="text-slate-500">حروف + عدد + علامت (@#$%!&*)</span>
+                    </div>
+                </div>
+                <input type="password" id="reg-confirm-password" required minlength="8" maxlength="30" placeholder="تکرار رمز عبور" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500 transition" dir="ltr" autocomplete="new-password">
                 <button type="submit" id="ui-reg-submit" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-sky-500/20 btn-lift">ایجاد حساب</button>
             </form>
         </div>
@@ -707,9 +726,22 @@
                 <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">کدهای تخفیف اشتراک (۵٪ تا ۱۰۰٪)</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <input type="text" id="discount-code-input" placeholder="کد (مثلاً WELCOME20)" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
-                    <input type="number" id="discount-percent-input" min="5" max="100" value="20" placeholder="درصد تخفیف" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
-                    <input type="datetime-local" id="discount-expires-input" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" title="تاریخ انقضا (اختیاری)">
+                    <input type="number" id="discount-percent-input" min="5" max="100" step="1" value="20" placeholder="درصد (۵ تا ۱۰۰)" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
+                    <input type="datetime-local" id="discount-expires-input" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" title="تاریخ انقضا">
                     <input type="text" id="discount-desc-input" placeholder="توضیح کد (مثلاً ویژه عید)" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
+                </div>
+                <div class="bg-slate-950/50 border border-slate-700/40 rounded-xl p-3 space-y-2">
+                    <div class="text-[11px] text-slate-300 font-bold">این کد برای کدام اشتراک‌ها باشد؟</div>
+                    <div class="flex flex-wrap gap-2 text-[11px]" id="discount-plans-checkboxes">
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="ALL" checked> همه پلن‌ها</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="پریمیوم"> پریمیوم</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="پرو"> پرو</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="پرو پریمیوم"> پرو پریمیوم</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="پرو مکس"> پرو مکس</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="پیشرفته"> پیشرفته</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="حرفه‌ای"> حرفه‌ای</label>
+                        <label class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-700/50 cursor-pointer"><input type="checkbox" class="discount-plan-cb" value="اولترا"> اولترا</label>
+                    </div>
                 </div>
                 <button onclick="createDiscountCode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">ایجاد کد تخفیف</button>
                 <div id="discount-codes-list" class="space-y-2 max-h-48 overflow-y-auto text-xs"></div>
@@ -1234,7 +1266,7 @@
                             <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400 text-[10px]"></i> ${currentLang === 'en' ? `${p.img} AI images daily` : `روزانه ${p.img} تصویر AI`}</li>
                         </ul>
                     </div>
-                    <button onclick="selectPlan('${displayName} (${durationText})', '${priceFormatted}')" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-md shadow-sky-500/15">${currentLang === 'en' ? 'Select & Pay' : 'انتخاب و پرداخت'}</button>
+                    <button onclick="selectPlan('${displayName} (${durationText})', ${finalPrice})" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-md shadow-sky-500/15">${currentLang === 'en' ? 'Select & Pay' : 'انتخاب و پرداخت'}</button>
                 </div>`;
             }).join('');
         }
@@ -2060,20 +2092,64 @@ Rules:
         function openPlansModal() {
             if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً ابتدا وارد شوید.', 'error'); openAuthModal(); return; }
             document.getElementById('payment-box').style.display = 'none';
+            renderAvailableDiscounts();
             document.getElementById('plans-modal').style.display = 'flex';
         }
         function closePlansModal() { document.getElementById('plans-modal').style.display = 'none'; }
 
         function selectPlan(name, price) {
-            selectedPlan = { name, price };
+            const rawPrice = typeof price === 'number' ? price : parsePriceNumber(price);
+            selectedPlan = { name, price: rawPrice, basePrice: rawPrice };
             appliedDiscount = null;
             document.getElementById('selected-plan-name').innerText = name;
-            document.getElementById('selected-plan-price').innerText = price;
+            document.getElementById('selected-plan-price').innerText = rawPrice.toLocaleString('fa-IR');
             const msg = document.getElementById('discount-applied-msg');
             if (msg) { msg.classList.add('hidden'); msg.textContent = ''; }
             const codeInput = document.getElementById('user-discount-code');
             if (codeInput) codeInput.value = '';
+            renderAvailableDiscounts();
             document.getElementById('payment-box').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('payment-box')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        function parsePriceNumber(val) {
+            if (typeof val === 'number') return val;
+            const fa = '۰۱۲۳۴۵۶۷۸۹';
+            let s = String(val || '');
+            s = s.replace(/[۰-۹]/g, d => String(fa.indexOf(d)));
+            s = s.replace(/[^\d]/g, '');
+            return parseInt(s, 10) || 0;
+        }
+
+        function renderAvailableDiscounts() {
+            const box = document.getElementById('available-discounts-list');
+            if (!box) return;
+            const list = getDiscountCodes().filter(c => {
+                if (!c.active) return false;
+                if (c.expiresAt && Date.now() > c.expiresAt) return false;
+                if (selectedPlan && !planMatchesDiscount(selectedPlan.name, c.allowedPlans)) return false;
+                return true;
+            });
+            if (!list.length) {
+                box.innerHTML = '<span class="text-slate-500">کد فعالی برای این پلن نیست — اگر کدی دارید وارد کنید</span>';
+                return;
+            }
+            box.innerHTML = list.map(c => {
+                const pct = Number(c.percent) || 0;
+                const desc = c.description ? ` — ${escapeHtml(c.description)}` : '';
+                const exp = c.expiresAt ? ` (تا ${new Date(c.expiresAt).toLocaleDateString('fa-IR')})` : '';
+                return `<button type="button" onclick="fillDiscountCode('${c.code}')" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25 transition font-mono">
+                    ${escapeHtml(c.code)} <span class="text-emerald-400 font-bold">${pct}٪</span>${desc}${exp}
+                </button>`;
+            }).join('');
+        }
+
+        function fillDiscountCode(code) {
+            const input = document.getElementById('user-discount-code');
+            if (input) input.value = code;
+            applyDiscountCode();
         }
 
         function handleReceiptSubmit(e) {
@@ -2110,6 +2186,56 @@ Rules:
             }
         }
 
+        function getPasswordStrength(pw) {
+            const len = pw.length;
+            const hasLetter = /[A-Za-z]/.test(pw);
+            const hasNumber = /[0-9]/.test(pw);
+            const hasSymbol = /[@#$%!%&*]/.test(pw);
+            const onlyAllowed = /^[A-Za-z0-9@#$%!%&*]+$/.test(pw);
+            let score = 0;
+            if (len >= 8) score++;
+            if (len >= 12) score++;
+            if (hasLetter) score++;
+            if (hasNumber) score++;
+            if (hasSymbol) score++;
+            if (len >= 16 && hasLetter && hasNumber && hasSymbol) score++;
+            let level = 'low';
+            if (score >= 5) level = 'high';
+            else if (score >= 3) level = 'medium';
+            const valid = len >= 8 && len <= 30 && hasLetter && hasNumber && hasSymbol && onlyAllowed;
+            return { level, valid, hasLetter, hasNumber, hasSymbol, onlyAllowed, len };
+        }
+
+        function updatePasswordStrength(pw) {
+            const bar = document.getElementById('pwd-strength-bar');
+            const label = document.getElementById('pwd-strength-label');
+            if (!bar || !label) return;
+            if (!pw) {
+                bar.style.width = '0%';
+                bar.className = 'h-full w-0 transition-all duration-300 rounded-full';
+                label.textContent = 'امنیت رمز';
+                label.className = 'text-slate-500';
+                return;
+            }
+            const s = getPasswordStrength(pw);
+            if (s.level === 'high') {
+                bar.style.width = '100%';
+                bar.className = 'h-full transition-all duration-300 rounded-full bg-emerald-500';
+                label.textContent = 'امنیت زیاد';
+                label.className = 'text-emerald-400 font-bold';
+            } else if (s.level === 'medium') {
+                bar.style.width = '60%';
+                bar.className = 'h-full transition-all duration-300 rounded-full bg-amber-400';
+                label.textContent = 'امنیت متوسط';
+                label.className = 'text-amber-400 font-bold';
+            } else {
+                bar.style.width = '30%';
+                bar.className = 'h-full transition-all duration-300 rounded-full bg-red-500';
+                label.textContent = 'امنیت کم';
+                label.className = 'text-red-400 font-bold';
+            }
+        }
+
         function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('reg-username').value.trim();
@@ -2117,6 +2243,19 @@ Rules:
             const password = document.getElementById('reg-password').value;
             const conf = document.getElementById('reg-confirm-password').value;
             if (password !== conf) { showToast(currentLang === 'en' ? 'Passwords do not match.' : 'رمز عبور مطابقت ندارد.', 'error'); return; }
+            const strength = getPasswordStrength(password);
+            if (password.length < 8 || password.length > 30) {
+                showToast('رمز عبور باید بین ۸ تا ۳۰ کاراکتر باشد.', 'error');
+                return;
+            }
+            if (!strength.hasLetter || !strength.hasNumber || !strength.hasSymbol) {
+                showToast('رمز باید شامل حروف انگلیسی، عدد و علامت (@#$%!&*) باشد.', 'error');
+                return;
+            }
+            if (!strength.onlyAllowed) {
+                showToast('فقط حروف انگلیسی، عدد و علامت‌های @#$%!&* مجاز است.', 'error');
+                return;
+            }
             if (!/^09[0-9]{9}$/.test(phone)) {
                 showToast(currentLang === 'en' ? 'Enter a valid Iranian mobile number (09xxxxxxxxx).' : 'شماره موبایل معتبر وارد کنید (۰۹xxxxxxxxx).', 'error');
                 return;
@@ -2188,16 +2327,36 @@ Rules:
 
         function createDiscountCode() {
             const code = (document.getElementById('discount-code-input').value || '').trim().toUpperCase();
-            let percent = parseInt(document.getElementById('discount-percent-input').value, 10);
+            // فقط عدد انگلیسی؛ درصد را محدود و صحیح نگه می‌داریم
+            let percent = Number(document.getElementById('discount-percent-input').value);
+            percent = Math.round(percent);
             const expiresRaw = document.getElementById('discount-expires-input')?.value || '';
             const description = (document.getElementById('discount-desc-input')?.value || '').trim();
             if (!code || code.length < 3) { showToast('کد معتبر وارد کنید (حداقل ۳ کاراکتر)', 'error'); return; }
-            if (isNaN(percent) || percent < 5 || percent > 100) { showToast('درصد باید بین ۵ تا ۱۰۰ باشد', 'error'); return; }
+            if (!Number.isFinite(percent) || percent < 5 || percent > 100) {
+                showToast('درصد باید عدد بین ۵ تا ۱۰۰ باشد', 'error');
+                return;
+            }
+            // پلن‌های انتخاب‌شده
+            const cbs = Array.from(document.querySelectorAll('.discount-plan-cb:checked')).map(el => el.value);
+            let allowedPlans = cbs.length ? cbs : ['ALL'];
+            if (allowedPlans.includes('ALL')) allowedPlans = ['ALL'];
+            if (!allowedPlans.length) { showToast('حداقل یک پلن را انتخاب کنید', 'error'); return; }
+
             const list = getDiscountCodes();
             if (list.find(c => c.code === code)) { showToast('این کد از قبل وجود دارد', 'error'); return; }
             const expiresAt = expiresRaw ? new Date(expiresRaw).getTime() : null;
             if (expiresAt && expiresAt <= Date.now()) { showToast('تاریخ انقضا باید در آینده باشد', 'error'); return; }
-            list.push({ code, percent, active: true, createdAt: Date.now(), expiresAt, description });
+
+            list.push({
+                code,
+                percent: percent, // عدد واقعی مثلاً 20
+                active: true,
+                createdAt: Date.now(),
+                expiresAt,
+                description,
+                allowedPlans
+            });
             saveDiscountCodes(list);
             document.getElementById('discount-code-input').value = '';
             document.getElementById('discount-percent-input').value = '20';
@@ -2218,14 +2377,17 @@ Rules:
                     ? (expired ? 'منقضی شده' : 'تا ' + new Date(c.expiresAt).toLocaleString('fa-IR'))
                     : 'بدون انقضا';
                 const desc = c.description ? `<div class="text-slate-400 text-[10px] mt-0.5">${escapeHtml(c.description)}</div>` : '';
+                const plans = (c.allowedPlans && c.allowedPlans.length)
+                    ? (c.allowedPlans.includes('ALL') ? 'همه پلن‌ها' : c.allowedPlans.join('، '))
+                    : 'همه پلن‌ها';
                 return `
                 <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl px-3 py-2 ${expired ? 'opacity-50' : ''}">
                     <div class="flex items-center justify-between gap-2">
                         <span class="font-mono text-sky-300">${escapeHtml(c.code)}</span>
-                        <span class="text-emerald-400 font-bold">${c.percent}٪</span>
+                        <span class="text-emerald-400 font-bold">${Number(c.percent)}٪</span>
                         <button onclick="deleteDiscountCode('${c.code}')" class="text-red-400 hover:text-red-300 text-xs">حذف</button>
                     </div>
-                    <div class="text-[10px] text-slate-500 mt-1">${expText}</div>
+                    <div class="text-[10px] text-slate-500 mt-1">${expText} · ${escapeHtml(plans)}</div>
                     ${desc}
                 </div>`;
             }).join('');
@@ -2239,6 +2401,12 @@ Rules:
         }
 
         let appliedDiscount = null;
+        function planMatchesDiscount(planName, allowedPlans) {
+            if (!allowedPlans || !allowedPlans.length || allowedPlans.includes('ALL')) return true;
+            const name = String(planName || '');
+            return allowedPlans.some(p => name.includes(p));
+        }
+
         function applyDiscountCode() {
             const code = (document.getElementById('user-discount-code').value || '').trim().toUpperCase();
             const found = getDiscountCodes().find(c => c.code === code && c.active);
@@ -2255,17 +2423,36 @@ Rules:
                 showToast('این کد تخفیف منقضی شده است', 'error');
                 return;
             }
-            appliedDiscount = found;
-            if (selectedPlan && selectedPlan.price) {
-                const raw = parseInt(String(selectedPlan.price).replace(/,/g, ''), 10) || 0;
-                const final = Math.round(raw * (1 - found.percent / 100));
+            if (selectedPlan && !planMatchesDiscount(selectedPlan.name, found.allowedPlans)) {
+                appliedDiscount = null;
+                if (msg) { msg.classList.add('hidden'); }
+                showToast('این کد برای این اشتراک معتبر نیست', 'error');
+                return;
+            }
+
+            // درصد را همیشه به عدد صحیح بین ۵ تا ۱۰۰ محدود کن
+            let percent = Number(found.percent);
+            if (!Number.isFinite(percent)) percent = 0;
+            percent = Math.min(100, Math.max(0, Math.round(percent)));
+
+            appliedDiscount = { ...found, percent };
+            if (selectedPlan && selectedPlan.price != null) {
+                const raw = parsePriceNumber(selectedPlan.price);
+                // قیمت اصلی را نگه می‌داریم تا چندبار اعمال خراب نشود
+                const base = selectedPlan.basePrice != null ? selectedPlan.basePrice : raw;
+                selectedPlan.basePrice = base;
+                const final = Math.round(base * (1 - percent / 100));
+                selectedPlan.finalPrice = final;
                 document.getElementById('selected-plan-price').innerText = final.toLocaleString('fa-IR');
                 if (msg) {
                     msg.classList.remove('hidden');
-                    msg.textContent = `تخفیف ${found.percent}٪ اعمال شد. مبلغ نهایی: ${final.toLocaleString('fa-IR')} تومان`;
+                    const desc = found.description ? ` — ${escapeHtml(found.description)}` : '';
+                    msg.innerHTML = `✓ کد <b dir="ltr">${escapeHtml(found.code)}</b> با <b>${percent}٪</b> تخفیف اعمال شد${desc}<br>
+                        قیمت قبل: <s>${base.toLocaleString('fa-IR')}</s> تومان<br>
+                        مبلغ نهایی: <b class="text-emerald-300">${final.toLocaleString('fa-IR')}</b> تومان`;
                 }
             }
-            showToast(`تخفیف ${found.percent}٪ اعمال شد`);
+            showToast(`تخفیف ${percent}٪ اعمال شد`);
         }
 
         function notifyUsersAboutDiscount() {
