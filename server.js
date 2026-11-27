@@ -3,15 +3,26 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-app.use(cors()); 
+app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// ==================== پروکسی Gemini ====================
+// لیست مدل‌ها به ترتیب اولویت (اگر یکی شلوغ بود می‌رود سراغ بعدی)
+const GEMINI_MODELS = [
+    'gemini-3.5-flash-lite',
+    'gemini-4-hydrogen',
+    'gemini-flash-latest',
+    'gemini-3.8-flash',
+    'gemini-3.6-flash'
+];
+
+// ==================== پروکسی Gemini با Fallback ====================
 app.post('/api/groq', async (req, res) => {
     try {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
-            return res.status(500).json({ error: { message: 'GEMINI_API_KEY is not set' } });
+            return res.status(500).json({
+                error: { message: 'GEMINI_API_KEY is not set on the server. Add it in Render Environment.' }
+            });
         }
 
         const messages = req.body.messages || [];
@@ -32,40 +43,74 @@ app.post('/api/groq', async (req, res) => {
             contents[0].parts[0].text = systemText.trim() + '\n\n' + contents[0].parts[0].text;
         }
 
-        const model = 'gemini-3.8-flash';
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const body = {
+            contents: contents.length ? contents : [{ role: 'user', parts: [{ text: 'سلام' }] }],
+            generationConfig: {
+                temperature: req.body.temperature || 0.7,
+                maxOutputTokens: req.body.max_tokens || 2048
+            }
+        };
 
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: contents.length ? contents : [{ role: 'user', parts: [{ text: 'سلام' }] }],
-                generationConfig: {
-                    maxOutputTokens: 65536
+        let lastError = null;
+
+        for (const model of GEMINI_MODELS) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                    if (text) {
+                        return res.json({
+                            choices: [{
+                                message: {
+                                    role: 'assistant',
+                                    content: text
+                                }
+                            }]
+                        });
+                    }
+                    lastError = { message: `Empty response from ${model}` };
+                    continue;
                 }
-            })
-        });
 
-        const data = await response.json();
+                const errMsg = data.error?.message || JSON.stringify(data);
+                lastError = { message: errMsg };
 
-        if (!response.ok) {
-            return res.status(response.status).json({
-                error: {
-                    message: data.error?.message || JSON.stringify(data)
+                // اگر شلوغی یا موقتی بود، مدل بعدی را امتحان کن
+                if (
+                    errMsg.includes('high demand') ||
+                    errMsg.includes('RESOURCE_EXHAUSTED') ||
+                    errMsg.includes('unavailable') ||
+                    errMsg.includes('no longer available') ||
+                    response.status === 429 ||
+                    response.status === 503
+                ) {
+                    console.log(`Model ${model} busy/unavailable, trying next...`);
+                    continue;
                 }
-            });
+
+                // خطای دیگر (کلید، کووتا و ...) → همان را برگردان
+                return res.status(response.status).json({
+                    error: { message: errMsg }
+                });
+            } catch (e) {
+                lastError = { message: e.message };
+                console.log(`Model ${model} error:`, e.message);
+            }
         }
 
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        res.json({
-            choices: [
-                {
-                    message: {
-                        role: 'assistant',
-                        content: text
-                    }
-                }
-            ]
+        // همه مدل‌ها شکست خوردند
+        return res.status(503).json({
+            error: {
+                message: lastError?.message || 'All Gemini models are currently unavailable. Please try again in a few minutes.'
+            }
         });
     } catch (error) {
         console.error('Gemini Proxy Error:', error);
@@ -91,10 +136,7 @@ app.post('/api/image', async (req, res) => {
                 },
                 body: JSON.stringify({
                     inputs: prompt,
-                    parameters: {
-                        width: 1024,
-                        height: 1024
-                    }
+                    parameters: { width: 1024, height: 1024 }
                 })
             }
         );
@@ -107,9 +149,7 @@ app.post('/api/image', async (req, res) => {
 
         const buffer = await response.arrayBuffer();
         const base64 = Buffer.from(buffer).toString('base64');
-        const dataUrl = `data:image/jpeg;base64,${base64}`;
-
-        res.json({ url: dataUrl });
+        res.json({ url: `data:image/jpeg;base64,${base64}` });
     } catch (err) {
         console.error('Image Error:', err);
         res.status(500).json({ error: err.message });
