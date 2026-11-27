@@ -705,12 +705,14 @@
             <!-- کدهای تخفیف -->
             <div class="space-y-3 border-t border-slate-700/50 pt-5">
                 <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">کدهای تخفیف اشتراک (۵٪ تا ۱۰۰٪)</h4>
-                <div class="flex flex-wrap gap-2 items-end">
-                    <input type="text" id="discount-code-input" placeholder="کد (مثلاً WELCOME20)" class="flex-1 min-w-[120px] bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
-                    <input type="number" id="discount-percent-input" min="5" max="100" value="20" placeholder="٪" class="w-20 bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
-                    <button onclick="createDiscountCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">ایجاد کد</button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <input type="text" id="discount-code-input" placeholder="کد (مثلاً WELCOME20)" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
+                    <input type="number" id="discount-percent-input" min="5" max="100" value="20" placeholder="درصد تخفیف" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
+                    <input type="datetime-local" id="discount-expires-input" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" title="تاریخ انقضا (اختیاری)">
+                    <input type="text" id="discount-desc-input" placeholder="توضیح کد (مثلاً ویژه عید)" class="bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100">
                 </div>
-                <div id="discount-codes-list" class="space-y-2 max-h-40 overflow-y-auto text-xs"></div>
+                <button onclick="createDiscountCode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold">ایجاد کد تخفیف</button>
+                <div id="discount-codes-list" class="space-y-2 max-h-48 overflow-y-auto text-xs"></div>
                 <button onclick="notifyUsersAboutDiscount()" class="w-full bg-sky-600/80 hover:bg-sky-500 text-white py-2 rounded-xl text-xs">اطلاع‌رسانی به کاربران درباره آخرین کد</button>
             </div>
 
@@ -1587,6 +1589,62 @@
             input.value = '';
             container.scrollTop = container.scrollHeight;
 
+            // نشانگر «در حال کار روی آن» با تایمر زنده
+            const loadingId = 'loading-' + Date.now();
+            const thinkStart = Date.now();
+            container.innerHTML += `
+                <div id="${loadingId}" class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-sky-500/30">ک</div>
+                    <div class="msg-ai px-4 py-3 rounded-2xl rounded-tl-md text-sm text-slate-300 space-y-1.5 min-w-[180px]">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style="animation-delay:0ms"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style="animation-delay:150ms"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-bounce" style="animation-delay:300ms"></span>
+                            </span>
+                            <span id="${loadingId}-timer" class="text-slate-400 text-xs">${currentLang === 'en' ? 'Working on it' : 'در حال کار روی آن'}...</span>
+                        </div>
+                        <div id="${loadingId}-steps" class="text-[10px] text-slate-500 space-y-0.5 pr-1 border-r-2 border-sky-500/30 mr-1">
+                            <div>${currentLang === 'en' ? 'Analyzing your request...' : 'در حال بررسی درخواست شما...'}</div>
+                        </div>
+                    </div>
+                </div>`;
+            container.scrollTop = container.scrollHeight;
+
+            // تایمر و مراحل ساختگی شفاف برای کاربر
+            const thinkStepsFa = [
+                'در حال بررسی درخواست شما...',
+                'تحلیل موضوع و نیاز...',
+                'جست‌وجوی دانش مرتبط...',
+                'ساختاردهی پاسخ...',
+                'آماده‌سازی خروجی نهایی...'
+            ];
+            const thinkStepsEn = [
+                'Analyzing your request...',
+                'Understanding the topic...',
+                'Gathering relevant knowledge...',
+                'Structuring the answer...',
+                'Preparing the final response...'
+            ];
+            const thinkSteps = currentLang === 'en' ? thinkStepsEn : thinkStepsFa;
+            let stepIdx = 0;
+            currentInterval = setInterval(() => {
+                const sec = Math.floor((Date.now() - thinkStart) / 1000);
+                const timerEl = document.getElementById(loadingId + '-timer');
+                const stepsEl = document.getElementById(loadingId + '-steps');
+                if (timerEl) {
+                    timerEl.textContent = currentLang === 'en'
+                        ? `Working on it for ${sec}s`
+                        : `در حال کار برای ${sec}ث`;
+                }
+                if (stepsEl && stepIdx < thinkSteps.length - 1 && sec > 0 && sec % 2 === 0) {
+                    stepIdx = Math.min(stepIdx + 1, thinkSteps.length - 1);
+                    stepsEl.innerHTML = thinkSteps.slice(0, stepIdx + 1).map(s =>
+                        `<div class="flex items-center gap-1.5"><span class="text-sky-400/70">·</span> ${s}</div>`
+                    ).join('');
+                }
+            }, 1000);
+
             let aiReply = "";
             let isError = false;
             currentAbortController = new AbortController();
@@ -1594,17 +1652,41 @@
             const isUserEnglish = /^[A-Za-z0-9\s.,?!@#$%^&*()_+-=;:""'']+$/.test(text.substring(0, 15));
             const systemPrompt = isUserEnglish 
                 ? `You are Kavosh AI3, a highly capable AI assistant. Reply strictly in English.
+
+For non-trivial questions (coding, analysis, how-to, explanations), structure your answer like this:
+
+**Process**
+- What you understood from the request
+- Key steps you considered
+- Sources/knowledge basis (general knowledge, common practices, standards — do not invent fake URLs)
+
+**Answer**
+- The main complete answer
+- If code is needed: full working code in a markdown code block, then a short explanation
+
 Rules:
-- Be accurate, clear and helpful.
-- When the user asks for code, ALWAYS provide complete, working code in a proper markdown code block. Never refuse or give incomplete snippets.
-- If the request is for programming help, give the full solution first, then a short explanation.
-- Stay on topic.`
-                : `شما کاوش AI3 هستید، یک دستیار هوش مصنوعی بسیار توانمند.
+- Be accurate and helpful.
+- Never give incomplete code when code is requested.
+- Keep the Process section short (3–6 bullets).
+- For very simple greetings, skip Process and answer normally.`
+                : `شما کاوش AI3 هستید، یک دستیار هوش مصنوعی بسیار توانمند. همیشه به فارسی روان پاسخ بده.
+
+برای سؤالات غیرساده (برنامه‌نویسی، تحلیل، آموزش، توضیح):
+
+**فرآیند کار**
+- چه چیزی از درخواست فهمیدی
+- چه مراحلی را در نظر گرفتی
+- مبنا/منبع دانش (دانش عمومی، استانداردها، روش‌های رایج — لینک جعلی نساز)
+
+**پاسخ**
+- جواب کامل و اصلی
+- اگر کد لازم است: کد کامل داخل بلوک مارک‌داون، بعد توضیح کوتاه
+
 قوانین:
-- همیشه به فارسی روان، دقیق و کامل پاسخ بده.
-- وقتی کاربر کد می‌خواهد، حتماً کد کامل و قابل اجرا را داخل بلوک کد بده. هرگز کد را ناقص نگذار یا طفره نرو.
-- اگر درخواست برنامه‌نویسی است، اول کد کامل را بده، بعد توضیح کوتاه.
-- موضوع را گم نکن.`;
+- دقیق و مفید باش.
+- وقتی کد می‌خواهند، کد ناقص نده.
+- بخش فرآیند کار کوتاه باشد (۳ تا ۶ مورد).
+- برای سلام و احوال‌پرسی ساده، بخش فرآیند لازم نیست.`;
 
             try {
                 const res = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
@@ -1657,16 +1739,30 @@ Rules:
             }
 
             setProcessingState(false);
+            if (currentInterval) { clearInterval(currentInterval); currentInterval = null; }
             if (!isError) incrementQuota('msg');
+
+            const thinkSeconds = Math.max(1, Math.floor((Date.now() - thinkStart) / 1000));
+
+            // حذف نشانگر در حال کار
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) loadingEl.remove();
             
             const encodedAiText = encodeURIComponent(aiReply);
             const encodedSpeechText = encodeURIComponent(aiReply);
+            const formattedBody = isError ? `<div class="text-red-300 whitespace-pre-line">${escapeHtml(aiReply)}</div>` : formatAiContent(aiReply);
+            const thinkBadge = currentLang === 'en'
+                ? `Thought for ${thinkSeconds}s`
+                : `فکر کرده برای ${thinkSeconds}ث`;
             
             container.innerHTML += `
                 <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-sky-500/30">ک</div>
-                    <div class="msg-ai p-4.5 rounded-2xl rounded-tl-md text-sm text-slate-200 whitespace-pre-line space-y-3 max-w-[85%] ${isError ? 'border border-red-500/30' : ''}">
-                        <div class="${isError ? 'text-red-300' : ''}">${escapeHtml(aiReply)}</div>
+                    <div class="msg-ai p-4.5 rounded-2xl rounded-tl-md text-sm text-slate-200 space-y-3 max-w-[85%] ${isError ? 'border border-red-500/30' : ''}">
+                        <div class="text-[10px] text-slate-500 flex items-center gap-1.5 -mt-1 mb-1">
+                            <i class="fa-regular fa-clock"></i> ${thinkBadge}
+                        </div>
+                        ${formattedBody}
                         <div class="flex items-center gap-3 pt-2.5 text-slate-400 text-xs border-t border-slate-700/50 justify-between">
                             <div class="flex items-center gap-3">
                                 <button onclick="copyText('${encodedAiText}')" class="hover:text-sky-400 flex items-center gap-1.5 transition"><i class="fa-regular fa-copy"></i> ${t.copy}</button>
@@ -1677,6 +1773,87 @@ Rules:
                 </div>`;
             container.scrollTop = container.scrollHeight;
             if (!isError) saveCurrentChatToStorage(container.innerHTML, text);
+        }
+
+        // فرمت کردن پاسخ AI با بلوک کد + دکمه کپی و دانلود
+        function formatAiContent(text) {
+            if (!text) return '';
+            const parts = [];
+            const regex = /```(\w*)\n?([\s\S]*?)```/g;
+            let lastIndex = 0;
+            let match;
+            let codeIdx = 0;
+            while ((match = regex.exec(text)) !== null) {
+                if (match.index > lastIndex) {
+                    const plain = text.slice(lastIndex, match.index);
+                    if (plain.trim()) {
+                        parts.push(`<div class="whitespace-pre-line leading-relaxed">${escapeHtml(plain)}</div>`);
+                    }
+                }
+                const lang = match[1] || 'code';
+                const code = match[2].replace(/\n$/, '');
+                const id = 'code-block-' + Date.now() + '-' + (codeIdx++);
+                const encoded = encodeURIComponent(code);
+                parts.push(`
+                    <div class="my-2 rounded-xl overflow-hidden border border-slate-600/50 bg-slate-950/80">
+                        <div class="flex items-center justify-between px-3 py-1.5 bg-slate-800/80 border-b border-slate-700/50 text-[11px]">
+                            <span class="text-slate-400 font-mono">${escapeHtml(lang)}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="copyCodeBlock('${id}')" class="text-slate-300 hover:text-sky-400 flex items-center gap-1 transition px-2 py-0.5 rounded-lg hover:bg-slate-700/50">
+                                    <i class="fa-regular fa-copy"></i> کپی
+                                </button>
+                                <button onclick="downloadCodeBlock('${id}', '${escapeHtml(lang)}')" class="text-slate-300 hover:text-emerald-400 flex items-center gap-1 transition px-2 py-0.5 rounded-lg hover:bg-slate-700/50">
+                                    <i class="fa-solid fa-download"></i> دانلود
+                                </button>
+                            </div>
+                        </div>
+                        <pre id="${id}" class="p-3 overflow-x-auto text-[12px] leading-relaxed text-slate-200 font-mono dir-ltr text-left" style="direction:ltr;text-align:left" data-raw="${encoded}"><code>${escapeHtml(code)}</code></pre>
+                    </div>
+                `);
+                lastIndex = regex.lastIndex;
+            }
+            if (lastIndex < text.length) {
+                const plain = text.slice(lastIndex);
+                if (plain.trim()) {
+                    parts.push(`<div class="whitespace-pre-line leading-relaxed">${escapeHtml(plain)}</div>`);
+                }
+            }
+            if (!parts.length) {
+                return `<div class="whitespace-pre-line leading-relaxed">${escapeHtml(text)}</div>`;
+            }
+            return parts.join('');
+        }
+
+        function copyCodeBlock(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const raw = el.getAttribute('data-raw');
+            const code = raw ? decodeURIComponent(raw) : el.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(currentLang === 'en' ? 'Code copied!' : 'کد کپی شد!');
+            });
+        }
+
+        function downloadCodeBlock(id, lang) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const raw = el.getAttribute('data-raw');
+            const code = raw ? decodeURIComponent(raw) : el.innerText;
+            const extMap = {
+                js: 'js', javascript: 'js', ts: 'ts', typescript: 'ts',
+                py: 'py', python: 'py', html: 'html', css: 'css',
+                json: 'json', java: 'java', cpp: 'cpp', c: 'c',
+                php: 'php', go: 'go', rust: 'rs', sql: 'sql',
+                sh: 'sh', bash: 'sh', txt: 'txt', code: 'txt'
+            };
+            const ext = extMap[(lang || '').toLowerCase()] || 'txt';
+            const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `kavosh-code-${Date.now()}.${ext}`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast(currentLang === 'en' ? 'Download started' : 'دانلود شروع شد');
         }
 
         function loadUserChats() {
@@ -2012,13 +2189,20 @@ Rules:
         function createDiscountCode() {
             const code = (document.getElementById('discount-code-input').value || '').trim().toUpperCase();
             let percent = parseInt(document.getElementById('discount-percent-input').value, 10);
+            const expiresRaw = document.getElementById('discount-expires-input')?.value || '';
+            const description = (document.getElementById('discount-desc-input')?.value || '').trim();
             if (!code || code.length < 3) { showToast('کد معتبر وارد کنید (حداقل ۳ کاراکتر)', 'error'); return; }
             if (isNaN(percent) || percent < 5 || percent > 100) { showToast('درصد باید بین ۵ تا ۱۰۰ باشد', 'error'); return; }
             const list = getDiscountCodes();
             if (list.find(c => c.code === code)) { showToast('این کد از قبل وجود دارد', 'error'); return; }
-            list.push({ code, percent, active: true, createdAt: Date.now() });
+            const expiresAt = expiresRaw ? new Date(expiresRaw).getTime() : null;
+            if (expiresAt && expiresAt <= Date.now()) { showToast('تاریخ انقضا باید در آینده باشد', 'error'); return; }
+            list.push({ code, percent, active: true, createdAt: Date.now(), expiresAt, description });
             saveDiscountCodes(list);
             document.getElementById('discount-code-input').value = '';
+            document.getElementById('discount-percent-input').value = '20';
+            if (document.getElementById('discount-expires-input')) document.getElementById('discount-expires-input').value = '';
+            if (document.getElementById('discount-desc-input')) document.getElementById('discount-desc-input').value = '';
             renderDiscountCodes();
             showToast(`کد ${code} با ${percent}٪ تخفیف ساخته شد`);
         }
@@ -2028,12 +2212,23 @@ Rules:
             if (!box) return;
             const list = getDiscountCodes();
             if (!list.length) { box.innerHTML = '<div class="text-slate-500 text-center py-2">هنوز کدی ساخته نشده</div>'; return; }
-            box.innerHTML = list.map(c => `
-                <div class="flex items-center justify-between bg-slate-900/60 border border-slate-700/40 rounded-xl px-3 py-2">
-                    <span class="font-mono text-sky-300">${c.code}</span>
-                    <span class="text-emerald-400 font-bold">${c.percent}٪</span>
-                    <button onclick="deleteDiscountCode('${c.code}')" class="text-red-400 hover:text-red-300 text-xs">حذف</button>
-                </div>`).join('');
+            box.innerHTML = list.map(c => {
+                const expired = c.expiresAt && Date.now() > c.expiresAt;
+                const expText = c.expiresAt
+                    ? (expired ? 'منقضی شده' : 'تا ' + new Date(c.expiresAt).toLocaleString('fa-IR'))
+                    : 'بدون انقضا';
+                const desc = c.description ? `<div class="text-slate-400 text-[10px] mt-0.5">${escapeHtml(c.description)}</div>` : '';
+                return `
+                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl px-3 py-2 ${expired ? 'opacity-50' : ''}">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="font-mono text-sky-300">${escapeHtml(c.code)}</span>
+                        <span class="text-emerald-400 font-bold">${c.percent}٪</span>
+                        <button onclick="deleteDiscountCode('${c.code}')" class="text-red-400 hover:text-red-300 text-xs">حذف</button>
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-1">${expText}</div>
+                    ${desc}
+                </div>`;
+            }).join('');
         }
 
         function deleteDiscountCode(code) {
@@ -2052,6 +2247,12 @@ Rules:
                 appliedDiscount = null;
                 if (msg) { msg.classList.add('hidden'); }
                 showToast('کد تخفیف نامعتبر است', 'error');
+                return;
+            }
+            if (found.expiresAt && Date.now() > found.expiresAt) {
+                appliedDiscount = null;
+                if (msg) { msg.classList.add('hidden'); }
+                showToast('این کد تخفیف منقضی شده است', 'error');
                 return;
             }
             appliedDiscount = found;
