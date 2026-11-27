@@ -5,19 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">کاوش AI3</title>
+    <!-- کیت توسعه ایتا (Eitaa WebApp SDK) - باید از آدرس رسمی لود شود -->
     <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+    <!-- فونت وزیرمتن -->
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif']
+                    },
                     colors: {
                         kavosh: {
-                            50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc',
-                            400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1',
-                            800: '#075985', 900: '#0c4a6e',
+                            50:  '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
                         }
                     },
                     animation: {
@@ -28,16 +40,32 @@
                         'glow': 'glow 3s ease-in-out infinite alternate',
                     },
                     keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-                        slideUp: { '0%': { opacity: '0', transform: 'translateY(16px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        pulseSoft: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.7' } },
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-8px)' } },
-                        glow: { '0%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.15)' }, '100%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.25)' } }
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(16px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.15)' },
+                            '100%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.25)' },
+                        }
                     }
                 }
             }
         };
     </script>
+    <!-- آیکون‌های FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -45,74 +73,271 @@
             background: radial-gradient(ellipse at top, #0f172a 0%, #020617 60%, #000000 100%);
             transition: background 0.5s ease, color 0.3s ease;
         }
-        body.day-mode { background: radial-gradient(ellipse at top, #e0f2fe 0%, #f0f9ff 40%, #f8fafc 100%); color: #0f172a; }
-        body.day-mode .glass, body.day-mode .glass-strong { background: rgba(255, 255, 255, 0.75) !important; border-color: rgba(148, 163, 184, 0.25) !important; }
-        body.day-mode .glass-card { background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(241,245,249,0.95)) !important; border-color: rgba(148, 163, 184, 0.2) !important; }
-        body.day-mode .msg-ai { background: linear-gradient(145deg, #ffffff, #f1f5f9) !important; border-color: rgba(148, 163, 184, 0.25) !important; color: #1e293b !important; }
-        body.day-mode .msg-user { box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2); }
-        body.day-mode header, body.day-mode aside { border-color: rgba(148, 163, 184, 0.2) !important; }
-        body.day-mode .text-slate-100, body.day-mode .text-slate-200, body.day-mode .text-slate-50 { color: #0f172a !important; }
-        body.day-mode .text-slate-300 { color: #334155 !important; }
-        body.day-mode .text-slate-400, body.day-mode .text-slate-500 { color: #64748b !important; }
-        body.day-mode #user-input { color: #0f172a !important; }
-        body.day-mode #user-input::placeholder { color: #94a3b8 !important; }
-        body.day-mode .orb { opacity: 0.15 !important; }
-        body.day-mode .bg-slate-800\/60, body.day-mode .bg-slate-800\/80, body.day-mode .bg-slate-900\/60, body.day-mode .bg-slate-900\/80 { background-color: rgba(241, 245, 249, 0.9) !important; }
-        body.day-mode .border-slate-700\/40, body.day-mode .border-slate-700\/50, body.day-mode .border-slate-700\/60 { border-color: rgba(203, 213, 225, 0.6) !important; }
-        body.day-mode .input-glow:focus-within { border-color: rgba(14, 165, 233, 0.5) !important; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08); }
-        body.day-mode .gradient-text { background: linear-gradient(90deg, #0284c7, #7c3aed, #db2777); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* ========== Day Mode (Light Theme) ========== */
+        body.day-mode {
+            background: radial-gradient(ellipse at top, #e0f2fe 0%, #f0f9ff 40%, #f8fafc 100%);
+            color: #0f172a;
+        }
+        body.day-mode .glass,
+        body.day-mode .glass-strong {
+            background: rgba(255, 255, 255, 0.75) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+        }
+        body.day-mode .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(241,245,249,0.95)) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+        }
+        body.day-mode .msg-ai {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9) !important;
+            border-color: rgba(148, 163, 184, 0.25) !important;
+            color: #1e293b !important;
+        }
+        body.day-mode .msg-user {
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+        }
+        body.day-mode header,
+        body.day-mode aside {
+            border-color: rgba(148, 163, 184, 0.2) !important;
+        }
+        body.day-mode .text-slate-100,
+        body.day-mode .text-slate-200,
+        body.day-mode .text-slate-50 {
+            color: #0f172a !important;
+        }
+        body.day-mode .text-slate-300 {
+            color: #334155 !important;
+        }
+        body.day-mode .text-slate-400,
+        body.day-mode .text-slate-500 {
+            color: #64748b !important;
+        }
+        body.day-mode #user-input {
+            color: #0f172a !important;
+        }
+        body.day-mode #user-input::placeholder {
+            color: #94a3b8 !important;
+        }
+        body.day-mode .orb {
+            opacity: 0.15 !important;
+        }
+        body.day-mode .bg-slate-800\/60,
+        body.day-mode .bg-slate-800\/80,
+        body.day-mode .bg-slate-900\/60,
+        body.day-mode .bg-slate-900\/80 {
+            background-color: rgba(241, 245, 249, 0.9) !important;
+        }
+        body.day-mode .border-slate-700\/40,
+        body.day-mode .border-slate-700\/50,
+        body.day-mode .border-slate-700\/60 {
+            border-color: rgba(203, 213, 225, 0.6) !important;
+        }
+        body.day-mode .input-glow:focus-within {
+            border-color: rgba(14, 165, 233, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12), 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        body.day-mode .gradient-text {
+            background: linear-gradient(90deg, #0284c7, #7c3aed, #db2777);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #0ea5e9, #a855f7); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #0ea5e9, #a855f7);
+            border-radius: 10px;
+        }
         ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #38bdf8, #c084fc); }
-        .glass { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.08); }
-        .glass-strong { background: rgba(15, 23, 42, 0.82); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(148, 163, 184, 0.12); }
-        .glass-card { background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85)); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.1); }
-        .glow-border { box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4); }
-        .glow-border-purple { box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4); }
-        .msg-user { background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%); box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25); }
-        .msg-ai { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3); }
-        .input-glow:focus-within { border-color: rgba(14, 165, 233, 0.5) !important; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15), 0 8px 30px rgba(0, 0, 0, 0.3); }
-        .gradient-text { background: linear-gradient(90deg, #38bdf8, #a78bfa, #f472b6); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: shine 4s linear infinite; }
-        @keyframes shine { to { background-position: 200% center; } }
-        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; pointer-events: none; z-index: 0; }
-        .btn-lift { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3); }
-        .plan-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .plan-card:hover { transform: translateY(-6px); border-color: rgba(14, 165, 233, 0.4) !important; box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2); }
-        .modal-enter { animation: fadeIn 0.3s ease-out, slideUp 0.35s ease-out; }
-        .avatar-ring { background: linear-gradient(135deg, #0ea5e9, #a855f7, #ec4899); padding: 2px; }
-        .avatar-inner { background: #0f172a; }
+
+        /* Glass morphism helpers */
+        .glass {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(148, 163, 184, 0.08);
+        }
+        .glass-strong {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        /* Soft glow borders */
+        .glow-border {
+            box-shadow: 0 0 0 1px rgba(14, 165, 233, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .glow-border-purple {
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Message bubbles */
+        .msg-user {
+            background: linear-gradient(135deg, #0284c7 0%, #7c3aed 100%);
+            box-shadow: 0 4px 20px rgba(14, 165, 233, 0.25);
+        }
+        .msg-ai {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Input focus ring */
+        .input-glow:focus-within {
+            border-color: rgba(14, 165, 233, 0.5) !important;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15), 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animated gradient text */
+        .gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #a78bfa, #f472b6);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Floating orbs background */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Button hover lift */
+        .btn-lift {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+        }
+
+        /* Plan card hover */
+        .plan-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .plan-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(14, 165, 233, 0.4) !important;
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.2);
+        }
+
+        /* Smooth modal appearance */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out, slideUp 0.35s ease-out;
+        }
+
+        /* Avatar ring */
+        .avatar-ring {
+            background: linear-gradient(135deg, #0ea5e9, #a855f7, #ec4899);
+            padding: 2px;
+        }
+        .avatar-inner {
+            background: #0f172a;
+        }
+
+        /* ========== Mobile Responsive ========== */
         @media (max-width: 767px) {
-            body { font-size: 16px; }
-            #sidebar { position: fixed !important; top: 0; bottom: 0; right: 0; width: 85% !important; max-width: 320px; z-index: 50; display: flex !important; transform: translateX(110%); transition: transform 0.3s ease; box-shadow: -8px 0 30px rgba(0,0,0,0.5); flex: none; margin: 0; }
-            #sidebar.mobile-open { transform: translateX(0); }
-            #mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 40; }
-            #mobile-overlay.active { display: block; }
-            main { width: 100% !important; min-width: 0; flex: 1 1 100%; }
-            #ui-welcome-title { font-size: 1.55rem !important; line-height: 1.4; }
-            #user-input { font-size: 16px !important; }
-            header { padding-left: 0.75rem; padding-right: 0.75rem; }
+            body {
+                font-size: 16px; /* prevent iOS zoom on inputs */
+            }
+            #sidebar {
+                position: fixed !important;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                width: 85% !important;
+                max-width: 320px;
+                z-index: 50;
+                display: flex !important;
+                transform: translateX(110%);
+                transition: transform 0.3s ease;
+                box-shadow: -8px 0 30px rgba(0,0,0,0.5);
+                /* Take no space in the flex layout on mobile */
+                flex: none;
+                margin: 0;
+            }
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            /* Overlay when sidebar is open */
+            #mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.55);
+                z-index: 40;
+            }
+            #mobile-overlay.active {
+                display: block;
+            }
+            main {
+                width: 100% !important;
+                min-width: 0;
+                flex: 1 1 100%;
+            }
+            /* Make welcome text a bit smaller on very small screens */
+            #ui-welcome-title {
+                font-size: 1.55rem !important;
+                line-height: 1.4;
+            }
+            /* Input area more comfortable + prevent zoom */
+            #user-input {
+                font-size: 16px !important;
+            }
+            header {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
         }
         @media (min-width: 768px) {
-            #sidebar { position: relative !important; transform: none !important; }
-            #sidebar.hidden { display: none !important; }
-            #mobile-overlay { display: none !important; }
+            #sidebar {
+                position: relative !important;
+                transform: none !important;
+            }
+            #sidebar.hidden {
+                display: none !important;
+            }
+            #mobile-overlay {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-screen flex overflow-hidden relative">
 
+    <!-- Background Orbs -->
     <div class="orb w-96 h-96 bg-sky-600 top-[-10%] right-[-5%]"></div>
     <div class="orb w-80 h-80 bg-purple-600 bottom-[-15%] left-[-8%]"></div>
     <div class="orb w-64 h-64 bg-fuchsia-600 top-[40%] left-[30%] opacity-20"></div>
 
+    <!-- Toast Container -->
     <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2.5 pointer-events-none"></div>
 
+    <!-- Mobile Overlay -->
     <div id="mobile-overlay" onclick="closeSidebarMobile()"></div>
 
+    <!-- Sidebar -->
     <aside id="sidebar" class="w-72 glass-strong border-l border-slate-700/40 flex flex-col justify-between transition-all duration-300 z-20 relative hidden md:flex">
         <div class="flex-1 flex flex-col min-h-0">
+            <!-- New Chat Button -->
             <div class="p-4">
                 <button onclick="newChat()" class="w-full bg-gradient-to-r from-sky-600 to-violet-600 hover:from-sky-500 hover:to-violet-500 text-white py-3 px-4 rounded-2xl flex items-center justify-between text-sm transition-all duration-300 font-medium shadow-lg shadow-sky-500/20 btn-lift">
                     <span class="flex items-center gap-2.5"><i class="fa-solid fa-plus text-sky-200"></i> <span id="ui-new-chat">گفتگوی جدید</span></span>
@@ -120,6 +345,7 @@
                 </button>
             </div>
             
+            <!-- Subscription & Quotas -->
             <div class="px-4 py-3 mx-3 my-1 glass rounded-2xl space-y-3 border border-slate-700/50">
                 <div class="flex items-center justify-between text-xs">
                     <span class="text-slate-400 font-medium" id="ui-sub-level">سطح اشتراک:</span>
@@ -153,6 +379,7 @@
                     </button>
                 </div>
 
+                <!-- Aparat & YouTube -->
                 <div class="space-y-2 pt-1">
                     <div class="grid grid-cols-2 gap-2">
                         <a href="https://www.aparat.com" target="_blank" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5 font-medium">
@@ -168,6 +395,7 @@
                 </div>
             </div>
 
+            <!-- Recent Chats -->
             <div class="px-4 py-3 flex items-center justify-between text-xs font-semibold text-slate-500 tracking-wider">
                 <span id="ui-recent-chats">گفتگوهای اخیر</span>
                 <button onclick="confirmClearAllChats()" class="text-slate-500 hover:text-red-400 transition flex items-center gap-1 normal-case text-xs" title="پاک کردن تمام گفتگوها">
@@ -180,6 +408,7 @@
             </div>
         </div>
 
+        <!-- User Profile Footer -->
         <div class="p-4 border-t border-slate-700/40 flex items-center justify-between shrink-0 bg-slate-900/40">
             <div class="flex items-center gap-3 cursor-pointer group" onclick="openProfileModal()" title="تنظیمات">
                 <div class="avatar-ring rounded-full">
@@ -197,7 +426,9 @@
         </div>
     </aside>
 
+    <!-- Main Chat Area -->
     <main class="flex-1 flex flex-col h-full relative z-10">
+        <!-- Header -->
         <header class="h-14 glass border-b border-slate-700/40 flex items-center justify-between px-3 sm:px-5 z-10">
             <div class="flex items-center gap-2 sm:gap-3">
                 <button onclick="goBack()" class="text-slate-400 hover:text-sky-300 p-2 rounded-xl hover:bg-slate-800/60 transition" title="بازگشت">
@@ -223,11 +454,13 @@
             </div>
         </header>
 
+        <!-- Warning Banner -->
         <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/5 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center text-xs text-amber-300/90 font-medium tracking-wide flex items-center justify-center gap-2.5 shrink-0">
             <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
             <span id="ui-warning-text">کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.</span>
         </div>
 
+        <!-- Chat Container -->
         <div id="chat-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
             <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-8 animate-fade-in px-4">
                 <div class="space-y-4">
@@ -239,6 +472,7 @@
                     </p>
                 </div>
 
+                <!-- Quick Actions (Grok-style) -->
                 <div class="flex flex-wrap gap-2.5 justify-center pt-1" id="quick-actions">
                     <button onclick="setModeAndFocus('text')" class="quick-action-btn px-4 py-2.5 rounded-full bg-slate-800/70 hover:bg-slate-700/80 border border-slate-700/50 text-sm text-slate-200 transition flex items-center gap-2">
                         <i class="fa-solid fa-message text-sky-400"></i> چت هوشمند
@@ -256,6 +490,7 @@
             </div>
         </div>
 
+        <!-- Input Box (Grok-style large centered) -->
         <div class="p-4 md:p-6 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
             <div class="max-w-3xl mx-auto space-y-3">
                 <div class="relative glass-strong border border-slate-700/50 rounded-full shadow-2xl input-glow transition-all duration-300 flex items-center px-2 py-1.5 gap-1">
@@ -279,6 +514,7 @@
                     </div>
                 </div>
 
+                <!-- Quick suggestion chips under input (visible mainly on welcome) -->
                 <div id="input-suggestions" class="flex flex-wrap gap-2 justify-center text-xs">
                     <button onclick="fillAndSend('یک داستان کوتاه بنویس')" class="px-3 py-1.5 rounded-full bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 transition border border-slate-700/40">داستان کوتاه بنویس</button>
                     <button onclick="fillAndSend('یک تصویر از غروب خورشید در کوهستان بساز')" class="px-3 py-1.5 rounded-full bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 transition border border-slate-700/40">تولید تصویر غروب</button>
@@ -292,6 +528,7 @@
         </div>
     </main>
 
+    <!-- Welcome Modal (first registration) -->
     <div id="welcome-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[55] flex items-center justify-center p-4">
         <div class="glass-strong border border-sky-500/30 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-5 text-center modal-enter">
             <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-3xl text-white shadow-lg shadow-sky-500/30">
@@ -307,6 +544,7 @@
         </div>
     </div>
 
+    <!-- Confirm Modal -->
     <div id="confirm-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-sm w-full p-7 shadow-2xl relative space-y-5 text-center modal-enter">
             <div class="w-14 h-14 rounded-2xl bg-red-500/15 text-red-400 flex items-center justify-center mx-auto text-2xl border border-red-500/20">
@@ -321,6 +559,7 @@
         </div>
     </div>
 
+    <!-- Profile Modal -->
     <div id="profile-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-6 modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
@@ -363,6 +602,7 @@
         </div>
     </div>
 
+    <!-- Ticket Modal -->
     <div id="ticket-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-xl w-full p-7 shadow-2xl relative space-y-5 max-h-[90vh] overflow-y-auto modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
@@ -386,6 +626,7 @@
         </div>
     </div>
 
+    <!-- Plans Modal -->
     <div id="plans-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-5xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
@@ -416,6 +657,7 @@
         </div>
     </div>
 
+    <!-- Auth Modal -->
     <div id="auth-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-md w-full p-7 shadow-2xl relative space-y-5 modal-enter">
             <div class="flex items-center justify-between">
@@ -440,6 +682,7 @@
         </div>
     </div>
 
+    <!-- Admin Modal -->
     <div id="admin-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-amber-500/20 rounded-3xl max-w-4xl w-full p-7 shadow-2xl relative space-y-6 max-h-[90vh] overflow-y-auto modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
@@ -459,6 +702,7 @@
                 </div>
             </div>
 
+            <!-- کدهای تخفیف -->
             <div class="space-y-3 border-t border-slate-700/50 pt-5">
                 <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">کدهای تخفیف اشتراک (۵٪ تا ۱۰۰٪)</h4>
                 <div class="flex flex-wrap gap-2 items-end">
@@ -470,6 +714,7 @@
                 <button onclick="notifyUsersAboutDiscount()" class="w-full bg-sky-600/80 hover:bg-sky-500 text-white py-2 rounded-xl text-xs">اطلاع‌رسانی به کاربران درباره آخرین کد</button>
             </div>
 
+            <!-- تنظیمات ایتا -->
             <div class="space-y-3 border-t border-slate-700/50 pt-5">
                 <h4 class="text-xs font-bold text-violet-400 uppercase tracking-wider">کیت توسعه ایتا (Eitaa Bot)</h4>
                 <input type="text" id="eitaa-token-input" placeholder="توکن ربات ایتا" class="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl px-3 py-2 text-xs text-slate-100" dir="ltr">
@@ -492,6 +737,7 @@
         </div>
     </div>
 
+    <!-- Admin Chats Modal -->
     <div id="admin-chats-modal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="glass-strong border border-slate-700/50 rounded-3xl max-w-2xl w-full p-7 shadow-2xl relative space-y-4 max-h-[85vh] overflow-y-auto modal-enter">
             <div class="flex items-center justify-between border-b border-slate-700/50 pb-4">
@@ -516,103 +762,179 @@
         let recognition = null;
         let isRecording = false;
         let pendingConfirmAction = null;
-        let appliedDiscount = null;
 
         let currentAbortController = null;
         let currentTimer = null;
         let currentInterval = null;
-        let lastImageRequestTime = 0;
+        let lastImageRequestTime = 0; // برای مدیریت محدودیت 45 ثانیه‌ای Pollinations
 
+        // قیمت‌های پایه ماهانه برای هر پلن
         const basePrices = { 
-            'پریمیوم': 25000, 'پرو': 50000, 'پرو پریمیوم': 75000, 'پرو مکس': 100000,
-            'پیشرفته': 125000, 'حرفه‌ای': 150000, 'اولترا': 175000
+            'پریمیوم': 25000, 
+            'پرو': 50000, 
+            'پرو پریمیوم': 75000, 
+            'پرو مکس': 100000,
+            'پیشرفته': 125000,
+            'حرفه‌ای': 150000,
+            'اولترا': 175000
         };
         const DEFAULT_MSG_QUOTA = 25;
         const DEFAULT_IMG_QUOTA = 2;
 
         const translations = {
             fa: {
-                brandName: "کاوش AI3", pageTitle: "کاوش AI3",
+                brandName: "کاوش AI3",
+                pageTitle: "کاوش AI3",
                 warningText: "کاوش AI3 یک مدل هوش مصنوعی است و ممکن است اشتباه کند، ازجمله درباره افراد.",
                 copyright: "هرگونه کپی از این هوش مصنوعی پیگرد قانونی دارد",
-                newChat: "گفتگوی جدید", subLevel: "سطح اشتراک:", free: "رایگان",
-                dailyMsg: "پیام روزانه:", dailyImg: "تصویر روزانه:",
-                needLogin: "نیاز به ورود", unlimited: "نامحدود",
-                upgrade: "ارتقای اشتراک", support: "پشتیبانی",
-                aparat: "کاوش آپارات", youtube: "کاوش یوتیوب",
+                newChat: "گفتگوی جدید",
+                subLevel: "سطح اشتراک:",
+                free: "رایگان",
+                dailyMsg: "پیام روزانه:",
+                dailyImg: "تصویر روزانه:",
+                needLogin: "نیاز به ورود",
+                unlimited: "نامحدود",
+                upgrade: "ارتقای اشتراک",
+                support: "پشتیبانی",
+                aparat: "کاوش آپارات",
+                youtube: "کاوش یوتیوب",
                 ytNote: "نکته: جهت استفاده از کاوش یوتیوب باید فیلتر شکن روشن باشد",
-                recentChats: "گفتگوهای اخیر", clearAll: "پاکسازی همه",
-                noChats: "هنوز گفتگویی ثبت نشده است.", guest: "کاربر مهمان",
+                recentChats: "گفتگوهای اخیر",
+                clearAll: "پاکسازی همه",
+                noChats: "هنوز گفتگویی ثبت نشده است.",
+                guest: "کاربر مهمان",
                 welcomeTitle: "سلام! من کاوش AI3 هستم",
                 welcomeDesc: "می‌توانید چت متنی (فارسی/انگلیسی) یا ساخت تصویر انجام دهید. آماده‌ام تا کمکتان کنم.",
                 inputPlaceholder: "پیام خود را بنویسید...",
                 imagePlaceholder: "توصیف تصویری که می‌خواهید ساخته شود...",
                 imgLoadingText: "⏳ در حال ساخت تصویر... (ممکن است ۴۵ ثانیه الی ۱ دقیقه طول بکشه)",
-                imagePrefix: "تصویر: ", copy: "کپی", edit: "ویرایش",
-                voicePlay: "پخش صوتی", authBtn: "ورود / ثبت‌نام",
-                modeText: "متن", modeImage: "تصویر",
-                settingsTitle: "تنظیمات حساب و زبان", labelLang: "زبان برنامه (Language)",
-                labelUsername: "تغییر نام کاربری", labelPass: "تغییر رمز عبور",
-                labelCurr: "رمز عبور فعلی", labelNew: "رمز عبور جدید",
-                labelConf: "تکرار رمز عبور جدید", saveBtn: "ذخیره تغییرات",
-                loginTab: "ورود", registerTab: "ثبت‌نام",
-                loginPlaceholder: "نام کاربری", passPlaceholder: "رمز عبور",
-                regUserPlaceholder: "نام کاربری جدید", regPassPlaceholder: "رمز عبور",
-                regConfPlaceholder: "تکرار رمز عبور", loginSubmit: "ورود به حساب",
-                regSubmit: "ایجاد حساب", ticketTitle: "پشتیبانی و تیکت‌ها",
-                ticketSubjLabel: "موضوع تیکت", ticketMsgLabel: "متن پیام",
-                ticketSend: "ارسال تیکت", plansTitle: "خرید اشتراک ویژه",
-                payHeader: "پرداخت اشتراک:", cardLabel: "شماره کارت:",
-                receiptBtn: "ارسال رسید فاکتور", adminTitle: "پنل مدیریت",
+                imagePrefix: "تصویر: ",
+                copy: "کپی",
+                edit: "ویرایش",
+                voicePlay: "پخش صوتی",
+                authBtn: "ورود / ثبت‌نام",
+                modeText: "متن",
+                modeImage: "تصویر",
+                settingsTitle: "تنظیمات حساب و زبان",
+                labelLang: "زبان برنامه (Language)",
+                labelUsername: "تغییر نام کاربری",
+                labelPass: "تغییر رمز عبور",
+                labelCurr: "رمز عبور فعلی",
+                labelNew: "رمز عبور جدید",
+                labelConf: "تکرار رمز عبور جدید",
+                saveBtn: "ذخیره تغییرات",
+                loginTab: "ورود",
+                registerTab: "ثبت‌نام",
+                loginPlaceholder: "نام کاربری",
+                passPlaceholder: "رمز عبور",
+                regUserPlaceholder: "نام کاربری جدید",
+                regPassPlaceholder: "رمز عبور",
+                regConfPlaceholder: "تکرار رمز عبور",
+                loginSubmit: "ورود به حساب",
+                regSubmit: "ایجاد حساب",
+                ticketTitle: "پشتیبانی و تیکت‌ها",
+                ticketSubjLabel: "موضوع تیکت",
+                ticketMsgLabel: "متن پیام",
+                ticketSend: "ارسال تیکت",
+                plansTitle: "خرید اشتراک ویژه",
+                payHeader: "پرداخت اشتراک:",
+                cardLabel: "شماره کارت:",
+                receiptBtn: "ارسال رسید فاکتور",
+                adminTitle: "پنل مدیریت",
                 adminUsersTitle: "مدیریت کاربران و مسدودسازی",
                 adminRecTitle: "فاکتورها و رسیدهای واریزی در انتظار تأیید",
                 adminTktTitle: "مدیریت تیکت‌های پشتیبانی کاربران",
                 noRec: "هیچ فاکتوری در انتظار تأیید نیست.",
                 noTkt: "هیچ تیکتی ثبت نشده است.",
-                adminLogout: "خروج از حساب", adminClose: "بستن پنل",
+                adminLogout: "خروج از حساب",
+                adminClose: "بستن پنل",
                 discountText: "🎉 ۲۵,۰۰۰ تومان تخفیف اعمال شد!",
-                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max', 'پیشرفته': 'Advanced', 'حرفه‌ای': 'Professional', 'اولترا': 'Ultra' }
+                plansMap: { 
+                    'پریمیوم': 'Premium', 
+                    'پرو': 'Pro', 
+                    'پرو پریمیوم': 'Pro Premium', 
+                    'پرو مکس': 'Pro Max',
+                    'پیشرفته': 'Advanced',
+                    'حرفه‌ای': 'Professional',
+                    'اولترا': 'Ultra'
+                }
             },
             en: {
-                brandName: "Kavosh AI3", pageTitle: "Kavosh AI3",
+                brandName: "Kavosh AI3",
+                pageTitle: "Kavosh AI3",
                 warningText: "Kavosh AI3 is an AI model and may make mistakes, including about people.",
                 copyright: "Any copying of this artificial intelligence is subject to legal prosecution",
-                newChat: "New Chat", subLevel: "Subscription:", free: "Free",
-                dailyMsg: "Daily Messages:", dailyImg: "Daily Images:",
-                needLogin: "Login Required", unlimited: "Unlimited",
-                upgrade: "Upgrade Plan", support: "Support",
-                aparat: "Kavosh Aparat", youtube: "Kavosh YouTube",
+                newChat: "New Chat",
+                subLevel: "Subscription:",
+                free: "Free",
+                dailyMsg: "Daily Messages:",
+                dailyImg: "Daily Images:",
+                needLogin: "Login Required",
+                unlimited: "Unlimited",
+                upgrade: "Upgrade Plan",
+                support: "Support",
+                aparat: "Kavosh Aparat",
+                youtube: "Kavosh YouTube",
                 ytNote: "Note: VPN must be turned on to use Kavosh YouTube",
-                recentChats: "Recent Chats", clearAll: "Clear All",
-                noChats: "No chats recorded yet.", guest: "Guest User",
+                recentChats: "Recent Chats",
+                clearAll: "Clear All",
+                noChats: "No chats recorded yet.",
+                guest: "Guest User",
                 welcomeTitle: "Hello! I am Kavosh AI3",
                 welcomeDesc: "You can chat with text (Persian/English) or generate images. Ready to help you.",
                 inputPlaceholder: "Type your message...",
                 imagePlaceholder: "Describe the image you want to generate...",
                 imgLoadingText: "⏳ Generating image... (May take 45 seconds to 1 minute)",
-                imagePrefix: "Image: ", copy: "Copy", edit: "Edit",
-                voicePlay: "Voice Play", authBtn: "Login / Register",
-                modeText: "Text", modeImage: "Image",
-                settingsTitle: "Account & Language Settings", labelLang: "Application Language",
-                labelUsername: "Change Username", labelPass: "Change Password",
-                labelCurr: "Current Password", labelNew: "New Password",
-                labelConf: "Confirm New Password", saveBtn: "Save Changes",
-                loginTab: "Login", registerTab: "Register",
-                loginPlaceholder: "Username", passPlaceholder: "Password",
-                regUserPlaceholder: "New Username", regPassPlaceholder: "Password",
-                regConfPlaceholder: "Confirm Password", loginSubmit: "Login to Account",
-                regSubmit: "Create Account", ticketTitle: "Support & Tickets",
-                ticketSubjLabel: "Ticket Subject", ticketMsgLabel: "Message",
-                ticketSend: "Send Ticket", plansTitle: "Buy Premium Subscription",
-                payHeader: "Subscription Payment:", cardLabel: "Card Number:",
-                receiptBtn: "Submit Payment Receipt", adminTitle: "Admin Panel",
+                imagePrefix: "Image: ",
+                copy: "Copy",
+                edit: "Edit",
+                voicePlay: "Voice Play",
+                authBtn: "Login / Register",
+                modeText: "Text",
+                modeImage: "Image",
+                settingsTitle: "Account & Language Settings",
+                labelLang: "Application Language",
+                labelUsername: "Change Username",
+                labelPass: "Change Password",
+                labelCurr: "Current Password",
+                labelNew: "New Password",
+                labelConf: "Confirm New Password",
+                saveBtn: "Save Changes",
+                loginTab: "Login",
+                registerTab: "Register",
+                loginPlaceholder: "Username",
+                passPlaceholder: "Password",
+                regUserPlaceholder: "New Username",
+                regPassPlaceholder: "Password",
+                regConfPlaceholder: "Confirm Password",
+                loginSubmit: "Login to Account",
+                regSubmit: "Create Account",
+                ticketTitle: "Support & Tickets",
+                ticketSubjLabel: "Ticket Subject",
+                ticketMsgLabel: "Message",
+                ticketSend: "Send Ticket",
+                plansTitle: "Buy Premium Subscription",
+                payHeader: "Subscription Payment:",
+                cardLabel: "Card Number:",
+                receiptBtn: "Submit Payment Receipt",
+                adminTitle: "Admin Panel",
                 adminUsersTitle: "User Management & Banning",
                 adminRecTitle: "Pending Receipts & Invoices",
                 adminTktTitle: "User Support Tickets",
-                noRec: "No pending receipts found.", noTkt: "No tickets found.",
-                adminLogout: "Logout", adminClose: "Close Panel",
+                noRec: "No pending receipts found.",
+                noTkt: "No tickets found.",
+                adminLogout: "Logout",
+                adminClose: "Close Panel",
                 discountText: "🎉 25,000 Tomans discount applied!",
-                plansMap: { 'پریمیوم': 'Premium', 'پرو': 'Pro', 'پرو پریمیوم': 'Pro Premium', 'پرو مکس': 'Pro Max', 'پیشرفته': 'Advanced', 'حرفه‌ای': 'Professional', 'اولترا': 'Ultra' }
+                plansMap: { 
+                    'پریمیوم': 'Premium', 
+                    'پرو': 'Pro', 
+                    'پرو پریمیوم': 'Pro Premium', 
+                    'پرو مکس': 'Pro Max',
+                    'پیشرفته': 'Advanced',
+                    'حرفه‌ای': 'Professional',
+                    'اولترا': 'Ultra'
+                }
             }
         };
 
@@ -638,33 +960,45 @@
             currentLang = localStorage.getItem('kavosh_lang') || 'fa';
         } catch (e) {}
 
+        // ========== Theme (Day / Night) ==========
         function getAutoTheme() {
+            // 6:00 تا 17:59 = روز ، بقیه = شب
             const hour = new Date().getHours();
             return (hour >= 6 && hour < 18) ? 'day' : 'night';
         }
 
         function applyTheme(theme) {
             const body = document.body;
-            if (theme === 'day') body.classList.add('day-mode');
-            else body.classList.remove('day-mode');
+            if (theme === 'day') {
+                body.classList.add('day-mode');
+            } else {
+                body.classList.remove('day-mode');
+            }
             const themeIcon = document.getElementById('theme-icon');
-            if (themeIcon) themeIcon.className = theme === 'day' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            if (themeIcon) {
+                themeIcon.className = theme === 'day' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+            }
         }
 
         function toggleTheme() {
             const current = document.body.classList.contains('day-mode') ? 'day' : 'night';
             const next = current === 'day' ? 'night' : 'day';
-            localStorage.setItem('kavosh_theme', next);
+            localStorage.setItem('kavosh_theme', next); // ذخیره انتخاب دستی
             applyTheme(next);
         }
 
         function initTheme() {
             const saved = localStorage.getItem('kavosh_theme');
+            // اگر کاربر دستی انتخاب کرده، همون رو استفاده کن، وگرنه بر اساس ساعت
             const theme = (saved === 'day' || saved === 'night') ? saved : getAutoTheme();
             applyTheme(theme);
+
+            // هر دقیقه چک کن (فقط اگر کاربر دستی انتخاب نکرده باشد)
             setInterval(() => {
                 const savedNow = localStorage.getItem('kavosh_theme');
-                if (savedNow !== 'day' && savedNow !== 'night') applyTheme(getAutoTheme());
+                if (savedNow !== 'day' && savedNow !== 'night') {
+                    applyTheme(getAutoTheme());
+                }
             }, 60000);
         }
 
@@ -693,10 +1027,20 @@
         function initEitaaWebApp() {
             try {
                 const wa = window.Eitaa && window.Eitaa.WebApp;
-                if (!wa) return;
+                if (!wa) {
+                    console.log('Eitaa SDK not active (only works inside Eitaa app)');
+                    return;
+                }
+                // آماده‌سازی برنامک داخل ایتا
                 if (typeof wa.ready === 'function') wa.ready();
                 if (typeof wa.expand === 'function') wa.expand();
-                if (wa.colorScheme === 'light') document.body.classList.add('day-mode');
+
+                // هماهنگ‌سازی تم
+                if (wa.colorScheme === 'light' || (wa.themeParams && wa.themeParams.bg_color === '#ffffff')) {
+                    document.body.classList.add('day-mode');
+                }
+
+                // دکمه بازگشت ایتا
                 if (wa.BackButton) {
                     wa.BackButton.show();
                     wa.BackButton.onClick(() => {
@@ -704,7 +1048,14 @@
                         else if (typeof wa.close === 'function') wa.close();
                     });
                 }
-            } catch (e) {}
+
+                // اگر کاربر از ایتا وارد شده، اطلاعاتش را لاگ کن
+                if (wa.initDataUnsafe && wa.initDataUnsafe.user) {
+                    console.log('Eitaa user:', wa.initDataUnsafe.user);
+                }
+            } catch (e) {
+                console.warn('Eitaa init error:', e);
+            }
         }
 
         function applyLanguage(lang) {
@@ -712,8 +1063,14 @@
             localStorage.setItem('kavosh_lang', lang);
             const root = document.getElementById('html-root');
             const t = translations[lang];
-            if (lang === 'en') { root.setAttribute('dir', 'ltr'); root.setAttribute('lang', 'en'); }
-            else { root.setAttribute('dir', 'rtl'); root.setAttribute('lang', 'fa'); }
+
+            if (lang === 'en') {
+                root.setAttribute('dir', 'ltr');
+                root.setAttribute('lang', 'en');
+            } else {
+                root.setAttribute('dir', 'rtl');
+                root.setAttribute('lang', 'fa');
+            }
 
             document.getElementById('page-title').innerText = t.pageTitle;
             document.getElementById('ui-brand-name').innerText = t.brandName;
@@ -735,6 +1092,7 @@
             document.getElementById('user-display-name').innerText = currentUser ? currentUser.username : t.guest;
             document.getElementById('user-status-text').innerText = currentUser ? (currentUser.isAdmin ? 'Admin' : 'User') : t.needLogin;
             document.getElementById('language-select').value = lang;
+
             document.getElementById('ui-settings-title').innerText = t.settingsTitle;
             document.getElementById('ui-label-lang').innerText = t.labelLang;
             document.getElementById('ui-label-username').innerText = t.labelUsername;
@@ -743,23 +1101,28 @@
             document.getElementById('ui-label-new').innerText = t.labelNew;
             document.getElementById('ui-label-conf').innerText = t.labelConf;
             document.getElementById('ui-save-btn').innerText = t.saveBtn;
+
             document.getElementById('tab-login-btn').innerText = t.loginTab;
             document.getElementById('tab-register-btn').innerText = t.registerTab;
             document.getElementById('login-username').placeholder = t.loginPlaceholder;
             document.getElementById('login-password').placeholder = t.passPlaceholder;
             document.getElementById('ui-login-submit').innerText = t.loginSubmit;
+
             document.getElementById('reg-username').placeholder = t.regUserPlaceholder;
             document.getElementById('reg-password').placeholder = t.regPassPlaceholder;
             document.getElementById('reg-confirm-password').placeholder = t.regConfPlaceholder;
             document.getElementById('ui-reg-submit').innerText = t.regSubmit;
+
             document.getElementById('ui-ticket-title').innerText = t.ticketTitle;
             document.getElementById('ui-ticket-subj-label').innerText = t.ticketSubjLabel;
             document.getElementById('ui-ticket-msg-label').innerText = t.ticketMsgLabel;
             document.getElementById('ui-ticket-send').innerText = t.ticketSend;
+
             document.getElementById('ui-plans-title').innerText = t.plansTitle;
             document.getElementById('ui-pay-header').innerText = t.payHeader;
             document.getElementById('ui-card-label').innerText = t.cardLabel;
             document.getElementById('ui-receipt-btn').innerText = t.receiptBtn;
+
             document.getElementById('ui-admin-title').innerText = t.adminTitle;
             document.getElementById('ui-admin-users-title').innerText = t.adminUsersTitle;
             document.getElementById('ui-admin-rec-title').innerText = t.adminRecTitle;
@@ -789,6 +1152,7 @@
             const text = document.getElementById('mode-text');
             const input = document.getElementById('user-input');
             const t = translations[currentLang];
+
             if (inputMode === 'text') {
                 inputMode = 'image';
                 icon.className = 'fa-solid fa-image text-violet-400';
@@ -806,8 +1170,11 @@
             selectedDuration = dur;
             ['1', '3', '6', '12'].forEach(d => {
                 const btn = document.getElementById(`dur-${d}`);
-                if (d === dur) btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition bg-gradient-to-r from-sky-600 to-violet-600 text-white shadow-md";
-                else btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+                if (d === dur) {
+                    btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition bg-gradient-to-r from-sky-600 to-violet-600 text-white shadow-md";
+                } else {
+                    btn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white";
+                }
             });
             renderPlans();
         }
@@ -816,7 +1183,16 @@
             const container = document.getElementById('plans-container');
             const months = parseInt(selectedDuration);
             const t = translations[currentLang];
-            const discountPercent = { 1: 0, 3: 10, 6: 15, 12: 20 }[months] || 0;
+            
+            // درصد تخفیف بر اساس مدت اشتراک
+            const discountPercent = {
+                1: 0,
+                3: 10,   // ۱۰٪ تخفیف برای ۳ ماهه
+                6: 15,   // ۱۵٪ تخفیف برای ۶ ماهه
+                12: 20   // ۲۰٪ تخفیف برای یک‌ساله
+            }[months] || 0;
+
+            // تمام 7 پلن
             const plans = [
                 { name: 'پریمیوم', msg: 50, img: 10 },
                 { name: 'پرو', msg: 100, img: 15 },
@@ -826,10 +1202,12 @@
                 { name: 'حرفه‌ای', msg: 300, img: 35 },
                 { name: 'اولترا', msg: 350, img: 40 }
             ];
+
             container.innerHTML = plans.map(p => {
                 let rawPrice = basePrices[p.name] * months;
                 let finalPrice = rawPrice;
                 let discountHtml = '';
+
                 if (discountPercent > 0) {
                     finalPrice = Math.round(rawPrice * (1 - discountPercent / 100));
                     const discountAmount = rawPrice - finalPrice;
@@ -838,6 +1216,7 @@
                         : `🎉 ${discountPercent}٪ تخفیف (−${discountAmount.toLocaleString('fa-IR')} تومان)`;
                     discountHtml = `<div class="text-[10px] text-emerald-400 mt-1.5 font-bold">${discountText}</div>`;
                 }
+
                 const priceFormatted = finalPrice.toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR');
                 const displayName = t.plansMap[p.name] || p.name;
                 const durationText = currentLang === 'en' ? `${months} Months` : `${months} ماهه`;
@@ -874,8 +1253,10 @@
 
         function toggleVoiceInput() {
             if (!recognition) { showToast(currentLang === 'en' ? 'Speech recognition not supported.' : 'مرورگر از تشخیص گفتار پشتیبانی نمی‌کند.', 'error'); return; }
-            if (isRecording) { recognition.stop(); stopRecordingUI(); }
-            else {
+            if (isRecording) {
+                recognition.stop();
+                stopRecordingUI();
+            } else {
                 try {
                     recognition.start();
                     isRecording = true;
@@ -892,6 +1273,7 @@
 
         function newChat() {
             currentChatId = 'chat_' + Date.now();
+            const t = translations[currentLang];
             const isFa = currentLang === 'fa';
             document.getElementById('chat-container').innerHTML = `
                 <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-8 animate-fade-in px-4">
@@ -918,6 +1300,8 @@
                         </button>
                     </div>
                 </div>`;
+            
+            // Show suggestions again
             const sugg = document.getElementById('input-suggestions');
             if (sugg) sugg.style.display = 'flex';
         }
@@ -937,14 +1321,19 @@
         function fillAndSend(text) {
             const input = document.getElementById('user-input');
             if (!input) return;
-            if (/تصویر|عکس|image|draw|generate.*image/i.test(text) && inputMode !== 'image') toggleMode();
+            // If text contains image-related words, switch to image mode
+            if (/تصویر|عکس|image|draw|generate.*image/i.test(text) && inputMode !== 'image') {
+                toggleMode();
+            }
             input.value = text;
             handleSendAction();
         }
 
         function handleSendAction() {
+            // Hide suggestions once user starts chatting
             const sugg = document.getElementById('input-suggestions');
             if (sugg) sugg.style.display = 'none';
+
             if (inputMode === 'image') generateImage();
             else sendMessage();
         }
@@ -968,6 +1357,7 @@
             }
             if (currentTimer) { clearTimeout(currentTimer); currentTimer = null; }
             if (currentInterval) { clearInterval(currentInterval); currentInterval = null; }
+
             const activeLoadings = document.querySelectorAll('[id^="loading-"], [id^="img-loading-"]');
             activeLoadings.forEach(el => {
                 el.innerHTML = `<div class="text-xs text-red-400 p-3">❌ ${currentLang === 'en' ? 'Operation stopped.' : 'عملیات متوقف شد.'}</div>`;
@@ -1004,24 +1394,38 @@
             const input = document.getElementById('user-input');
             const text = input.value.trim();
             if (!text) return;
+
+            // محدودیت کوتاه برای جلوگیری از اسپم سرویس رایگان
             const now = Date.now();
             if (now - lastImageRequestTime < 20000) {
                 const waitSeconds = Math.ceil((20000 - (now - lastImageRequestTime)) / 1000);
-                showToast(currentLang === 'en' ? `Please wait ${waitSeconds}s before generating another image.` : `لطفاً ${waitSeconds} ثانیه صبر کنید و دوباره تصویر بسازید.`, 'error');
+                showToast(currentLang === 'en' 
+                    ? `Please wait ${waitSeconds}s before generating another image.` 
+                    : `لطفاً ${waitSeconds} ثانیه صبر کنید و دوباره تصویر بسازید.`, 'error');
                 return;
             }
+
             const quota = checkUserQuota('img');
             if (!quota.allowed) {
-                if (!currentUser) { showToast(quota.message, 'error'); openAuthModal(); }
-                else if (quota.isQuota) showQuotaExceededMessage('img');
-                else showToast(quota.message, 'error');
+                if (!currentUser) {
+                    showToast(quota.message, 'error');
+                    openAuthModal();
+                } else if (quota.isQuota) {
+                    showQuotaExceededMessage('img');
+                } else {
+                    showToast(quota.message, 'error');
+                }
                 return;
             }
+
             setProcessingState(true);
             const container = document.getElementById('chat-container');
             const welcome = document.getElementById('welcome-screen');
             if (welcome) welcome.remove();
+
             const t = translations[currentLang];
+
+            // نمایش پیام کاربر
             container.innerHTML += `
                 <div class="flex items-start gap-4 max-w-3xl mx-auto justify-end animate-slide-up">
                     <div class="msg-user text-white px-5 py-3.5 rounded-2xl rounded-tr-md text-sm space-y-2 max-w-[85%]">
@@ -1030,6 +1434,7 @@
                 </div>`;
             input.value = '';
             container.scrollTop = container.scrollHeight;
+
             const loadingId = 'img-loading-' + Date.now();
             container.innerHTML += `
                 <div id="${loadingId}" class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
@@ -1042,6 +1447,7 @@
                 </div>`;
             container.scrollTop = container.scrollHeight;
 
+            // ---- ساخت پرامپت دقیق با مدل ----
             let finalPrompt = text;
             const hasPersian = /[\u0600-\u06FF]/.test(text);
 
@@ -1050,43 +1456,61 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        model: "gemini-3.8-flash",
+                        model: "gemini-3.5-flash-lite",
                         messages: [
-                            { role: "system", content: hasPersian
-                                ? "You are an expert image-prompt engineer. The user writes in Persian. Convert their request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
-                                : "You are an expert image-prompt engineer. Convert the user request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else." },
+                            {
+                                role: "system",
+                                content: hasPersian
+                                    ? "You are an expert image-prompt engineer. The user writes in Persian. Convert their request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
+                                    : "You are an expert image-prompt engineer. Convert the user request into ONE highly detailed English image generation prompt. Include subject, style, lighting, colors, composition, quality tags. Output ONLY the English prompt, nothing else."
+                            },
                             { role: "user", content: text }
                         ],
+                        temperature: 0.35,
                         max_tokens: 220
                     })
                 });
+
                 if (promptRes.ok) {
                     const promptData = await promptRes.json();
                     if (promptData.choices?.[0]?.message?.content) {
                         finalPrompt = promptData.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
                     }
                 }
-            } catch (e) { console.warn("Prompt enhancement failed", e); }
+            } catch (e) {
+                console.warn("Prompt enhancement failed", e);
+            }
 
+            // ساخت تصویر از طریق بک‌اند خود سایت (بدون هیچ سرویس Pollinations)
             lastImageRequestTime = Date.now();
             currentAbortController = new AbortController();
+
             try {
                 const imgRes = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/image", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: finalPrompt, width: 1024, height: 1024 }),
+                    body: JSON.stringify({
+                        prompt: finalPrompt,
+                        width: 1024,
+                        height: 1024
+                    }),
                     signal: currentAbortController.signal
                 });
+
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
                 setProcessingState(false);
+
                 if (!imgRes.ok) {
                     const errData = await imgRes.json().catch(() => ({}));
                     throw new Error(errData.error || errData.message || `HTTP ${imgRes.status}`);
                 }
+
                 const imgData = await imgRes.json();
                 const imageUrl = imgData.url || imgData.image || (imgData.data && imgData.data[0] && imgData.data[0].url);
+
                 if (!imageUrl) throw new Error('No image URL in response');
+
                 incrementQuota('img');
                 container.innerHTML += `
                     <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
@@ -1098,19 +1522,26 @@
                     </div>`;
                 container.scrollTop = container.scrollHeight;
                 saveCurrentChatToStorage(container.innerHTML, t.imagePrefix + text);
+
             } catch (e) {
-                if (e.name === 'AbortError') { setProcessingState(false); return; }
+                if (e.name === 'AbortError') {
+                    setProcessingState(false);
+                    return;
+                }
                 console.error("Image gen error:", e);
                 const loadingEl = document.getElementById(loadingId);
                 if (loadingEl) loadingEl.remove();
                 setProcessingState(false);
+
                 container.innerHTML += `
                     <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold shrink-0">ک</div>
                         <div class="msg-ai p-4 rounded-2xl rounded-tl-md text-sm text-amber-200 max-w-[85%] border border-amber-500/30 space-y-2">
                             <div>⚠️ ${currentLang === 'en' ? 'Image API is not configured on the server yet.' : 'API ساخت تصویر هنوز روی سرور تنظیم نشده است.'}</div>
                             <div class="text-xs text-slate-400 leading-relaxed">
-                                ${currentLang === 'en' ? 'You need to add <code>/api/image</code> endpoint with a real model (Flux / Stability / SDXL).' : 'باید مسیر <code>/api/image</code> را در بک‌اند با یک مدل واقعی (Flux یا Stability) اضافه کنید.'}
+                                ${currentLang === 'en' 
+                                    ? 'You need to add <code>/api/image</code> endpoint with a real model (Flux / Stability / SDXL).' 
+                                    : 'باید مسیر <code>/api/image</code> را در بک‌اند با یک مدل واقعی (Flux یا Stability) اضافه کنید.'}
                             </div>
                         </div>
                     </div>`;
@@ -1121,19 +1552,28 @@
             const input = document.getElementById('user-input');
             const text = input.value.trim();
             if (!text) return;
+
             const quota = checkUserQuota('msg');
             if (!quota.allowed) {
-                if (!currentUser) { showToast(quota.message, 'error'); openAuthModal(); }
-                else if (quota.isQuota) showQuotaExceededMessage('msg');
-                else showToast(quota.message, 'error');
+                if (!currentUser) {
+                    showToast(quota.message, 'error');
+                    openAuthModal();
+                } else if (quota.isQuota) {
+                    showQuotaExceededMessage('msg');
+                } else {
+                    showToast(quota.message, 'error');
+                }
                 return;
             }
+
             setProcessingState(true);
             const container = document.getElementById('chat-container');
             const welcome = document.getElementById('welcome-screen');
             if (welcome) welcome.remove();
+
             const encodedUserText = encodeURIComponent(text);
             const t = translations[currentLang];
+
             container.innerHTML += `
                 <div class="flex items-start gap-4 max-w-3xl mx-auto justify-end animate-slide-up">
                     <div class="msg-user text-white px-5 py-3.5 rounded-2xl rounded-tr-md text-sm space-y-2 max-w-[85%]">
@@ -1150,35 +1590,49 @@
             let aiReply = "";
             let isError = false;
             currentAbortController = new AbortController();
+            
             const isUserEnglish = /^[A-Za-z0-9\s.,?!@#$%^&*()_+-=;:""'']+$/.test(text.substring(0, 15));
             const systemPrompt = isUserEnglish 
-                ? `You are Kavosh AI3, a highly capable AI assistant. Reply strictly in English.\nRules:\n- Be accurate, clear and helpful.\n- When the user asks for code, ALWAYS provide complete, working code in a proper markdown code block. Never refuse or give incomplete snippets.\n- If the request is for programming help, give the full solution first, then a short explanation.\n- Stay on topic.`
-                : `شما کاوش AI3 هستید، یک دستیار هوش مصنوعی بسیار توانمند.\nقوانین:\n- همیشه به فارسی روان، دقیق و کامل پاسخ بده.\n- وقتی کاربر کد می‌خواهد، حتماً کد کامل و قابل اجرا را داخل بلوک کد بده. هرگز کد را ناقص نگذار یا طفره نرو.\n- اگر درخواست برنامه‌نویسی است، اول کد کامل را بده، بعد توضیح کوتاه.\n- موضوع را گم نکن.`;
+                ? `You are Kavosh AI3, a highly capable AI assistant. Reply strictly in English.
+Rules:
+- Be accurate, clear and helpful.
+- When the user asks for code, ALWAYS provide complete, working code in a proper markdown code block. Never refuse or give incomplete snippets.
+- If the request is for programming help, give the full solution first, then a short explanation.
+- Stay on topic.`
+                : `شما کاوش AI3 هستید، یک دستیار هوش مصنوعی بسیار توانمند.
+قوانین:
+- همیشه به فارسی روان، دقیق و کامل پاسخ بده.
+- وقتی کاربر کد می‌خواهد، حتماً کد کامل و قابل اجرا را داخل بلوک کد بده. هرگز کد را ناقص نگذار یا طفره نرو.
+- اگر درخواست برنامه‌نویسی است، اول کد کامل را بده، بعد توضیح کوتاه.
+- موضوع را گم نکن.`;
 
             try {
                 const res = await fetch("https://kavosh-ai-3-bo3z.onrender.com/api/groq", {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ 
-                        model: "gemini-3.8-flash",
+                        model: "gemini-3.5-flash-lite",
                         messages: [
                             { role: "system", content: systemPrompt },
                             { role: "user", content: text }
                         ],
-                        max_tokens: 65536
+                        temperature: 0.55,
+                        max_tokens: 4096
                     }),
                     signal: currentAbortController.signal
                 });
 
                 const data = await res.json();
-                console.log("Gemini response:", data);
+                console.log("Groq response:", data);
 
                 if (!res.ok) {
                     isError = true;
                     const errMsg = data.error?.message || data.message || data.error || `خطای سرور (${res.status})`;
                     aiReply = currentLang === 'en' 
-                        ? `⚠️ API Error: ${errMsg}\n\nPlease check your GEMINI_API_KEY.`
-                        : `⚠️ خطا در ارتباط با هوش مصنوعی:\n${errMsg}\n\nکلید GEMINI_API_KEY را در Render بررسی کنید.`;
+                        ? `⚠️ API Error: ${errMsg}\n\nPlease check GEMINI_API_KEY or try again later (high demand).`
+                        : `⚠️ خطا در ارتباط با هوش مصنوعی:\n${errMsg}\n\nکلید GEMINI_API_KEY را در Render بررسی کنید (یا مدل موقتاً شلوغ است).`;
                 } else if (data.choices && data.choices[0]?.message?.content) {
                     aiReply = data.choices[0].message.content.trim();
                 } else if (data.choices && data.choices[0]?.text) {
@@ -1191,7 +1645,10 @@
                         : `⚠️ پاسخی از مدل دریافت نشد.\n\nجزئیات: ${debugInfo}`;
                 }
             } catch(e) {
-                if (e.name === 'AbortError') { setProcessingState(false); return; }
+                if (e.name === 'AbortError') { 
+                    setProcessingState(false); 
+                    return; 
+                }
                 isError = true;
                 console.error("Kavosh AI Error:", e);
                 aiReply = currentLang === 'en' 
@@ -1201,8 +1658,10 @@
 
             setProcessingState(false);
             if (!isError) incrementQuota('msg');
+            
             const encodedAiText = encodeURIComponent(aiReply);
             const encodedSpeechText = encodeURIComponent(aiReply);
+            
             container.innerHTML += `
                 <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-sky-500/30">ک</div>
@@ -1218,10 +1677,6 @@
                 </div>`;
             container.scrollTop = container.scrollHeight;
             if (!isError) saveCurrentChatToStorage(container.innerHTML, text);
-        }
-
-        function escapeHtml(text) {
-            return String(text).replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s]));
         }
 
         function loadUserChats() {
@@ -1314,6 +1769,7 @@
             if (!currentUser) return { msg: 0, img: 0 };
             if (currentUser.isAdmin || currentUser.isVice) return { msg: 9999, img: 9999 };
             const tier = (currentUser.tier || 'free').toLowerCase();
+            
             if (tier.includes('اولترا') || tier.includes('ultra')) return { msg: 350, img: 40 };
             if (tier.includes('حرفه‌ای') || tier.includes('professional')) return { msg: 300, img: 35 };
             if (tier.includes('پیشرفته') || tier.includes('advanced')) return { msg: 250, img: 30 };
@@ -1321,6 +1777,7 @@
             if (tier.includes('پرو پریمیوم') || tier.includes('pro premium')) return { msg: 150, img: 20 };
             if (tier.includes('پرو') || tier.includes('pro')) return { msg: 100, img: 15 };
             if (tier.includes('پریمیوم') || tier.includes('premium')) return { msg: 50, img: 10 };
+            
             return { msg: DEFAULT_MSG_QUOTA, img: DEFAULT_IMG_QUOTA };
         }
 
@@ -1330,10 +1787,22 @@
             const limits = getMaxQuotas();
             const { data } = getUserQuotaData();
             if (type === 'msg' && data.count >= limits.msg) {
-                return { allowed: false, isQuota: true, message: currentLang === 'en' ? 'You have reached the free message limit for today.' : 'شما به محدودیت پیام رایگان در امروز رسیده‌اید' };
+                return { 
+                    allowed: false, 
+                    isQuota: true,
+                    message: currentLang === 'en' 
+                        ? 'You have reached the free message limit for today.' 
+                        : 'شما به محدودیت پیام رایگان در امروز رسیده‌اید'
+                };
             }
             if (type === 'img' && data.imgCount >= limits.img) {
-                return { allowed: false, isQuota: true, message: currentLang === 'en' ? 'You have reached the free image limit for today.' : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید' };
+                return { 
+                    allowed: false, 
+                    isQuota: true,
+                    message: currentLang === 'en' 
+                        ? 'You have reached the free image limit for today.' 
+                        : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید'
+                };
             }
             return { allowed: true };
         }
@@ -1342,12 +1811,18 @@
             const container = document.getElementById('chat-container');
             const welcome = document.getElementById('welcome-screen');
             if (welcome) welcome.remove();
+
             const isMsg = type === 'msg';
             const title = currentLang === 'en' 
                 ? (isMsg ? 'You have reached the free message limit for today.' : 'You have reached the free image limit for today.')
                 : (isMsg ? 'شما به محدودیت پیام رایگان در امروز رسیده‌اید' : 'شما به محدودیت تصویر رایگان در امروز رسیده‌اید');
-            const subtitle = currentLang === 'en' ? 'Upgrade your subscription to Premium for more messages.' : 'برای پیام‌های بیشتر اشتراک خود را به پریمیوم ارتقا دهید';
+            
+            const subtitle = currentLang === 'en'
+                ? 'Upgrade your subscription to Premium for more messages.'
+                : 'برای پیام‌های بیشتر اشتراک خود را به پریمیوم ارتقا دهید';
+
             const btnText = currentLang === 'en' ? 'Upgrade to Premium' : 'ارتقاء به پریمیوم';
+
             container.innerHTML += `
                 <div class="flex items-start gap-4 max-w-3xl mx-auto animate-slide-up">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-lg shadow-amber-500/30">
@@ -1380,6 +1855,7 @@
             const imgQuotaBar = document.getElementById('img-quota-bar');
             const tierBadge = document.getElementById('sub-tier-badge');
             const t = translations[currentLang];
+
             if (!currentUser) {
                 quotaText.innerText = t.needLogin;
                 quotaBar.style.width = "0%";
@@ -1430,7 +1906,9 @@
             if (!fileInput.files.length) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
-                receiptsDB.push({ id: 'rec_' + Date.now(), username: currentUser.username, payerName, planName: selectedPlan.name, planPrice: selectedPlan.price, image: evt.target.result, status: 'pending' });
+                receiptsDB.push({
+                    id: 'rec_' + Date.now(), username: currentUser.username, payerName, planName: selectedPlan.name, planPrice: selectedPlan.price, image: evt.target.result, status: 'pending'
+                });
                 try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
                 showToast(currentLang === 'en' ? 'Receipt submitted successfully.' : 'فاکتور با موفقیت ارسال شد.');
                 closePlansModal();
@@ -1462,9 +1940,23 @@
             const password = document.getElementById('reg-password').value;
             const conf = document.getElementById('reg-confirm-password').value;
             if (password !== conf) { showToast(currentLang === 'en' ? 'Passwords do not match.' : 'رمز عبور مطابقت ندارد.', 'error'); return; }
-            if (!/^09[0-9]{9}$/.test(phone)) { showToast(currentLang === 'en' ? 'Enter a valid Iranian mobile number (09xxxxxxxxx).' : 'شماره موبایل معتبر وارد کنید (۰۹xxxxxxxxx).', 'error'); return; }
-            if (usersDB.find(u => u.username === username)) { showToast(currentLang === 'en' ? 'Username already exists.' : 'این نام کاربری قبلاً ثبت شده است.', 'error'); return; }
-            const newUser = { username, phone, password, tier: currentLang === 'en' ? 'Free' : 'رایگان', banUntil: 0, isNew: true, createdAt: Date.now() };
+            if (!/^09[0-9]{9}$/.test(phone)) {
+                showToast(currentLang === 'en' ? 'Enter a valid Iranian mobile number (09xxxxxxxxx).' : 'شماره موبایل معتبر وارد کنید (۰۹xxxxxxxxx).', 'error');
+                return;
+            }
+            if (usersDB.find(u => u.username === username)) {
+                showToast(currentLang === 'en' ? 'Username already exists.' : 'این نام کاربری قبلاً ثبت شده است.', 'error');
+                return;
+            }
+            const newUser = {
+                username,
+                phone,
+                password,
+                tier: currentLang === 'en' ? 'Free' : 'رایگان',
+                banUntil: 0,
+                isNew: true,
+                createdAt: Date.now()
+            };
             usersDB.push(newUser);
             localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
             currentUser = newUser;
@@ -1483,156 +1975,328 @@
                 title.textContent = `Welcome to Kavosh AI3, ${username}! 🎉`;
                 desc.textContent = 'Your account was created successfully. You can chat, generate images, and upgrade your plan anytime.';
             } else {
-                title.textContent = `${username} عزیز، خوش آمدید! 🎉`;
-                desc.textContent = 'حساب شما با موفقیت ساخته شد. می‌توانید چت کنید، تصویر بسازید و در صورت نیاز اشتراک خود را ارتقا دهید.';
+                title.textContent = `${username} عزیز، به کاوش AI3 خوش آمدید 🎉`;
+                desc.innerHTML = 'حساب شما با موفقیت ساخته شد.<br>می‌توانید چت کنید، تصویر بسازید و در صورت نیاز اشتراک خود را ارتقا دهید.';
             }
             document.getElementById('welcome-modal').style.display = 'flex';
         }
-        function closeWelcomeModal() { document.getElementById('welcome-modal').style.display = 'none'; }
+
+        function closeWelcomeModal() {
+            document.getElementById('welcome-modal').style.display = 'none';
+            if (currentUser && currentUser.isNew) {
+                currentUser.isNew = false;
+                const idx = usersDB.findIndex(u => u.username === currentUser.username);
+                if (idx >= 0) { usersDB[idx].isNew = false; localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); }
+                localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+            }
+            showToast(currentLang === 'en' ? 'Welcome aboard!' : 'خوش آمدید! آماده‌اید شروع کنید.');
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                newChat();
+                showToast(currentLang === 'en' ? 'Back to home' : 'بازگشت به صفحه اصلی');
+            }
+        }
+
+        // ========== Discount Codes ==========
+        function getDiscountCodes() {
+            try { return JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) { return []; }
+        }
+        function saveDiscountCodes(list) {
+            localStorage.setItem('kavosh_discount_codes', JSON.stringify(list));
+        }
+
+        function createDiscountCode() {
+            const code = (document.getElementById('discount-code-input').value || '').trim().toUpperCase();
+            let percent = parseInt(document.getElementById('discount-percent-input').value, 10);
+            if (!code || code.length < 3) { showToast('کد معتبر وارد کنید (حداقل ۳ کاراکتر)', 'error'); return; }
+            if (isNaN(percent) || percent < 5 || percent > 100) { showToast('درصد باید بین ۵ تا ۱۰۰ باشد', 'error'); return; }
+            const list = getDiscountCodes();
+            if (list.find(c => c.code === code)) { showToast('این کد از قبل وجود دارد', 'error'); return; }
+            list.push({ code, percent, active: true, createdAt: Date.now() });
+            saveDiscountCodes(list);
+            document.getElementById('discount-code-input').value = '';
+            renderDiscountCodes();
+            showToast(`کد ${code} با ${percent}٪ تخفیف ساخته شد`);
+        }
+
+        function renderDiscountCodes() {
+            const box = document.getElementById('discount-codes-list');
+            if (!box) return;
+            const list = getDiscountCodes();
+            if (!list.length) { box.innerHTML = '<div class="text-slate-500 text-center py-2">هنوز کدی ساخته نشده</div>'; return; }
+            box.innerHTML = list.map(c => `
+                <div class="flex items-center justify-between bg-slate-900/60 border border-slate-700/40 rounded-xl px-3 py-2">
+                    <span class="font-mono text-sky-300">${c.code}</span>
+                    <span class="text-emerald-400 font-bold">${c.percent}٪</span>
+                    <button onclick="deleteDiscountCode('${c.code}')" class="text-red-400 hover:text-red-300 text-xs">حذف</button>
+                </div>`).join('');
+        }
+
+        function deleteDiscountCode(code) {
+            let list = getDiscountCodes().filter(c => c.code !== code);
+            saveDiscountCodes(list);
+            renderDiscountCodes();
+            showToast('کد حذف شد');
+        }
+
+        let appliedDiscount = null;
+        function applyDiscountCode() {
+            const code = (document.getElementById('user-discount-code').value || '').trim().toUpperCase();
+            const found = getDiscountCodes().find(c => c.code === code && c.active);
+            const msg = document.getElementById('discount-applied-msg');
+            if (!found) {
+                appliedDiscount = null;
+                if (msg) { msg.classList.add('hidden'); }
+                showToast('کد تخفیف نامعتبر است', 'error');
+                return;
+            }
+            appliedDiscount = found;
+            if (selectedPlan && selectedPlan.price) {
+                const raw = parseInt(String(selectedPlan.price).replace(/,/g, ''), 10) || 0;
+                const final = Math.round(raw * (1 - found.percent / 100));
+                document.getElementById('selected-plan-price').innerText = final.toLocaleString('fa-IR');
+                if (msg) {
+                    msg.classList.remove('hidden');
+                    msg.textContent = `تخفیف ${found.percent}٪ اعمال شد. مبلغ نهایی: ${final.toLocaleString('fa-IR')} تومان`;
+                }
+            }
+            showToast(`تخفیف ${found.percent}٪ اعمال شد`);
+        }
+
+        function notifyUsersAboutDiscount() {
+            const list = getDiscountCodes();
+            if (!list.length) { showToast('اول یک کد بسازید', 'error'); return; }
+            const last = list[list.length - 1];
+            const note = `کد تخفیف جدید: ${last.code} با ${last.percent}٪ تخفیف روی اشتراک‌ها`;
+            localStorage.setItem('kavosh_discount_announcement', JSON.stringify({ text: note, at: Date.now() }));
+            showToast('اطلاع‌رسانی ذخیره شد و به کاربران نمایش داده می‌شود');
+            // تلاش برای ارسال به ایتا (اگر بک‌اند آماده باشد)
+            sendEitaaMessage(note);
+        }
+
+        function checkDiscountAnnouncement() {
+            try {
+                const ann = JSON.parse(localStorage.getItem('kavosh_discount_announcement') || 'null');
+                if (!ann) return;
+                const seen = localStorage.getItem('kavosh_seen_discount_ann');
+                if (seen === String(ann.at)) return;
+                showToast(ann.text, 'success');
+                localStorage.setItem('kavosh_seen_discount_ann', String(ann.at));
+            } catch(e) {}
+        }
+
+        // ========== Eitaa Kit ==========
+        function saveEitaaConfig() {
+            const token = document.getElementById('eitaa-token-input').value.trim();
+            const chatId = document.getElementById('eitaa-chat-input').value.trim();
+            localStorage.setItem('kavosh_eitaa', JSON.stringify({ token, chatId }));
+            showToast('تنظیمات ایتا ذخیره شد');
+        }
+
+        function loadEitaaConfig() {
+            try {
+                const cfg = JSON.parse(localStorage.getItem('kavosh_eitaa') || '{}');
+                const t = document.getElementById('eitaa-token-input');
+                const c = document.getElementById('eitaa-chat-input');
+                if (t) t.value = cfg.token || '';
+                if (c) c.value = cfg.chatId || '';
+            } catch(e) {}
+        }
+
+        async function sendEitaaMessage(text) {
+            try {
+                const cfg = JSON.parse(localStorage.getItem('kavosh_eitaa') || '{}');
+                if (!cfg.token || !cfg.chatId) return;
+                // از بک‌اند پروکسی استفاده می‌شود تا توکن لو نرود
+                await fetch('https://kavosh-ai-3-bo3z.onrender.com/api/eitaa', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: cfg.token, chatId: cfg.chatId, text })
+                });
+            } catch(e) {
+                console.warn('Eitaa send failed (backend may not be ready)', e);
+            }
+        }
 
         function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
-            const user = usersDB.find(u => u.username === username && u.password === password);
-            if (!user) { showToast(currentLang === 'en' ? 'Invalid username or password.' : 'نام کاربری یا رمز عبور اشتباه است.', 'error'); return; }
-            if (user.banUntil && Date.now() < user.banUntil) { showToast(currentLang === 'en' ? 'Your account is banned.' : 'حساب کاربری شما مسدود شده است.', 'error'); return; }
-            currentUser = user;
+            if (username === 'parham' && password === '13951395') {
+                currentUser = { username: 'parham', isAdmin: true };
+                updateUIForUser('parham (مدیر کل)', true, false);
+            } else if (username === 'radin' && password === '13951395') {
+                currentUser = { username: 'radin', isVice: true };
+                updateUIForUser('radin (معاون)', false, true);
+            } else {
+                const user = usersDB.find(u => u.username === username && u.password === password);
+                if (!user) { showToast(currentLang === 'en' ? 'Invalid username or password.' : 'نام کاربری یا رمز عبور اشتباه است.', 'error'); return; }
+                if (user.banUntil && Date.now() < user.banUntil) {
+                    showToast(currentLang === 'en' ? 'Your account is banned.' : 'حساب کاربری شما تا تاریخ مشخصی مسدود است.', 'error');
+                    return;
+                }
+                currentUser = user;
+                updateUIForUser(user.username, false, false);
+            }
             localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
-            updateUIForUser(user.username, user.isAdmin, user.isVice);
-            loadUserChats();
             updateQuotaUI();
+            loadUserChats();
             newChat();
             closeAuthModal();
-            showToast(currentLang === 'en' ? 'Login successful.' : 'ورود با موفقیت انجام شد.');
+            showToast(currentLang === 'en' ? 'Logged in successfully.' : 'با موفقیت وارد شدید.');
         }
 
-        function updateUIForUser(username, isAdmin = false, isVice = false) {
-            const displayName = document.getElementById('user-display-name');
-            const avatar = document.getElementById('user-avatar');
-            const statusText = document.getElementById('user-status-text');
-            const authBtnText = document.getElementById('ui-auth-btn-text');
-            const authBtn = document.getElementById('auth-btn');
-            const adminBtn = document.getElementById('admin-panel-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            
-            if (username) {
-                displayName.innerText = username;
-                avatar.innerText = username.charAt(0).toUpperCase();
-                statusText.innerText = isAdmin ? 'Admin' : (isVice ? 'Vice' : (currentLang === 'en' ? 'User' : 'کاربر'));
-                authBtnText.innerText = username;
-                if (authBtn) authBtn.style.display = 'none';
-                if (logoutBtn) logoutBtn.style.display = 'block';
-                if (adminBtn && (isAdmin || isVice)) adminBtn.style.display = 'block';
-            } else {
-                displayName.innerText = translations[currentLang].guest;
-                avatar.innerText = 'ک';
-                statusText.innerText = translations[currentLang].needLogin;
-                authBtnText.innerText = translations[currentLang].authBtn;
-                if (authBtn) authBtn.style.display = 'flex';
-                if (logoutBtn) logoutBtn.style.display = 'none';
-                if (adminBtn) adminBtn.style.display = 'none';
-            }
+        function updateUIForUser(username, isAdmin, isVice) {
+            document.getElementById('user-display-name').innerText = username;
+            document.getElementById('user-status-text').innerText = isAdmin ? 'Admin' : (isVice ? 'Vice' : 'User');
+            document.getElementById('user-avatar').innerText = username.charAt(0).toUpperCase();
+            document.getElementById('ui-auth-btn-text').innerText = username;
+            document.getElementById('admin-panel-btn').style.display = (isAdmin || isVice) ? 'block' : 'none';
+            document.getElementById('logout-btn').style.display = 'block';
         }
 
         function confirmLogout() {
             showConfirmModal(
-                currentLang === 'en' ? "Logout?" : "خروج از حساب؟",
-                currentLang === 'en' ? "Are you sure you want to log out?" : "آیا از خروج مطمئن هستید؟",
+                currentLang === 'en' ? "Logout confirmation" : "تأیید خروج",
+                currentLang === 'en' ? "Are you sure you want to logout?" : "آیا از خروج از حساب کاربری خود مطمئن هستید؟",
                 () => {
                     currentUser = null;
                     localStorage.removeItem('kavosh_current_user');
-                    updateUIForUser(null);
+                    const t = translations[currentLang];
+                    document.getElementById('user-display-name').innerText = t.guest;
+                    document.getElementById('user-status-text').innerText = t.needLogin;
+                    document.getElementById('user-avatar').innerText = "ک";
+                    document.getElementById('ui-auth-btn-text').innerText = t.authBtn;
+                    document.getElementById('admin-panel-btn').style.display = 'none';
+                    document.getElementById('logout-btn').style.display = 'none';
                     updateQuotaUI();
                     newChat();
-                    showToast(currentLang === 'en' ? 'Logged out.' : 'خارج شدید.');
+                    closeAdminModal();
+                    closeProfileModal();
+                    showToast(currentLang === 'en' ? 'Logged out.' : 'از حساب خارج شدید.');
                 }
             );
         }
 
-        function showConfirmModal(title, desc, action) {
+        function showConfirmModal(title, desc, onConfirm) {
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-desc').innerText = desc;
-            pendingConfirmAction = action;
+            document.getElementById('confirm-yes-btn').innerText = currentLang === 'en' ? 'Yes' : 'بله';
+            document.getElementById('confirm-no-btn').innerText = currentLang === 'en' ? 'No' : 'خیر';
+            pendingConfirmAction = onConfirm;
             document.getElementById('confirm-modal').style.display = 'flex';
         }
-        function closeConfirmModal() { document.getElementById('confirm-modal').style.display = 'none'; pendingConfirmAction = null; }
+
+        function closeConfirmModal() {
+            pendingConfirmAction = null;
+            document.getElementById('confirm-modal').style.display = 'none';
+        }
+
         function executeConfirmAction() {
-            if (typeof pendingConfirmAction === 'function') pendingConfirmAction();
+            if (pendingConfirmAction) pendingConfirmAction();
             closeConfirmModal();
         }
 
+        function openTicketModal() {
+            if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً وارد شوید.', 'error'); openAuthModal(); return; }
+            renderUserTickets();
+            document.getElementById('ticket-modal').style.display = 'flex';
+        }
+        function closeTicketModal() { document.getElementById('ticket-modal').style.display = 'none'; }
+        
+        function handleTicketSubmit(e) {
+            e.preventDefault();
+            ticketsDB.push({
+                id: 'tkt_' + Date.now(), username: currentUser.username, subject: document.getElementById('ticket-subject').value, message: document.getElementById('ticket-message').value, reply: '', status: currentLang === 'en' ? 'Pending' : 'در انتظار پاسخ'
+            });
+            try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+            document.getElementById('ticket-subject').value = '';
+            document.getElementById('ticket-message').value = '';
+            renderUserTickets();
+            showToast(currentLang === 'en' ? 'Ticket submitted.' : 'تیکت شما ارسال شد.');
+        }
+
+        function renderUserTickets() {
+            const list = document.getElementById('user-tickets-list');
+            if (!currentUser) return;
+            const myT = ticketsDB.filter(t => t.username === currentUser.username);
+            list.innerHTML = myT.length ? myT.map(t => `
+                <div class="bg-slate-900/60 p-4 rounded-2xl text-xs space-y-1.5 relative border border-slate-700/40">
+                    <div class="font-bold flex justify-between">
+                        <span>${escapeHtml(t.subject)}</span>
+                        ${!t.reply ? `<button onclick="deleteMyTicket('${t.id}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </div>
+                    <p class="text-slate-400">${escapeHtml(t.message)}</p>
+                    ${t.reply ? `<div class="text-emerald-400">${currentLang === 'en' ? 'Admin Reply: ' : 'پاسخ مدیر: '} ${escapeHtml(t.reply)}</div>` : `<div class="text-amber-400 text-[10px]">${currentLang === 'en' ? 'Pending admin reply' : 'در انتظار پاسخ مدیر'}</div>`}
+                </div>`).join('') : `<div class="text-xs text-slate-500 text-center">${currentLang === 'en' ? 'No tickets.' : 'تیکتی نیست.'}</div>`;
+        }
+
+        function deleteMyTicket(id) {
+            const tkt = ticketsDB.find(t => t.id === id);
+            if (tkt && !tkt.reply) {
+                ticketsDB = ticketsDB.filter(t => t.id !== id);
+                try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+                renderUserTickets();
+                showToast(currentLang === 'en' ? 'Ticket deleted.' : 'تیکت شما حذف شد.');
+            } else {
+                showToast(currentLang === 'en' ? 'Replied tickets cannot be deleted.' : 'تیکت پاسخ داده شده قابل حذف نیست.', 'error');
+            }
+        }
+
         function openProfileModal() {
-            if (!currentUser) { openAuthModal(); return; }
+            if (!currentUser) { showToast(currentLang === 'en' ? 'Please login first.' : 'لطفاً ابتدا وارد حساب کاربری خود شوید.', 'error'); openAuthModal(); return; }
             document.getElementById('profile-username').value = currentUser.username;
-            document.getElementById('profile-curr-pass').value = '';
-            document.getElementById('profile-new-pass').value = '';
-            document.getElementById('profile-confirm-pass').value = '';
+            document.getElementById('language-select').value = currentLang;
             document.getElementById('profile-modal').style.display = 'flex';
         }
         function closeProfileModal() { document.getElementById('profile-modal').style.display = 'none'; }
 
         function handleProfileUpdate(e) {
             e.preventDefault();
-            const newUsername = document.getElementById('profile-username').value.trim();
-            const currPass = document.getElementById('profile-curr-pass').value;
-            const newPass = document.getElementById('profile-new-pass').value;
-            const confPass = document.getElementById('profile-confirm-pass').value;
-            const user = usersDB.find(u => u.username === currentUser.username);
-            if (!user) return;
-            if (currPass) {
-                if (currPass !== user.password) { showToast(currentLang === 'en' ? 'Current password is incorrect.' : 'رمز عبور فعلی اشتباه است.', 'error'); return; }
-                if (newPass !== confPass) { showToast(currentLang === 'en' ? 'New passwords do not match.' : 'رمز عبور جدید مطابقت ندارد.', 'error'); return; }
-                if (newPass) user.password = newPass;
+            const newU = document.getElementById('profile-username').value.trim();
+            const newLang = document.getElementById('language-select').value;
+            const currP = document.getElementById('profile-curr-pass').value;
+            const newP = document.getElementById('profile-new-pass').value;
+            const confP = document.getElementById('profile-confirm-pass').value;
+
+            if (newLang !== currentLang) {
+                showConfirmModal(
+                    newLang === 'en' ? "Change Language Confirmation" : "تأیید تغییر زبان",
+                    newLang === 'en' ? "Are you sure you want to change the application language?" : "آیا از تغییر زبان برنامه مطمئن هستید؟",
+                    () => {
+                        applyProfileChanges(newU, newLang, currP, newP, confP);
+                    }
+                );
+            } else {
+                applyProfileChanges(newU, newLang, currP, newP, confP);
             }
-            if (newUsername && newUsername !== user.username) {
-                if (usersDB.find(u => u.username === newUsername)) { showToast(currentLang === 'en' ? 'Username already taken.' : 'این نام کاربری قبلاً گرفته شده.', 'error'); return; }
-                user.username = newUsername;
-                currentUser.username = newUsername;
+        }
+
+        function applyProfileChanges(newU, newLang, currP, newP, confP) {
+            if (newP || currP || confP) {
+                if (currP !== currentUser.password) { showToast(currentLang === 'en' ? 'Incorrect current password.' : 'رمز عبور فعلی اشتباه است.', 'error'); return; }
+                if (newP !== confP) { showToast(currentLang === 'en' ? 'New passwords do not match.' : 'تکرار رمز عبور جدید مطابقت ندارد.', 'error'); return; }
+                currentUser.password = newP;
+            }
+
+            currentUser.username = newU;
+            try {
                 localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
-            }
-            localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
-            updateUIForUser(user.username, user.isAdmin, user.isVice);
+                usersDB = usersDB.map(u => u.username === currentUser.username ? currentUser : u);
+                localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
+            } catch(e) {}
+
+            applyLanguage(newLang);
+            updateUIForUser(currentUser.username, currentUser.isAdmin, currentUser.isVice);
             closeProfileModal();
-            showToast(currentLang === 'en' ? 'Changes saved.' : 'تغییرات ذخیره شد.');
-        }
-
-        function openTicketModal() {
-            if (!currentUser) { openAuthModal(); return; }
-            renderUserTickets();
-            document.getElementById('ticket-modal').style.display = 'flex';
-        }
-        function closeTicketModal() { document.getElementById('ticket-modal').style.display = 'none'; }
-
-        function handleTicketSubmit(e) {
-            e.preventDefault();
-            const subject = document.getElementById('ticket-subject').value.trim();
-            const message = document.getElementById('ticket-message').value.trim();
-            ticketsDB.push({ id: 'tkt_' + Date.now(), username: currentUser.username, subject, message, status: 'open', createdAt: Date.now() });
-            try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
-            document.getElementById('ticket-subject').value = '';
-            document.getElementById('ticket-message').value = '';
-            renderUserTickets();
-            showToast(currentLang === 'en' ? 'Ticket submitted.' : 'تیکت ارسال شد.');
-        }
-
-        function renderUserTickets() {
-            const list = document.getElementById('user-tickets-list');
-            const mine = ticketsDB.filter(t => t.username === currentUser.username);
-            if (mine.length === 0) { list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No tickets yet.' : 'هنوز تیکتی ندارید.'}</div>`; return; }
-            list.innerHTML = mine.map(t => `
-                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3 text-xs space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-sky-300">${escapeHtml(t.subject)}</span>
-                        <span class="px-2 py-0.5 rounded-md ${t.status === 'open' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'} text-[10px]">${t.status === 'open' ? (currentLang === 'en' ? 'Open' : 'باز') : (currentLang === 'en' ? 'Closed' : 'بسته')}</span>
-                    </div>
-                    <div class="text-slate-400">${escapeHtml(t.message)}</div>
-                </div>
-            `).join('');
+            showToast(currentLang === 'en' ? 'Changes saved successfully.' : 'تغییرات با موفقیت ذخیره شد.');
         }
 
         function openAdminModal() {
-            if (!currentUser || (!currentUser.isAdmin && !currentUser.isVice)) return;
             renderAdminUsers();
             renderAdminReceipts();
             renderAdminTickets();
@@ -1644,39 +2308,71 @@
 
         function renderAdminUsers() {
             const list = document.getElementById('admin-users-list');
-            if (usersDB.length === 0) { list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No users.' : 'کاربری وجود ندارد.'}</div>`; return; }
+            if (!usersDB.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No users registered.' : 'هیچ کاربری ثبت نام نکرده است.'}</div>`;
+                return;
+            }
             list.innerHTML = usersDB.map(u => {
                 const isBanned = u.banUntil && Date.now() < u.banUntil;
+                const tierInfo = u.tier || (currentLang === 'en' ? 'Regular User' : 'کاربر معمولی');
+                const phoneInfo = u.phone ? ` | 📱 ${u.phone}` : '';
                 return `
-                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3 flex items-center justify-between text-xs gap-2">
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs flex flex-col md:flex-row items-center justify-between gap-3">
                     <div>
-                        <div class="font-bold text-slate-200">${escapeHtml(u.username)} ${u.isAdmin ? '<span class="text-amber-400">(Admin)</span>' : ''}</div>
-                        <div class="text-slate-500" dir="ltr">${escapeHtml(u.phone || '')}</div>
+                        <div class="font-bold text-slate-200">${escapeHtml(u.username)}${phoneInfo}</div>
+                        <div class="text-amber-400">${currentLang === 'en' ? 'Subscription: ' : 'اشتراک: '} ${tierInfo} ${isBanned ? '<span class="text-red-400 font-bold">(مسدود شده)</span>' : ''}</div>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="openAdminChats('${u.username}')" class="bg-sky-600/20 text-sky-300 hover:bg-sky-600/40 px-2 py-1 rounded-lg text-[10px]">چت‌ها</button>
-                        <button onclick="toggleBan('${u.username}')" class="bg-red-600/20 text-red-300 hover:bg-red-600/40 px-2 py-1 rounded-lg text-[10px]">${isBanned ? 'آنبن' : 'بن'}</button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="viewUserChats('${u.username}')" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg transition">مکالمات</button>
+                        <select id="ban-duration-${u.username}" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200">
+                            <option value="1">۱ روز</option>
+                            <option value="7">۷ روز</option>
+                            <option value="30">۳۰ روز</option>
+                            <option value="365">۳۶۵ روز</option>
+                        </select>
+                        <button onclick="banUser('${u.username}')" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg transition">مسدود</button>
+                        <button onclick="unbanUser('${u.username}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg transition">رفع مسدودی</button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        function toggleBan(username) {
+        function banUser(username) {
+            const days = parseInt(document.getElementById(`ban-duration-${username}`).value);
             const user = usersDB.find(u => u.username === username);
-            if (!user) return;
-            if (user.banUntil && Date.now() < user.banUntil) user.banUntil = 0;
-            else user.banUntil = Date.now() + 30*24*60*60*1000;
-            localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
-            renderAdminUsers();
-            showToast(currentLang === 'en' ? 'User status updated.' : 'وضعیت کاربر به‌روزرسانی شد.');
+            if (user) {
+                user.banUntil = Date.now() + (days * 24 * 60 * 60 * 1000);
+                try { localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); } catch(e) {}
+                renderAdminUsers();
+                showToast(`کاربر ${username} به مدت ${days} روز مسدود شد.`);
+            }
         }
 
-        function openAdminChats(username) {
-            const chats = JSON.parse(localStorage.getItem(`kavosh_chats_${username}`)) || [];
-            document.getElementById('admin-chats-title').innerText = `${currentLang === 'en' ? 'Chats of' : 'مکالمات'} ${username}`;
+        function unbanUser(username) {
+            const user = usersDB.find(u => u.username === username);
+            if (user) {
+                user.banUntil = 0;
+                try { localStorage.setItem('kavosh_users', JSON.stringify(usersDB)); } catch(e) {}
+                renderAdminUsers();
+                showToast(`مسدودی کاربر ${username} برداشته شد.`);
+            }
+        }
+
+        function viewUserChats(username) {
+            let uChats = [];
+            try { uChats = JSON.parse(localStorage.getItem(`kavosh_chats_${username}`)) || []; } catch(e) {}
             const content = document.getElementById('admin-chats-content');
-            if (chats.length === 0) { content.innerHTML = `<div class="text-xs text-slate-500 text-center">${currentLang === 'en' ? 'No chats.' : 'مکالمه‌ای وجود ندارد.'}</div>`; }
-            else content.innerHTML = chats.map(c => `<div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3"><div class="font-bold text-sky-300 mb-1">${escapeHtml(c.title)}</div><div class="text-slate-400 text-[11px]">${new Date(c.updatedAt).toLocaleString(currentLang === 'en' ? 'en-US' : 'fa-IR')}</div></div>`).join('');
+            document.getElementById('admin-chats-title').innerText = `مکالمات کاربر: ${username}`;
+            if (!uChats.length) {
+                content.innerHTML = `<div class="text-slate-500 text-center py-4">${currentLang === 'en' ? 'This user has no chats.' : 'این کاربر هیچ گفتگویی ثبت نکرده است.'}</div>`;
+            } else {
+                content.innerHTML = uChats.map(c => `
+                    <div class="bg-slate-900/60 p-3.5 rounded-2xl border border-slate-700/40 space-y-2">
+                        <div class="font-bold text-sky-400">عنوان: ${escapeHtml(c.title)}</div>
+                        <div class="max-h-48 overflow-y-auto bg-slate-950/80 p-2.5 rounded-xl">${c.html}</div>
+                    </div>
+                `).join('');
+            }
             document.getElementById('admin-chats-modal').style.display = 'flex';
         }
         function closeAdminChatsModal() { document.getElementById('admin-chats-modal').style.display = 'none'; }
@@ -1684,175 +2380,132 @@
         function renderAdminReceipts() {
             const list = document.getElementById('admin-receipts-list');
             const pending = receiptsDB.filter(r => r.status === 'pending');
-            if (pending.length === 0) { list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No pending receipts.' : 'هیچ فاکتوری در انتظار تأیید نیست.'}</div>`; return; }
+            if (!pending.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${translations[currentLang].noRec}</div>`;
+                return;
+            }
             list.innerHTML = pending.map(r => `
-                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3 text-xs space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-slate-200">${escapeHtml(r.username)}</span>
-                        <span class="text-amber-400 font-bold">${r.planName}</span>
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex justify-between font-bold text-slate-200">
+                        <span>User: ${escapeHtml(r.username)} (${escapeHtml(r.payerName)})</span>
+                        <span class="text-amber-400">${r.planName} - ${r.planPrice} Toman</span>
                     </div>
-                    <div class="text-slate-400">${currentLang === 'en' ? 'Payer' : 'واریزکننده'}: ${escapeHtml(r.payerName)} | ${r.planPrice} ${currentLang === 'en' ? 'Tomans' : 'تومان'}</div>
-                    <img src="${r.image}" class="rounded-lg max-h-40 border border-slate-700" alt="receipt">
-                    <div class="flex gap-2">
-                        <button onclick="approveReceipt('${r.id}')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-1.5 rounded-lg font-bold text-[10px]">${currentLang === 'en' ? 'Approve' : 'تأیید'}</button>
-                        <button onclick="rejectReceipt('${r.id}')" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-1.5 rounded-lg font-bold text-[10px]">${currentLang === 'en' ? 'Reject' : 'رد'}</button>
+                    <div><a href="${r.image}" target="_blank" class="text-sky-400 underline">View Receipt Image</a></div>
+                    <div class="flex gap-2 pt-1">
+                        ${currentUser.isAdmin ? `<button onclick="approveReceipt('${r.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">تأیید و فعال‌سازی اشتراک</button>` : `<span class="text-xs text-slate-400">معاون دسترسی تأیید فاکتور پرو/پریمیوم را ندارد</span>`}
+                        <button onclick="rejectReceipt('${r.id}')" class="bg-red-600 hover:bg-red-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">رد فاکتور</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function approveReceipt(recId) {
-            const rec = receiptsDB.find(r => r.id === recId);
+        function approveReceipt(id) {
+            if (!currentUser.isAdmin) { showToast('شما دسترسی تأیید این فاکتور را ندارید.', 'error'); return; }
+            const rec = receiptsDB.find(r => r.id === id);
             if (!rec) return;
             rec.status = 'approved';
-            const user = usersDB.find(u => u.username === rec.username);
-            if (user) {
-                const parts = rec.planName.split(' ');
-                const planKey = parts.slice(0, -2).join(' ') || parts[0];
-                user.tier = planKey;
-                if (currentUser && currentUser.username === user.username) {
-                    currentUser.tier = planKey;
-                    localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
-                }
+            
+            let targetUser = usersDB.find(u => u.username === rec.username);
+            if (targetUser) {
+                targetUser.tier = rec.planName;
                 localStorage.setItem('kavosh_users', JSON.stringify(usersDB));
+                if (currentUser && currentUser.username === targetUser.username) {
+                    currentUser = targetUser;
+                    localStorage.setItem('kavosh_current_user', JSON.stringify(currentUser));
+                    updateQuotaUI();
+                }
             }
-            localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB));
+            try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
             renderAdminReceipts();
-            updateQuotaUI();
-            showToast(currentLang === 'en' ? 'Receipt approved.' : 'فاکتور تأیید شد.');
+            renderAdminUsers();
+            showToast('فاکتور تأیید و اشتراک کاربر فعال شد.');
         }
 
-        function rejectReceipt(recId) {
-            const rec = receiptsDB.find(r => r.id === recId);
-            if (!rec) return;
-            rec.status = 'rejected';
-            localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB));
+        function rejectReceipt(id) {
+            receiptsDB = receiptsDB.filter(r => r.id !== id);
+            try { localStorage.setItem('kavosh_receipts', JSON.stringify(receiptsDB)); } catch(e) {}
             renderAdminReceipts();
-            showToast(currentLang === 'en' ? 'Receipt rejected.' : 'فاکتور رد شد.');
+            showToast('فاکتور رد شد.', 'error');
         }
 
         function renderAdminTickets() {
             const list = document.getElementById('admin-tickets-list');
-            if (ticketsDB.length === 0) { list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No tickets.' : 'هیچ تیکتی ثبت نشده است.'}</div>`; return; }
-            list.innerHTML = ticketsDB.map(t => `
-                <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-3 text-xs space-y-1.5">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-sky-300">${escapeHtml(t.subject)}</span>
-                        <span class="text-slate-500">${escapeHtml(t.username)}</span>
+            const activeTickets = ticketsDB.filter(t => !t.isClosed);
+            if (!activeTickets.length) {
+                list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${translations[currentLang].noTkt}</div>`;
+                return;
+            }
+            list.innerHTML = activeTickets.map(t => `
+                <div class="bg-slate-900/60 border border-slate-700/40 p-3.5 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex justify-between font-bold text-sky-400">
+                        <span>${escapeHtml(t.username)}: ${escapeHtml(t.subject)}</span>
+                        <span class="text-slate-400">${t.status}</span>
                     </div>
-                    <div class="text-slate-400">${escapeHtml(t.message)}</div>
-                    <div class="flex gap-2 pt-1">
-                        <button onclick="closeTicket('${t.id}')" class="bg-emerald-600/80 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg text-[10px]">${currentLang === 'en' ? 'Close' : 'بستن'}</button>
+                    <p class="text-slate-300">${escapeHtml(t.message)}</p>
+                    ${t.reply ? `<div class="bg-slate-950/80 p-2.5 rounded-xl text-emerald-400">پاسخ قبلی: ${escapeHtml(t.reply)}</div>` : ''}
+                    <div class="flex gap-2 pt-1 items-center">
+                        <input type="text" id="reply-input-${t.id}" value="${t.reply || ''}" placeholder="پاسخ به تیکت..." class="flex-1 bg-slate-900 border border-slate-700/60 rounded-lg px-3 py-1.5 text-slate-100 focus:outline-none focus:border-sky-500 transition">
+                        <button onclick="replyAndCloseTicket('${t.id}')" class="bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-1.5 rounded-lg font-medium transition">ارسال و بستن تیکت</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function closeTicket(ticketId) {
-            const t = ticketsDB.find(x => x.id === ticketId);
-            if (!t) return;
-            t.status = 'closed';
-            localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB));
-            renderAdminTickets();
-            showToast(currentLang === 'en' ? 'Ticket closed.' : 'تیکت بسته شد.');
+        function replyAndCloseTicket(id) {
+            const input = document.getElementById(`reply-input-${id}`);
+            const replyText = input ? input.value.trim() : '';
+            if (!replyText) { showToast(currentLang === 'en' ? 'Please enter a reply.' : 'لطفاً پاسخ را وارد کنید.', 'error'); return; }
+            const tkt = ticketsDB.find(t => t.id === id);
+            if (tkt) {
+                tkt.reply = replyText;
+                tkt.status = currentLang === 'en' ? 'Replied & Closed' : 'پاسخ داده شد و بسته شد';
+                tkt.isClosed = true;
+                try { localStorage.setItem('kavosh_tickets', JSON.stringify(ticketsDB)); } catch(e) {}
+                renderAdminTickets();
+                showToast(currentLang === 'en' ? 'Ticket replied and closed.' : 'تیکت پاسخ داده شد و از پنل بسته شد.');
+            }
         }
 
-        function renderDiscountCodes() {
-            const list = document.getElementById('discount-codes-list');
-            let codes = [];
-            try { codes = JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) {}
-            if (codes.length === 0) { list.innerHTML = `<div class="text-xs text-slate-500 text-center py-3">${currentLang === 'en' ? 'No codes.' : 'هیچ کدی وجود ندارد.'}</div>`; return; }
-            list.innerHTML = codes.map(c => `
-                <div class="bg-slate-900/60 border border-slate-700/40 rounded-lg p-2 flex items-center justify-between">
-                    <span class="font-mono text-emerald-300" dir="ltr">${c.code}</span>
-                    <span class="text-amber-300 font-bold">${c.percent}%</span>
-                </div>
-            `).join('');
-        }
-
-        function createDiscountCode() {
-            const code = document.getElementById('discount-code-input').value.trim().toUpperCase();
-            const percent = parseInt(document.getElementById('discount-percent-input').value);
-            if (!code || !percent || percent < 5 || percent > 100) { showToast('کد یا درصد نامعتبر است.', 'error'); return; }
-            let codes = [];
-            try { codes = JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) {}
-            codes.push({ code, percent, createdAt: Date.now() });
-            localStorage.setItem('kavosh_discount_codes', JSON.stringify(codes));
-            document.getElementById('discount-code-input').value = '';
-            renderDiscountCodes();
-            showToast('کد تخفیف ایجاد شد.');
-        }
-
-        function applyDiscountCode() {
-            const code = document.getElementById('user-discount-code').value.trim().toUpperCase();
-            const msg = document.getElementById('discount-applied-msg');
-            if (!code) return;
-            let codes = [];
-            try { codes = JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) {}
-            const found = codes.find(c => c.code === code);
-            if (!found) { msg.classList.remove('hidden'); msg.className = 'text-xs text-red-400'; msg.textContent = 'کد تخفیف نامعتبر است.'; return; }
-            appliedDiscount = found.percent;
-            msg.classList.remove('hidden'); msg.className = 'text-xs text-emerald-400'; msg.textContent = `کد تخفیف ${found.percent}٪ اعمال شد.`;
-        }
-
-        function notifyUsersAboutDiscount() {
-            let codes = [];
-            try { codes = JSON.parse(localStorage.getItem('kavosh_discount_codes')) || []; } catch(e) {}
-            if (codes.length === 0) { showToast('کدی برای اطلاع‌رسانی وجود ندارد.', 'error'); return; }
-            const last = codes[codes.length - 1];
-            showToast(`اطلاع‌رسانی کد ${last.code} (${last.percent}٪) انجام شد.`);
-        }
-
-        function checkDiscountAnnouncement() {
-            try {
-                const latest = localStorage.getItem('kavosh_latest_discount');
-                if (latest) {
-                    const code = JSON.parse(latest);
-                    setTimeout(() => showToast(`🎉 کد تخفیف ${code.code} با ${code.percent}٪ تخفیف فعال است!`), 2000);
-                }
-            } catch(e) {}
-        }
-
-        function saveEitaaConfig() {
-            const token = document.getElementById('eitaa-token-input').value.trim();
-            const chatId = document.getElementById('eitaa-chat-input').value.trim();
-            localStorage.setItem('kavosh_eitaa_config', JSON.stringify({ token, chatId }));
-            showToast('تنظیمات ایتا ذخیره شد.');
-        }
-
-        function loadEitaaConfig() {
-            try {
-                const cfg = JSON.parse(localStorage.getItem('kavosh_eitaa_config')) || {};
-                document.getElementById('eitaa-token-input').value = cfg.token || '';
-                document.getElementById('eitaa-chat-input').value = cfg.chatId || '';
-            } catch(e) {}
-        }
+        function handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendAction(); } }
+        function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-            if (window.innerWidth < 768) {
-                sidebar.classList.toggle('mobile-open');
-                overlay.classList.toggle('active');
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) {
+                const isOpen = sidebar.classList.contains('mobile-open');
+                if (isOpen) {
+                    sidebar.classList.remove('mobile-open');
+                    if (overlay) overlay.classList.remove('active');
+                } else {
+                    sidebar.classList.remove('hidden');
+                    sidebar.classList.add('mobile-open');
+                    if (overlay) overlay.classList.add('active');
+                }
             } else {
                 sidebar.classList.toggle('hidden');
             }
         }
+
         function closeSidebarMobile() {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            document.getElementById('mobile-overlay').classList.remove('active');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active');
         }
 
-        function goBack() {
-            if (window.history.length > 1) window.history.back();
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendAction();
+        // Close mobile sidebar on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                closeSidebarMobile();
+                const sidebar = document.getElementById('sidebar');
+                if (sidebar && !sidebar.classList.contains('hidden')) {
+                    // keep open state on desktop if desired
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
